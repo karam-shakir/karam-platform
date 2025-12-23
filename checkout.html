@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إتمام الحجز - كرم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/main.css">
+
+    <!-- Language and Components -->
+    <script src="js/language.js" defer></script>
+    <script src="js/components-loader.js" defer></script>
+    <style>
+        .checkout-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-3xl) var(--space-xl);
+        }
+
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: var(--space-3xl);
+        }
+
+        .section-card {
+            background: white;
+            padding: var(--space-2xl);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        .section-title {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary);
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 2px solid var(--color-border-light);
+        }
+
+        .booking-item {
+            padding: var(--space-lg);
+            background: var(--color-bg-light);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            border-right: 4px solid var(--color-primary);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-sm);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid var(--color-border-light);
+        }
+
+        .summary-row.total {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary);
+            border-bottom: none;
+            padding-top: var(--space-lg);
+            margin-top: var(--space-md);
+            border-top: 2px solid var(--color-primary);
+        }
+
+        .payment-button {
+            width: 100%;
+            padding: var(--space-lg);
+            font-size: var(--font-size-lg);
+            margin-top: var(--space-lg);
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+            flex-wrap: wrap;
+        }
+
+        .payment-method-badge {
+            padding: 8px 16px;
+            background: var(--color-bg);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            border: 1px solid var(--color-border);
+        }
+
+        @media (max-width: 768px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Unified Header -->
+    <div id="header-container"></div>
+
+    <!-- Checkout Content -->
+    <div class="checkout-container">
+        <h2 class="section-title">بيانات العميل</h2>
+        <form id="customer-info-form">
+            <div class="form-group">
+                <label class="form-label">الاسم الكامل *</label>
+                <input type="text" id="customer-name" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">البريد الإلكتروني *</label>
+                <input type="email" id="customer-email" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">رقم الجوال *</label>
+                <input type="tel" id="customer-phone" class="form-input" placeholder="05xxxxxxxx" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">رقم الطوارئ *</label>
+                <input type="tel" id="emergency-contact" class="form-input" placeholder="05xxxxxxxx" required>
+                <small class="text-muted">للتواصل في حالات الطوارئ</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">ملاحظات إضافية</label>
+                <textarea id="customer-notes" class="form-textarea" rows="3"
+                    placeholder="أي طلبات أو ملاحظات خاصة..."></textarea>
+            </div>
+        </form>
+    </div>
+
+    <!-- Visitor Names Section -->
+    <div class="section-card">
+        <h2 class="section-title">أسماء الزوار / Visitor Names</h2>
+        <p class="text-sm text-muted" style="margin-bottom: var(--space-lg);">
+            ⚠️ يجب إدخال الاسم الثلاثي أو الرباعي لكل زائر (عربي أو إنجليزي) لأغراض أمنية<br>
+            Required: Full name (3-4 parts) for each visitor in Arabic or English for security purposes
+        </p>
+        <div id="visitor-names-container">
+            <!-- Will be filled by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Discount Code Section -->
+    <div class="section-card">
+        <h2 class="section-title">كود الخصم (اختياري)</h2>
+        <div style="display: flex; gap: var(--space-md);">
+            <input type="text" id="discount-code" class="form-input" placeholder="أدخل كود الخصم" style="flex: 1;">
+            <button type="button" onclick="applyDiscountCode()" class="btn btn-secondary">
+                تطبيق
+            </button>
+        </div>
+        <div id="discount-message" style="margin-top: var(--space-sm);"></div>
+    </div>
+
+    <!-- Payment Section -->
+    <div class="section-card">
+        <h2 class="section-title">الدفع</h2>
+
+        <div class="payment-methods">
+            <div class="payment-method-badge">💳 بطاقة ائتمانية</div>
+            <div class="payment-method-badge">🇸🇦 مدى</div>
+            <div class="payment-method-badge"> Apple Pay</div>
+        </div>
+
+        <div id="moyasar-form" style="margin-top: var(--space-xl);">
+            <!-- Moyasar Payment Form will be injected here -->
+        </div>
+
+        <button id="pay-button" class="btn btn-primary payment-button" onclick="processPayment()">
+            💳 الدفع الآن
+        </button>
+
+        <p class="text-sm text-muted text-center" style="margin-top: var(--space-md);">
+            🔒 الدفع آمن ومشفر عبر Moyasar
+        </p>
+    </div>
+    </div>
+
+    <!-- Right Column: Order Summary -->
+    <div>
+        <div class="section-card" style="position: sticky; top: 100px;">
+            <h2 class="section-title">ملخص الحجز</h2>
+
+            <div id="bookings-summary">
+                <!-- Will be filled by JavaScript -->
+            </div>
+        </div>
+        <div class="summary-row">
+            <span>ضريبة القيمة المضافة (15%)</span>
+            <span id="vat">0 ر.س</span>
+        </div>
+        <div class="summary-row total">
+            <span>الإجمالي</span>
+            <span id="grand-total">0 ر.س</span>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    <!-- Unified Footer -->
+    <div id="footer-container"></div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.moyasar.com/mpf/1.14.0/moyasar.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/moyasar-config.js"></script>
+    <script src="js/checkout.js"></script>
+</body>
+
+</html>

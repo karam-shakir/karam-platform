@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <title>جاري التحميل...</title>
+</head>
+
+<body>
+    <h1 style="text-align: center; font-family: Arial; margin-top: 20%;">جاري فتح لوحة التحكم... 🎛️</h1>
+
+    <script>
+        // Clear any existing user data
+        localStorage.clear();
+
+        // Set operator user
+        localStorage.setItem('user', JSON.stringify({
+            id: 'test-operator-id-' + Date.now(),
+            email: 'operator@karam.sa',
+            role: 'operator',
+            full_name: 'مشغل المنصة'
+        }));
+
+        // Verify
+        console.log('✅ User set:', localStorage.getItem('user'));
+
+        // Immediate redirect
+        window.location.replace('operator-dashboard.html');
+    </script>
+</body>
+
+</html>

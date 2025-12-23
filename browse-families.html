@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="تصفح الأسر المستضيفة في مكة والمدينة">
+    <title>تصفح الأسر المستضيفة - كرم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/main.css">
+
+    <!-- Language and Components -->
+    <script src="js/language.js" defer></script>
+    <script src="js/components-loader.js" defer></script>
+    <link rel="stylesheet" href="styles/browse.css">
+    <link rel="stylesheet" href="styles/payment.css">
+</head>
+
+<body>
+    <!-- Unified Header -->
+    <div id="header-container"></div>
+
+    <!-- Hero Section -->
+    <section class="browse-hero">
+        <div class="container">
+            <h1 class="browse-title">اختر تجربة الضيافة المثالية</h1>
+            <p class="browse-subtitle">استكشف الأسر المستضيفة في مكة المكرمة والمدينة المنورة</p>
+        </div>
+    </section>
+
+    <!-- Filters & Search -->
+    <section class="filters-section">
+        <div class="container">
+            <div class="filters-bar">
+                <div class="search-box">
+                    <input type="text" id="search-input" class="search-input" placeholder="ابحث عن أسرة..."
+                        onkeyup="filterFamilies()">
+                    <button class="search-btn">🔍</button>
+                </div>
+
+                <div class="filters">
+                    <select id="city-filter" class="filter-select" onchange="filterFamilies()">
+                        <option value="">جميع المدن</option>
+                        <option value="makkah">مكة المكرمة</option>
+                        <option value="madinah">المدينة المنورة</option>
+                    </select>
+
+                    <select id="package-filter" class="filter-select" onchange="filterFamilies()">
+                        <option value="">جميع الباقات</option>
+                        <option value="simple">ضيافة بسيطة</option>
+                        <option value="meal">وجبة كاملة</option>
+                    </select>
+
+                    <select id="sort-filter" class="filter-select" onchange="sortFamilies()">
+                        <option value="rating">الأعلى تقييماً</option>
+                        <option value="price-low">السعر: من الأقل للأعلى</option>
+                        <option value="price-high">السعر: من الأعلى للأقل</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Families Grid -->
+    <section class="families-section">
+        <div class="container">
+            <div class="results-header">
+                <h2>الأسر المتاحة</h2>
+                <span class="results-count" id="results-count">جاري التحميل...</span>
+            </div>
+
+            <div class="families-grid" id="families-grid">
+                <!-- Families will be loaded here dynamically -->
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>جاري تحميل الأسر المستضيفة...</p>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination" style="display: none;">
+                <!-- Pagination will be generated dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Unified Footer -->
+    <div id="footer-container"></div>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3>سلة التسوق</h3>
+            <button class="close-cart" onclick="closeCart()">×</button>
+        </div>
+        <div class="cart-body" id="cart-items">
+            <div class="empty-cart">
+                <p>سلتك فارغة</p>
+                <p class="text-muted">أضف باقة لتبدأ الحجز</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>المجموع:</span>
+                <span id="cart-total">0 ريال</span>
+            </div>
+            <button class="btn btn-primary btn-block" onclick="proceedToCheckout()">
+                إتمام الحجز
+            </button>
+        </div>
+    </div>
+
+    <div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/main.js"></script>
+    <script src="js/browse.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/payment.js"></script>
+</body>
+
+</html>

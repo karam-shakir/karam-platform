@@ -1,0 +1,5 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="100" r="100" fill="#D4CEBA"/>
+  <circle cx="100" cy="100" r="80" fill="#EDE9DC"/>
+  <text x="100" y="120" font-family="Arial, sans-serif" font-size="64" fill="#5C704D" text-anchor="middle">👤</text>
+</svg>

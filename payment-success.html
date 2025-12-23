@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نجح الدفع - كرم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        .success-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--space-4xl) var(--space-xl);
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 120px;
+            margin-bottom: var(--space-2xl);
+            animation: bounceIn 0.8s ease;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-card {
+            background: white;
+            padding: var(--space-3xl);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: var(--space-2xl);
+        }
+
+        .success-title {
+            font-size: var(--font-size-4xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-success);
+            margin-bottom: var(--space-md);
+        }
+
+        .success-message {
+            color: var(--color-text-light);
+            margin-bottom: var(--space-2xl);
+            font-size: var(--font-size-lg);
+        }
+
+        .booking-details {
+            background: var(--color-bg-light);
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-2xl);
+            text-align: right;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid var(--color-border-light);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="success-container">
+        <div class="success-icon">✅</div>
+
+        <div class="success-card">
+            <h1 class="success-title">تم الحجز بنجاح!</h1>
+            <p class="success-message">
+                شكراً لك! تم استلام دفعتك وتأكيد حجزك.<br>
+                سيتم إرسال تفاصيل الحجز إلى بريدك الإلكتروني.
+            </p>
+
+            <div class="booking-details" id="payment-details">
+                <div class="detail-row">
+                    <span class="text-muted">رقم العملية:</span>
+                    <strong id="payment-id">-</strong>
+                </div>
+                <div class="detail-row">
+                    <span class="text-muted">المبلغ المدفوع:</span>
+                    <strong id="amount">-</strong>
+                </div>
+                <div class="detail-row">
+                    <span class="text-muted">طريقة الدفع:</span>
+                    <strong id="payment-method">-</strong>
+                </div>
+                <div class="detail-row">
+                    <span class="text-muted">التاريخ:</span>
+                    <strong id="payment-date">-</strong>
+                </div>
+            </div>
+
+            <div class="actions">
+                <a href="index.html" class="btn btn-primary">العودة للرئيسية</a>
+                <a href="browse-families-calendar.html" class="btn btn-secondary">حجز آخر</a>
+                <button onclick="window.print()" class="btn btn-outline">طباعة</button>
+            </div>
+        </div>
+
+        <p class="text-sm text-muted">
+            في حال وجود أي استفسارات، يرجى التواصل معنا عبر البريد الإلكتروني أو الدعم.
+        </p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Get payment ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentId = urlParams.get('payment_id');
+
+        if (paymentId) {
+            document.getElementById('payment-id').textContent = paymentId;
+            document.getElementById('amount').textContent = '---  ر.س';
+            document.getElementById('payment-method').textContent = 'بطاقة ائتمانية';
+            document.getElementById('payment-date').textContent = new Date().toLocaleDateString('ar-SA');
+        }
+    </script>
+</body>
+
+</html>

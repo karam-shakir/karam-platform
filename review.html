@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="تقييم تجربة الضيافة">
+    <title>تقييم التجربة - كرم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        .review-container {
+            max-width: 800px;
+            margin: var(--space-4xl) auto;
+            padding: var(--space-2xl);
+        }
+
+        .review-card {
+            background: white;
+            padding: var(--space-3xl);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-2xl);
+        }
+
+        .review-header {
+            text-align: center;
+            margin-bottom: var(--space-3xl);
+        }
+
+        .review-header h1 {
+            color: var(--color-primary);
+            margin-bottom: var(--space-md);
+        }
+
+        .booking-info {
+            background: var(--color-bg-light);
+            padding: var(--space-lg);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-2xl);
+        }
+
+        .rating-section {
+            margin-bottom: var(--space-2xl);
+        }
+
+        .rating-section h3 {
+            margin-bottom: var(--space-lg);
+            color: var(--color-primary);
+        }
+
+        .stars {
+            display: flex;
+            gap: var(--space-md);
+            font-size: 3rem;
+            justify-content: center;
+            margin-bottom: var(--space-xl);
+        }
+
+        .star {
+            cursor: pointer;
+            transition: all var(--transition-base);
+            color: #ddd;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #ffd700;
+            transform: scale(1.2);
+        }
+
+        .aspects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-2xl);
+        }
+
+        .aspect {
+            text-align: center;
+        }
+
+        .aspect-label {
+            display: block;
+            margin-bottom: var(--space-sm);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .aspect-stars {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .aspect-star {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #ddd;
+        }
+
+        .aspect-star:hover,
+        .aspect-star.active {
+            color: #ffd700;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="review-container">
+        <div class="review-card">
+            <div class="review-header">
+                <h1>كيف كانت تجربتك؟</h1>
+                <p>نسعد بتقييمك لتحسين خدماتنا</p>
+            </div>
+
+            <div class="booking-info">
+                <h3>تفاصيل الزيارة</h3>
+                <p><strong>الأسرة المضيفة:</strong> أسرة آل محمد</p>
+                <p><strong>التاريخ:</strong> 2024-12-07</p>
+                <p><strong>نوع الباقة:</strong> وجبة كاملة</p>
+            </div>
+
+            <div class="rating-section">
+                <h3>التقييم الإجمالي</h3>
+                <div class="stars" id="overall-rating">
+                    <span class="star" data-rating="1">★</span>
+                    <span class="star" data-rating="2">★</span>
+                    <span class="star" data-rating="3">★</span>
+                    <span class="star" data-rating="4">★</span>
+                    <span class="star" data-rating="5">★</span>
+                </div>
+            </div>
+
+            <div class="rating-section">
+                <h3>تقييم جوانب التجربة</h3>
+                <div class="aspects-grid">
+                    <div class="aspect">
+                        <span class="aspect-label">النظافة</span>
+                        <div class="aspect-stars" data-aspect="cleanliness">
+                            <span class="aspect-star" data-rating="1">★</span>
+                            <span class="aspect-star" data-rating="2">★</span>
+                            <span class="aspect-star" data-rating="3">★</span>
+                            <span class="aspect-star" data-rating="4">★</span>
+                            <span class="aspect-star" data-rating="5">★</span>
+                        </div>
+                    </div>
+                    <div class="aspect">
+                        <span class="aspect-label">جودة الطعام</span>
+                        <div class="aspect-stars" data-aspect="food">
+                            <span class="aspect-star" data-rating="1">★</span>
+                            <span class="aspect-star" data-rating="2">★</span>
+                            <span class="aspect-star" data-rating="3">★</span>
+                            <span class="aspect-star" data-rating="4">★</span>
+                            <span class="aspect-star" data-rating="5">★</span>
+                        </div>
+                    </div>
+                    <div class="aspect">
+                        <span class="aspect-label">الضيافة</span>
+                        <div class="aspect-stars" data-aspect="hospitality">
+                            <span class="aspect-star" data-rating="1">★</span>
+                            <span class="aspect-star" data-rating="2">★</span>
+                            <span class="aspect-star" data-rating="3">★</span>
+                            <span class="aspect-star" data-rating="4">★</span>
+                            <span class="aspect-star" data-rating="5">★</span>
+                        </div>
+                    </div>
+                    <div class="aspect">
+                        <span class="aspect-label">الموقع</span>
+                        <div class="aspect-stars" data-aspect="location">
+                            <span class="aspect-star" data-rating="1">★</span>
+                            <span class="aspect-star" data-rating="2">★</span>
+                            <span class="aspect-star" data-rating="3">★</span>
+                            <span class="aspect-star" data-rating="4">★</span>
+                            <span class="aspect-star" data-rating="5">★</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">�اركنا ملاحظاتك</label>
+                <textarea id="review-comment" class="form-textarea" rows="5"
+                    placeholder="اكتب تجربتك مع الأسرة المضيفة..."></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-outline" onclick="window.history.back()">إلغاء</button>
+                <button class="btn btn-primary" onclick="submitReview()">إرسال التقييم</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/main.js"></script>
+    <script>
+        let overallRating = 0;
+        const aspectRatings = {
+            cleanliness: 0,
+            food: 0,
+            hospitality: 0,
+            location: 0
+        };
+
+        // Overall rating
+        document.querySelectorAll('#overall-rating .star').forEach(star => {
+            star.addEventListener('click', function () {
+                overallRating = parseInt(this.dataset.rating);
+                updateStars('#overall-rating', overallRating);
+            });
+        });
+
+        // Aspect ratings
+        document.querySelectorAll('.aspect-stars').forEach(aspectDiv => {
+            const aspect = aspectDiv.dataset.aspect;
+            aspectDiv.querySelectorAll('.aspect-star').forEach(star => {
+                star.addEventListener('click', function () {
+                    aspectRatings[aspect] = parseInt(this.dataset.rating);
+                    updateStars(`[data-aspect="${aspect}"]`, aspectRatings[aspect]);
+                });
+            });
+        });
+
+        function updateStars(selector, rating) {
+            const container = document.querySelector(selector);
+            const stars = container.querySelectorAll('.star, .aspect-star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        async function submitReview() {
+            if (overallRating === 0) {
+                showNotification('يرجى اختيار تقييم عام', 'error');
+                return;
+            }
+
+            const comment = document.getElementById('review-comment').value;
+
+            const reviewData = {
+                overall_rating: overallRating,
+                cleanliness: aspectRatings.cleanliness || 0,
+                food_quality: aspectRatings.food || 0,
+                hospitality: aspectRatings.hospitality || 0,
+                location: aspectRatings.location || 0,
+                comment: comment,
+                created_at: new Date().toISOString()
+            };
+
+            console.log('Review data:', reviewData);
+
+            // Here you would save to Supabase
+            showNotification('شكراً لتقييمك! ✅', 'success');
+
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 2000);
+        }
+    </script>
+</body>
+
+</html>

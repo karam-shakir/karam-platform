@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="لوحة تحكم المعتمر">
+    <title>لوحة التحكم - كرم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <a href="index.html">
+                        <img src="assets/logo.png" alt="كرم" class="logo">
+                    </a>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="nav-link">الرئيسية</a></li>
+                    <li><a href="browse-families.html" class="nav-link">تصفح الأسر</a></li>
+                    <li><a href="souvenirs.html" class="nav-link">متجر الهدايا</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="btn btn-text" id="user-menu-btn">
+                        <span id="user-name">حسابي</span>
+                    </button>
+                    <button class="btn btn-secondary btn-sm" onclick="logout()">تسجيل الخروج</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Section -->
+    <section class="dashboard-section">
+        <div class="container">
+            <div class="dashboard-header">
+                <div>
+                    <h1 class="dashboard-title">لوحة التحكم</h1>
+                    <p class="dashboard-subtitle">مرحباً بك في لوحة تحكم المعتمر</p>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="upcoming-bookings">0</div>
+                        <div class="stat-label">حجوزات قادمة</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✓</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="completed-bookings">0</div>
+                        <div class="stat-label">حجوزات مكتملة</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">❤️</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="favorites-count">0</div>
+                        <div class="stat-label">المفضلة</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="total-spent">0 ريال</div>
+                        <div class="stat-label">إجمالي المدفوعات</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="dashboard-content">
+                <!-- Sidebar -->
+                <div class="dashboard-sidebar">
+                    <nav class="sidebar-nav">
+                        <a href="#bookings" class="sidebar-link active" onclick="switchTab('bookings', event)">
+                            <span>📅</span> حجوزاتي
+                        </a>
+                        <a href="#favorites" class="sidebar-link" onclick="switchTab('favorites', event)">
+                            <span>❤️</span> المفضلة
+                        </a>
+                        <a href="#profile" class="sidebar-link" onclick="switchTab('profile', event)">
+                            <span>👤</span> الملف الشخصي
+                        </a>
+                        <a href="#notifications" class="sidebar-link" onclick="switchTab('notifications', event)">
+                            <span>🔔</span> الإشعارات
+                            <span class="notification-badge" id="notification-count">0</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Content Area -->
+                <div class="dashboard-main">
+                    <!-- Bookings Tab -->
+                    <div id="bookings-tab" class="tab-content active">
+                        <h2>حجوزاتي</h2>
+                        <div class="bookings-filters">
+                            <button class="filter-btn active" onclick="filterBookings('all')">الكل</button>
+                            <button class="filter-btn" onclick="filterBookings('upcoming')">القادمة</button>
+                            <button class="filter-btn" onclick="filterBookings('completed')">المكتملة</button>
+                            <button class="filter-btn" onclick="filterBookings('cancelled')">الملغاة</button>
+                        </div>
+                        <div id="bookings-list" class="bookings-list">
+                            <div class="loading-state">
+                                <div class="spinner"></div>
+                                <p>جاري تحميل الحجوزات...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Favorites Tab -->
+                    <div id="favorites-tab" class="tab-content">
+                        <h2>المفضلة</h2>
+                        <div id="favorites-list" class="families-grid">
+                            <!-- Favorites will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Profile Tab -->
+                    <div id="profile-tab" class="tab-content">
+                        <h2>الملف الشخصي</h2>
+                        <form id="profile-form" class="profile-form" onsubmit="updateProfile(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="full-name">الاسم الكامل</label>
+                                    <input type="text" id="full-name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">رقم الجوال</label>
+                                    <input type="tel" id="phone" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">البريد الإلكتروني</label>
+                                <input type="email" id="email" required disabled>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="city">المدينة</label>
+                                    <input type="text" id="city">
+                                </div>
+                                <div class="form-group">
+                                    <label for="address">العنوان</label>
+                                    <input type="text" id="address">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                        </form>
+                    </div>
+
+                    <!-- Notifications Tab -->
+                    <div id="notifications-tab" class="tab-content">
+                        <h2>الإشعارات</h2>
+                        <div id="notifications-list">
+                            <!-- Notifications will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 كرم. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/main.js"></script>
+    <script src="js/visitor-dashboard.js"></script>
+</body>
+
+</html>

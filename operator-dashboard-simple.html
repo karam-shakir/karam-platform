@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم المشغل - كرم</title>
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+</head>
+
+<body class="dashboard-page">
+    <!-- Navigation -->
+    <nav class="dashboard-nav">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>🎛️ لوحة تحكم المشغل</h1>
+            </div>
+            <div class="nav-user">
+                <span id="operator-name">مشغل المنصة</span>
+                <button onclick="logout()" class="btn btn-text">تسجيل الخروج</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="dashboard-container" style="padding: 2rem;">
+        <div class="card" style="max-width: 800px; margin: 0 auto;">
+            <h2 style="color: #667eea; margin-bottom: 1rem;">✅ مرحباً في لوحة تحكم المشغل</h2>
+
+            <div style="background: #f0f4ff; padding: 1.5rem; border-radius: 10px; margin: 1rem 0;">
+                <h3 style="margin-bottom: 0.5rem;">📊 نظرة عامة</h3>
+                <p>هذه نسخة بسيطة من لوحة التحكم للاختبار</p>
+            </div>
+
+            <div
+                style="background: #fff3cd; padding: 1.5rem; border-radius: 10px; margin: 1rem 0; border-right: 4px solid #ffc107;">
+                <h3 style="margin-bottom: 0.5rem;">🏠 إدارة الأسر</h3>
+                <p>يمكنك من هنا الموافقة على الأسر الجديدة وإدارة الأسر المسجلة</p>
+                <button class="btn btn-primary" style="margin-top: 1rem;"
+                    onclick="window.location.href='operator-families-pending.html'">
+                    عرض الأسر المنتظرة
+                </button>
+            </div>
+
+            <div
+                style="background: #d1ecf1; padding: 1.5rem; border-radius: 10px; margin: 1rem 0; border-right: 4px solid #0dcaf0;">
+                <h3 style="margin-bottom: 0.5rem;">📅 الحجوزات</h3>
+                <p>إدارة جميع الحجوزات على المنصة</p>
+            </div>
+
+            <div
+                style="background: #d4edda; padding: 1.5rem; border-radius: 10px; margin: 1rem 0; border-right: 4px solid #28a745;">
+                <h3 style="margin-bottom: 0.5rem;">💰 التقارير المالية</h3>
+                <p>عرض الإيرادات والعمولات</p>
+            </div>
+
+            <hr style="margin: 2rem 0;">
+
+            <div style="text-align: center; color: #666;">
+                <p>🎉 تم فتح لوحة التحكم بنجاح!</p>
+                <p style="font-size: 0.9rem; margin-top: 0.5rem;">هذه نسخة بسيطة للاختبار - لا توجد فحوصات مصادقة</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple Script - NO EXTERNAL FILES -->
+    <script>
+        console.log('✅ Simple dashboard loaded - NO AUTH, NO REDIRECTS');
+
+        // Get user from localStorage if exists
+        try {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.full_name) {
+                document.getElementById('operator-name').textContent = user.full_name;
+                console.log('User found:', user.full_name);
+            }
+        } catch (e) {
+            console.log('No user in localStorage');
+        }
+
+        // Simple logout
+        function logout() {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            }
+        }
+
+        console.log('✅ Dashboard ready - all functions loaded');
+    </script>
+</body>
+
+</html>

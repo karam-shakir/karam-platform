@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الأسرة - كرم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <!-- Flatpickr Calendar -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+
+<body class="dashboard-page">
+    <!-- Navigation -->
+    <nav class="dashboard-nav">
+        <div class="container">
+            <div class="nav-brand">
+                <img src="assets/logo.png" alt="كرم" class="logo">
+                <h1>لوحة تحكم الأسرة</h1>
+            </div>
+            <div class="nav-user">
+                <span id="family-name">أسرة...</span>
+                <button onclick="logout()" class="btn btn-text">تسجيل الخروج</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+            <nav class="sidebar-nav">
+                <a href="#availability" class="nav-item active" onclick="showSection('availability')">
+                    <span class="icon">📅</span>
+                    <span>إدارة التوفر</span>
+                </a>
+                <a href="#bookings" class="nav-item" onclick="showSection('bookings')">
+                    <span class="icon">📋</span>
+                    <span>الحجوزات</span>
+                </a>
+                <a href="#earnings" class="nav-item" onclick="showSection('earnings')">
+                    <span class="icon">💰</span>
+                    <span>الأرباح</span>
+                </a>
+                <a href="#profile" class="nav-item" onclick="showSection('profile')">
+                    <span class="icon">⚙️</span>
+                    <span>الإعدادات</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Panel -->
+        <main class="dashboard-main">
+
+            <!-- Section: Availability Management -->
+            <section id="availability-section" class="dashboard-section active">
+                <div class="section-header">
+                    <h2>إدارة التوفر</h2>
+                    <p class="text-muted">حدد الأيام والأوقات المتاحة لاستقبال الضيوف</p>
+                </div>
+
+                <!-- Weekly Schedule -->
+                <div class="card">
+                    <h3>الجدول الأسبوعي</h3>
+                    <p class="text-muted">حدد الأيام والأوقات المتكررة أسبوعياً</p>
+
+                    <div id="weekly-schedule" class="schedule-grid">
+                        <!-- سيتم ملؤها بـ JavaScript -->
+                    </div>
+
+                    <button onclick="saveWeeklySchedule()" class="btn btn-primary mt-lg">حفظ الجدول الأسبوعي</button>
+                </div>
+
+                <!-- Specific Dates -->
+                <div class="card mt-xl">
+                    <h3>أ
+
+                        يام محددة</h3>
+                    <p class="text-muted">أضف أو أغلق أيام معينة (تعطيل استثنائي أو إضافة)</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">اختر التاريخ</label>
+                            <input type="text" id="specific-date-picker" class="form-input" placeholder="اختر التاريخ">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">نوع التعديل</label>
+                            <select id="specific-action" class="form-select">
+                                <option value="add">إضافة توفر</option>
+                                <option value="block">إغلاق (غير متاح)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="specific-time-slots" class="time-slots">
+                        <label class="form-label">الأوقات المتاحة</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="morning" data-time="08:00-12:00">
+                                <span>صباحاً (8-12)</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="afternoon" data-time="12:00-16:00">
+                                <span>ظهراً (12-4)</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="evening" data-time="16:00-20:00">
+                                <span>مساءً (4-8)</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="night" data-time="20:00-00:00">
+                                <span>ليلاً (8-12)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">السعة الاستيعابية</label>
+                        <input type="number" id="specific-capacity" class="form-input" min="1" max="50" value="10">
+                    </div>
+
+                    <button onclick="saveSpecificDate()" class="btn btn-secondary">حفظ</button>
+                </div>
+            </section>
+
+            <!-- Section: Bookings -->
+            <section id="bookings-section" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h2>الحجوزات</h2>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-bookings">0</div>
+                        <div class="stat-label">إجمالي الحجوزات</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="upcoming-bookings">0</div>
+                        <div class="stat-label">الحجوزات القادمة</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="completed-bookings">0</div>
+                        <div class="stat-label">مكتملة</div>
+                    </div>
+                </div>
+
+                <!-- Bookings List -->
+                <div class="card mt-xl">
+                    <h3>الحجوزات القادمة</h3>
+                    <div id="bookings-list" class="bookings-table">
+                        <!-- سيتم ملؤها بـ JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Earnings -->
+            <section id="earnings-section" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h2>الأرباح</h2>
+                </div>
+
+                <!-- Earnings Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-value" id="total-earnings">0 ريال</div>
+                        <div class="stat-label">إجمالي الأرباح</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="this-month-earnings">0 ريال</div>
+                        <div class="stat-label">هذا الشهر</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="pending-earnings">0 ريال</div>
+                        <div class="stat-label">قيد الانتظار</div>
+                    </div>
+                </div>
+
+                <!-- Earnings History -->
+                <div class="card mt-xl">
+                    <h3>سجل الأرباح</h3>
+                    <div id="earnings-list" class="earnings-table">
+                        <!-- سيتم ملؤها بـ JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Profile Settings -->
+            <section id="profile-section" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h2>إعدادات الحساب</h2>
+                </div>
+
+                <div class="card">
+                    <h3>معلومات الأسرة</h3>
+                    <form id="profile-form">
+                        <div class="form-group">
+                            <label>اسم الأسرة</label>
+                            <input type="text" id="profile-name" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>الوصف</label>
+                            <textarea id="profile-description" class="form-textarea" rows="4"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/family-dashboard.js"></script>
+</body>
+
+</html>

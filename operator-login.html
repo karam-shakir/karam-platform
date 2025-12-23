@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل دخول مشغل - كرم</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            direction: rtl;
+        }
+
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .info {
+            background: #f0f4ff;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="icon">🎛️</div>
+        <h1>تسجيل دخول مشغل المنصة</h1>
+        <p>اضغط على الزر أدناه للدخول إلى لوحة تحكم المشغل مباشرةً</p>
+
+        <button class="btn" onclick="loginAsOperator()">
+            🚀 الدخول للوحة التحكم
+        </button>
+
+        <div class="info">
+            💡 <strong>ملاحظة:</strong> هذا تسجيل دخول تجريبي للاختبار فقط
+        </div>
+    </div>
+
+    <script>
+        function loginAsOperator() {
+            // Set operator user in localStorage
+            localStorage.setItem('user', JSON.stringify({
+                id: 'test-operator-id',
+                email: 'operator@karam.sa',
+                role: 'operator',
+                full_name: 'مشغل المنصة'
+            }));
+
+            // Redirect to operator dashboard
+            window.location.href = 'operator-dashboard.html';
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,203 @@
+<!-- Unified Header Component -->
+<nav class="navbar">
+    <div class="container">
+        <div class="nav-content">
+            <div class="nav-brand">
+                <a href="index.html" class="brand-link">
+                    <img src="assets/logo.png" alt="كرم" class="logo">
+                    <span class="brand-name">كرم</span>
+                </a>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link" data-i18n="home">الرئيسية</a></li>
+                <li><a href="browse-families-calendar.html" class="nav-link" data-i18n="browse">استعراض الأسر</a></li>
+                <li><a href="souvenirs.html" class="nav-link" data-i18n="gifts">الهدايا</a></li>
+                <li><a href="#about" class="nav-link" data-i18n="about">من نحن</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <!-- Language Toggle -->
+                <div class="language-toggle">
+                    <button class="lang-btn active" data-lang="ar" onclick="switchLanguage('ar')">ع</button>
+                    <button class="lang-btn" data-lang="en" onclick="switchLanguage('en')">EN</button>
+                </div>
+
+                <!-- Cart Badge (for browse pages) -->
+                <button class="btn btn-text cart-btn" onclick="viewCart()" style="display: none;">
+                    🛒 <span data-i18n="cart">السلة</span> (<span id="cart-count">0</span>)
+                </button>
+
+                <!-- User Menu -->
+                <div class="user-menu" id="user-menu">
+                    <!-- Will be filled by JavaScript based on auth state -->
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<style>
+    .navbar {
+        background: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        padding: var(--space-md) 0;
+    }
+
+    .nav-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--space-xl);
+    }
+
+    .nav-brand {
+        display: flex;
+        align-items: center;
+    }
+
+    .brand-link {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        text-decoration: none;
+        color: var(--color-primary);
+        font-weight: var(--font-weight-bold);
+        font-size: var(--font-size-xl);
+    }
+
+    .logo {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+    }
+
+    .nav-links {
+        display: flex;
+        list-style: none;
+        gap: var(--space-lg);
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-link {
+        text-decoration: none;
+        color: var(--color-text);
+        font-weight: var(--font-weight-medium);
+        padding: var(--space-sm) var(--space-md);
+        border-radius: var(--radius-md);
+        transition: all var(--transition-base);
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+        background: var(--color-primary-light);
+        color: var(--color-primary);
+    }
+
+    .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+    }
+
+    .language-toggle {
+        display: flex;
+        gap: 4px;
+        background: var(--color-bg);
+        padding: 4px;
+        border-radius: var(--radius-md);
+    }
+
+    .lang-btn {
+        padding: 6px 12px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        border-radius: var(--radius-sm);
+        font-weight: var(--font-weight-medium);
+        transition: all var(--transition-base);
+        color: var(--color-text-light);
+    }
+
+    .lang-btn.active {
+        background: var(--color-primary);
+        color: white;
+    }
+
+    .lang-btn:hover:not(.active) {
+        background: var(--color-bg-light);
+    }
+
+    .cart-btn {
+        position: relative;
+    }
+
+    @media (max-width: 768px) {
+        .nav-links {
+            display: none;
+        }
+
+        .nav-content {
+            gap: var(--space-md);
+        }
+    }
+</style>
+
+<script>
+    // Initialize header
+    document.addEventListener('DOMContentLoaded', () => {
+        // Update user menu based on auth state
+        const user = JSON.parse(localStorage.getItem('karam_user') || 'null');
+        const userMenu = document.getElementById('user-menu');
+
+        if (user) {
+            userMenu.innerHTML = `
+            <a href="${getUserDashboardUrl(user.user_type)}" class="btn btn-text">
+                ${user.full_name || 'لوحة التحكم'}
+            </a>
+            <button onclick="logout()" class="btn btn-text" data-i18n="logout">تسجيل الخروج</button>
+        `;
+        } else {
+            userMenu.innerHTML = `
+            <a href="login.html" class="btn btn-secondary" data-i18n="login">تسجيل الدخول</a>
+            <a href="visitor-register.html" class="btn btn-primary" data-i18n="register">إنشاء حساب</a>
+        `;
+        }
+
+        // Show cart button on browse pages
+        if (window.location.pathname.includes('browse') || window.location.pathname.includes('checkout')) {
+            const cartBtn = document.querySelector('.cart-btn');
+            if (cartBtn) cartBtn.style.display = 'flex';
+        }
+
+        // Update cart count
+        updateCartCount();
+    });
+
+    function getUserDashboardUrl(userType) {
+        const dashboards = {
+            'visitor': 'visitor-dashboard.html',
+            'family': 'family-dashboard.html',
+            'company': 'company-dashboard.html',
+            'admin': 'operator-dashboard.html'
+        };
+        return dashboards[userType] || 'visitor-dashboard.html';
+    }
+
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('karam_booking_cart') || '[]');
+        const countElement = document.getElementById('cart-count');
+        if (countElement) {
+            countElement.textContent = cart.length;
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('karam_user');
+        window.location.href = 'index.html';
+    }
+</script>

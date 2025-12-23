@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأسر المنتظرة - كرم</title>
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+
+<body style="background: #f5f7fa; padding: 2rem;">
+    <div style="max-width: 1000px; margin: 0 auto;">
+        <!-- Header -->
+        <div
+            style="background: white; padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <a href="operator-dashboard-simple.html" style="color: #667eea; text-decoration: none;">← العودة للوحة
+                التحكم</a>
+            <h1 style="margin: 1rem 0 0.5rem 0;">🏠 الأسر المنتظرة الموافقة</h1>
+            <p style="color: #666; margin: 0;">قائمة الأسر التي تنتظر الموافقة للانضمام للمنصة</p>
+        </div>
+
+        <!-- Families List -->
+        <div id="families-list">
+            <div style="text-align: center; padding: 3rem; background: white; border-radius: 10px;">
+                <div class="spinner" style="width: 50px; height: 50px; border-width: 4px; margin: 0 auto 1rem;"></div>
+                <p>جاري تحميل الأسر...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+
+    <script>
+        console.log('Loading pending families...');
+
+        async function loadPendingFamilies() {
+            const listDiv = document.getElementById('families-list');
+
+            try {
+                // Check if supabase is available
+                if (typeof supabase === 'undefined') {
+                    throw new Error('Supabase not initialized');
+                }
+
+                // Fetch pending families
+                const { data: families, error } = await supabase
+                    .from('host_families')
+                    .select('*')
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                // Display families
+                if (!families || families.length === 0) {
+                    listDiv.innerHTML = `
+                        <div style="text-align: center; padding: 3rem; background: white; border-radius: 10px;">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
+                            <h2 style="color: #28a745; margin-bottom: 0.5rem;">لا توجد أسر منتظرة</h2>
+                            <p style="color: #666;">جميع الأسر تمت الموافقة عليها</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Build families HTML
+                let html = '';
+                families.forEach(family => {
+                    html += `
+                        <div style="background: white; padding: 1.5rem; border-radius: 10px; margin-bottom: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0 0 0.5rem 0; color: #333;">${family.family_name || 'بدون اسم'}</h3>
+                                    <p style="margin: 0.25rem 0; color: #666;">📍 ${family.city === 'makkah' ? 'مكة المكرمة' : 'المدينة المنورة'}</p>
+                                    <p style="margin: 0.25rem 0; color: #666;">👥 السعة: ${family.capacity} شخص</p>
+                                    <p style="margin: 0.5rem 0; color: #888; font-size: 0.9rem;">${family.description || 'لا يوجد وصف'}</p>
+                                    <p style="margin: 0.5rem 0; color: #999; font-size: 0.85rem;">📅 تاريخ التقديم: ${new Date(family.created_at).toLocaleDateString('ar-SA')}</p>
+                                </div>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button onclick="approveFamily('${family.id}')" class="btn btn-success" style="background: #28a745;">
+                                        ✓ موافقة
+                                    </button>
+                                    <button onclick="rejectFamily('${family.id}')" class="btn btn-danger" style="background: #dc3545;">
+                                        ✗ رفض
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                listDiv.innerHTML = html;
+                console.log(`✅ Loaded ${families.length} pending families`);
+
+            } catch (error) {
+                console.error('Error loading families:', error);
+                listDiv.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; background: white; border-radius: 10px; border: 2px solid #dc3545;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">❌</div>
+                        <h2 style="color: #dc3545; margin-bottom: 0.5rem;">حدث خطأ</h2>
+                        <p style="color: #666;">${error.message}</p>
+                        <button onclick="loadPendingFamilies()" class="btn btn-primary" style="margin-top: 1rem;">
+                            🔄 إعادة المحاولة
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Approve family
+        async function approveFamily(familyId) {
+            if (!confirm('هل تريد الموافقة على هذه الأسرة؟')) return;
+
+            try {
+                const { error } = await supabase
+                    .from('host_families')
+                    .update({
+                        status: 'approved',
+                        is_active: true
+                    })
+                    .eq('id', familyId);
+
+                if (error) throw error;
+
+                alert('✅ تمت الموافقة على الأسرة بنجاح');
+                loadPendingFamilies();
+            } catch (error) {
+                alert('❌ خطأ: ' + error.message);
+            }
+        }
+
+        // Reject family
+        async function rejectFamily(familyId) {
+            if (!confirm('هل تريد رفض هذه الأسرة؟')) return;
+
+            try {
+                const { error } = await supabase
+                    .from('host_families')
+                    .update({
+                        status: 'rejected',
+                        is_active: false
+                    })
+                    .eq('id', familyId);
+
+                if (error) throw error;
+
+                alert('✅ تم رفض الأسرة');
+                loadPendingFamilies();
+            } catch (error) {
+                alert('❌ خطأ: ' + error.message);
+            }
+        }
+
+        // Load on page load
+        loadPendingFamilies();
+    </script>
+</body>
+
+</html>

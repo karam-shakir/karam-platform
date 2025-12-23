@@ -1,0 +1,350 @@
+/* ===================================
+   Group Booking Styles
+   تنسيقات نظام الحجز الجماعي
+   =================================== */
+
+.booking-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.booking-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+}
+
+.booking-modal-content {
+    position: relative;
+    background: var(--color-bg-white);
+    border-radius: var(--radius-2xl);
+    max-width: 900px;
+    width: 95%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-2xl);
+    animation: slideUp 0.3s ease-out;
+}
+
+.booking-modal-header {
+    padding: var(--space-xl);
+    border-bottom: 2px solid var(--color-border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+}
+
+.booking-modal-header h2 {
+    margin: 0;
+    font-size: var(--font-size-2xl);
+    color: white;
+}
+
+.close-booking-modal {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: var(--font-size-3xl);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.close-booking-modal:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.booking-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-2xl);
+}
+
+/* ملخص الحجز */
+.booking-summary {
+    background: var(--color-bg-light);
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-2xl);
+}
+
+.booking-summary h3 {
+    margin-top: 0;
+    margin-bottom: var(--space-lg);
+    color: var(--color-primary);
+}
+
+.booking-info {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.booking-info:last-child {
+    border-bottom: none;
+}
+
+.booking-info.total-price {
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 2px solid var(--color-primary);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+}
+
+.info-label {
+    color: var(--color-text-light);
+}
+
+.info-value {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+.discount-badge {
+    display: inline-block;
+    background: var(--color-secondary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    margin-right: var(--space-sm);
+}
+
+/* قسم الضيوف */
+.guests-section {
+    margin-bottom: var(--space-2xl);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+}
+
+.section-header h3 {
+    margin: 0;
+    color: var(--color-primary);
+}
+
+#guests-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+}
+
+/* نموذج الزائر */
+.guest-form {
+    background: white;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    position: relative;
+    transition: all var(--transition-base);
+}
+
+.guest-form:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+}
+
+.guest-form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 2px solid var(--color-border-light);
+}
+
+.guest-form-header h4 {
+    margin: 0;
+    color: var(--color-primary);
+    font-size: var(--font-size-lg);
+}
+
+.btn-remove-guest {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: var(--color-error);
+    color: white;
+    font-size: var(--font-size-xl);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.btn-remove-guest:hover {
+    background: #d32f2f;
+    transform: scale(1.1);
+}
+
+/* Checkbox Group */
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    margin-top: var(--space-sm);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    user-select: none;
+    padding: var(--space-sm) var(--space-md);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+}
+
+.checkbox-label:hover {
+    border-color: var(--color-primary);
+    background: var(--color-bg-light);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"]:checked+span {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+}
+
+/* Form Grid */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+}
+
+.form-grid-full {
+    grid-column: 1 / -1;
+}
+
+.form-hint {
+    display: block;
+    margin-top: var(--space-xs);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+}
+
+/* معلومات إضافية */
+.additional-info {
+    margin-bottom: var(--space-xl);
+}
+
+.additional-info h3 {
+    margin-top: 0;
+    margin-bottom: var(--space-md);
+    color: var(--color-primary);
+}
+
+/* Footer */
+.booking-modal-footer {
+    padding: var(--space-xl);
+    border-top: 2px solid var(--color-border-light);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-md);
+    background: var(--color-bg-light);
+    border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+}
+
+/* Utility Classes */
+.mt-sm {
+    margin-top: var(--space-sm);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .booking-modal-content {
+        width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .booking-modal-header,
+    .booking-modal-footer {
+        border-radius: 0;
+    }
+
+    .booking-modal-body {
+        padding: var(--space-lg);
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-md);
+    }
+
+    .checkbox-group {
+        flex-direction: column;
+    }
+
+    .booking-modal-footer {
+        flex-direction: column-reverse;
+    }
+
+    .booking-modal-footer .btn {
+        width: 100%;
+    }
+}
+
+/* Loading State */
+.guest-form.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Success State */
+.guest-form.completed {
+    border-color: var(--color-success);
+}
+
+.guest-form.completed::before {
+    content: '✓';
+    position: absolute;
+    top: var(--space-md);
+    left: var(--space-md);
+    width: 30px;
+    height: 30px;
+    background: var(--color-success);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}

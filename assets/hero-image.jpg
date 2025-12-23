@@ -1,0 +1,25 @@
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#EDE9DC;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F5F3ED;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="600" height="400" fill="url(#bgGrad)"/>
+  
+  <!-- Pattern -->
+  <pattern id="pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+    <line x1="0" y1="0" x2="40" y2="40" stroke="#B8925A" stroke-width="0.5" opacity="0.3"/>
+  </pattern>
+  <rect width="600" height="400" fill="url(#pattern)"/>
+  
+  <!-- Center icon -->
+  <circle cx="300" cy="180" r="60" fill="#5C704D" opacity="0.2"/>
+  <text x="300" y="200" font-family="Arial, sans-serif" font-size="48" fill="#5C704D" text-anchor="middle">🏠</text>
+  
+  <!-- Text -->
+  <text x="300" y="260" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#5C704D" text-anchor="middle">الضيافة الأصيلة</text>
+  <text x="300" y="290" font-family="Arial, sans-serif" font-size="16" fill="#8A9479" text-anchor="middle">تجربة تراثية لا تُنسى</text>
+</svg>

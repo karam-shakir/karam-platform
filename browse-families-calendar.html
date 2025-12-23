@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استعراض الأسر المتاحة - كرم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/main.css">
+
+    <!-- Language and Components -->
+    <script src="js/language.js" defer></script>
+    <script src="js/components-loader.js" defer></script>
+    <!-- Flatpickr Calendar -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        /* Search Panel */
+        .search-panel {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            color: white;
+            padding: var(--space-3xl) 0;
+            margin-bottom: var(--space-3xl);
+        }
+
+        .search-form {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-2xl);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+
+        .search-field {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .search-field label {
+            font-weight: var(--font-weight-medium);
+            font-size: var(--font-size-sm);
+        }
+
+        .search-field input,
+        .search-field select {
+            background: white;
+            border: none;
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-base);
+            color: var(--color-text);
+        }
+
+        .guest-counter {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            border-radius: var(--radius-md);
+            padding: var(--space-sm);
+        }
+
+        .guest-counter button {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--color-primary);
+            color: white;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .guest-counter button:hover {
+            background: var(--color-primary-dark);
+        }
+
+        .guest-counter span {
+            color: var(--color-text);
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-lg);
+        }
+
+        /* Time Slots Grid */
+        .time-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: var(--space-md);
+            margin-top: var(--space-sm);
+        }
+
+        .time-slot-card {
+            background: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            text-align: center;
+            position: relative;
+        }
+
+        .time-slot-card:hover {
+            border-color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .time-slot-card.selected {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+            color: white;
+        }
+
+        .time-slot-card.selected .time-icon {
+            transform: scale(1.2);
+        }
+
+        .time-slot-card .time-icon {
+            font-size: 32px;
+            margin-bottom: var(--space-sm);
+            transition: transform var(--transition-base);
+        }
+
+        .time-slot-card .time-label {
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--space-xs);
+            color: inherit;
+        }
+
+        .time-slot-card .time-range {
+            font-size: var(--font-size-sm);
+            opacity: 0.8;
+            color: inherit;
+        }
+
+        /* Results */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-xl);
+        }
+
+        .results-count {
+            color: var(--color-text-light);
+        }
+
+        .families-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--space-xl);
+        }
+
+        .family-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-base);
+            border: 2px solid transparent;
+        }
+
+        .family-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--color-primary);
+        }
+
+        .family-card.in-cart {
+            border-color: var(--color-success);
+            background: var(--color-success-light);
+        }
+
+        .availability-badge {
+            position: absolute;
+            top: var(--space-md);
+            right: var(--space-md);
+            background: white;
+            padding: 6px 12px;
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            box-shadow: var(--shadow-sm);
+            z-index: 10;
+        }
+
+        .family-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-secondary-light) 100%);
+        }
+
+        .family-content {
+            padding: var(--space-lg);
+        }
+
+        .family-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: var(--space-md);
+        }
+
+        .family-name {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text);
+            margin: 0 0 var(--space-xs);
+        }
+
+        .family-rating {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            color: var(--color-warning);
+        }
+
+        .family-location {
+            color: var(--color-text-light);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .family-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+        }
+
+        .feature-badge {
+            padding: 4px 12px;
+            background: var(--color-bg);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-light);
+        }
+
+        .family-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--color-border-light);
+        }
+
+        .price-amount {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary);
+        }
+
+        .price-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-light);
+        }
+
+        /* Cart Summary */
+        .cart-summary {
+            position: sticky;
+            top: 100px;
+            background: white;
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            border: 2px solid var(--color-primary);
+        }
+
+        .cart-summary h3 {
+            margin: 0 0 var(--space-lg);
+            color: var(--color-primary);
+        }
+
+        .cart-items {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: var(--space-lg);
+        }
+
+        .cart-item {
+            padding: var(--space-md);
+            background: var(--color-bg-light);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-sm);
+        }
+
+        .cart-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-xs);
+        }
+
+        .cart-total {
+            padding: var(--space-lg);
+            background: var(--color-primary-light);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-lg);
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-sm);
+        }
+
+        .total-amount {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-4xl);
+            color: var(--color-text-light);
+        }
+
+        .empty-state-icon {
+            font-size: 80px;
+            margin-bottom: var(--space-lg);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <a href="index.html" class="brand-link">
+                        <img src="assets/logo.png" alt="كرم" class="logo">
+                        <span class="brand-name">كرم</span>
+                    </a>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="nav-link">الرئيسية</a></li>
+                    <li><a href="browse-families-calendar.html" class="nav-link active">استعراض الأسر</a></li>
+                    <li><a href="souvenirs.html" class="nav-link">الهدايا</a></li>
+                    <li><a href="#" class="nav-link">من نحن</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="btn btn-text" onclick="viewCart()">
+                        🛒 السلة (<span id="cart-count">0</span>)
+                    </button>
+                    <a href="login.html" class="btn btn-secondary">تسجيل الدخول</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Panel -->
+    <section class="search-panel">
+        <div class="container">
+            <h1 style="margin-bottom: var(--space-xl); text-align: center;">ابحث عن الأسرة المثالية</h1>
+
+            <div class="search-form">
+                <div class="search-grid">
+                    <div class="search-field">
+                        <label>📅 التاريخ</label>
+                        <input type="text" id="date-picker" placeholder="اختر التاريخ" readonly>
+                    </div>
+
+                    <div class="search-field" style="grid-column: 1/-1;">
+                        <label>🕐 الوقت المفضل</label>
+                        <div class="time-slots-grid">
+                            <button type="button" class="time-slot-card" data-slot="morning"
+                                onclick="selectTimeSlot('morning')">
+                                <div class="time-icon">🌅</div>
+                                <div class="time-label">صباحاً</div>
+                                <div class="time-range">8:00 - 12:00</div>
+                            </button>
+                            <button type="button" class="time-slot-card" data-slot="afternoon"
+                                onclick="selectTimeSlot('afternoon')">
+                                <div class="time-icon">☀️</div>
+                                <div class="time-label">ظهراً</div>
+                                <div class="time-range">12:00 - 4:00</div>
+                            </button>
+                            <button type="button" class="time-slot-card" data-slot="evening"
+                                onclick="selectTimeSlot('evening')">
+                                <div class="time-icon">🌆</div>
+                                <div class="time-label">مساءً</div>
+                                <div class="time-range">4:00 - 8:00</div>
+                            </button>
+                            <button type="button" class="time-slot-card" data-slot="night"
+                                onclick="selectTimeSlot('night')">
+                                <div class="time-icon">🌙</div>
+                                <div class="time-label">ليلاً</div>
+                                <div class="time-range">8:00 - 12:00</div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="time-slot" value="">
+                    </div>
+
+                    <div class="search-field">
+                        <label>🏙️ المدينة</label>
+                        <select id="city-filter">
+                            <option value="">جميع المدن</option>
+                            <option value="makkah">مكة المكرمة</option>
+                            <option value="madinah">المدينة المنورة</option>
+                        </select>
+                    </div>
+
+                    <div class="search-field">
+                        <label>👥 عدد الضيوف</label>
+                        <div class="guest-counter">
+                            <button onclick="changeGuestCount(-1)">-</button>
+                            <span id="guest-count">1</span>
+                            <button onclick="changeGuestCount(1)">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="searchFamilies()" class="btn btn-secondary btn-lg" style="width: 100%;">
+                    🔍 بحث
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results -->
+    <section class="container" style="margin-bottom: var(--space-4xl);">
+        <div class="grid" style="grid-template-columns: 1fr 350px; gap: var(--space-2xl);">
+            <!-- Families List -->
+            <div>
+                <div class="results-header">
+                    <h2>الأسر المتاحة</h2>
+                    <span class="results-count" id="results-count">0 أسرة متاحة</span>
+                </div>
+
+                <div id="families-grid" class="families-grid">
+                    <!-- سيتم ملؤها بـ JavaScript -->
+                </div>
+            </div>
+
+            <!-- Cart Summary -->
+            <div>
+                <div class="cart-summary">
+                    <h3>سلة الحجوزات</h3>
+                    <div id="cart-items" class="cart-items">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🛒</div>
+                            <p>لم تضف أي حجوزات بعد</p>
+                        </div>
+                    </div>
+                    <div id="cart-total" class="cart-total" style="display: none;">
+                        <div class="total-row">
+                            <span>الإجمالي:</span>
+                            <span class="total-amount" id="total-amount">0 ريال</span>
+                        </div>
+                    </div>
+                    <button onclick="checkout()" class="btn btn-primary btn-lg" style="width: 100%;" id="checkout-btn"
+                        disabled>
+                        إتمام الحجز
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/browse-calendar.js"></script>
+</body>
+
+</html>

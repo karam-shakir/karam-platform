@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="تسجيل حساب كأسرة مستضيفة في منصة كرم">
+    <title>تسجيل أسرة مستضيفة - كرم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/auth.css">
+</head>
+
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-side">
+            <div class="auth-box">
+                <div class="auth-logo">
+                    <img src="assets/logo.png" alt="كرم">
+                </div>
+                <div class="auth-header">
+                    <h1 class="auth-title">تسجيل أسرة مستضيفة</h1>
+                    <p class="auth-subtitle">شارك كرمك مع ضيوف الرحمن</p>
+                </div>
+
+                <!-- Register Form -->
+                <form id="family-register-form" class="auth-form">
+                    <input type="hidden" id="user-role" value="host_family">
+
+                    <!-- Family Info -->
+                    <div class="form-group">
+                        <label class="form-label" for="family-name">اسم الأسرة *</label>
+                        <input type="text" id="family-name" class="form-input" placeholder="أسرة آل ..." required>
+                        <span class="form-error" id="family-name-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="city">المدينة *</label>
+                        <select id="city" class="form-select" required>
+                            <option value="">اختر المدينة</option>
+                            <option value="makkah">مكة المكرمة</option>
+                            <option value="madinah">المدينة المنورة</option>
+                        </select>
+                        <span class="form-error" id="city-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="address">عنوان المجلس *</label>
+                        <textarea id="address" class="form-textarea" placeholder="الحي، الشارع، رقم المبنى..." required
+                            rows="3"></textarea>
+                        <span class="form-error" id="address-error"></span>
+                    </div>
+
+                    <!-- Google Maps Location -->
+                    <div class="form-group">
+                        <label class="form-label" for="google-maps-link">رابط موقع Google Maps *</label>
+                        <input type="url" id="google-maps-link" class="form-input"
+                            placeholder="https://maps.google.com/?q=..." required>
+                        <span class="form-error" id="maps-link-error"></span>
+                        <small class="text-muted">
+                            📍 <a href="#" onclick="showMapsHelp(); return false;" class="link-text">كيف أحصل على رابط
+                                Google Maps؟</a>
+                        </small>
+                    </div>
+
+                    <!-- Optional: Direct Coordinates -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="latitude">خط العرض (اختياري)</label>
+                            <input type="number" id="latitude" class="form-input" placeholder="21.4225" step="any"
+                                min="-90" max="90">
+                            <small class="text-muted">Latitude</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="longitude">خط الطول (اختياري)</label>
+                            <input type="number" id="longitude" class="form-input" placeholder="39.8262" step="any"
+                                min="-180" max="180">
+                            <small class="text-muted">Longitude</small>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="capacity">السعة الاستيعابية *</label>
+                            <input type="number" id="capacity" class="form-input" placeholder="عدد الضيوف" required
+                                min="1" max="50">
+                            <span class="form-error" id="capacity-error"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="contact-name">اسم المسؤول *</label>
+                            <input type="text" id="contact-name" class="form-input" placeholder="الاسم الكامل" required
+                                autocomplete="name">
+                            <span class="form-error" id="contact-name-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="email">البريد الإلكتروني *</label>
+                            <input type="email" id="email" class="form-input" placeholder="example@email.com" required
+                                autocomplete="email">
+                            <span class="form-error" id="email-error"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="phone">رقم الجوال *</label>
+                            <input type="tel" id="phone" class="form-input" placeholder="05xxxxxxxx" required
+                                autocomplete="tel" pattern="05[0-9]{8}">
+                            <span class="form-error" id="phone-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="description">وصف المجلس *</label>
+                        <textarea id="description" class="form-textarea"
+                            placeholder="أخبر المعتمرين عن مجلسكم والخدمات التي تقدمونها..." required
+                            rows="4"></textarea>
+                        <span class="form-error" id="description-error"></span>
+                        <small class="text-muted">اكتب وصفاً جذاباً يعرّف المعتمرين بتجربتكم الفريدة</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">الباقات المتاحة *</label>
+                        <div style="display: flex; flex-direction: column; gap: var(--space-sm);">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="package-simple" name="packages" value="simple">
+                                <span>باقة الضيافة البسيطة (قهوة + تمر + تصوير)</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="package-meal" name="packages" value="meal">
+                                <span>باقة الوجبة الكاملة (وجبة + ضيافة + تصوير)</span>
+                            </label>
+                        </div>
+                        <span class="form-error" id="packages-error"></span>
+                    </div>
+
+                    <!-- House Gate Image -->
+                    <div class="form-group">
+                        <label class="form-label" for="gate-image">صورة بوابة المنزل *</label>
+                        <div class="file-upload-wrapper">
+                            <input type="file" id="gate-image" class="form-input" accept="image/*" required>
+                            <small class="text-muted">يرجى رفع صورة واضحة لبوابة المنزل لتسهيل وصول المعتمرين</small>
+                        </div>
+                        <span class="form-error" id="gate-image-error"></span>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="password">كلمة المرور *</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="password" class="form-input" placeholder="••••••••" required
+                                    autocomplete="new-password" minlength="6">
+                                <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                    <span class="show-icon">👁️</span>
+                                </button>
+                            </div>
+                            <span class="form-error" id="password-error"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="confirm-password">تأكيد كلمة المرور *</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="confirm-password" class="form-input" placeholder="••••••••"
+                                    required autocomplete="new-password">
+                                <button type="button" class="password-toggle"
+                                    onclick="togglePassword('confirm-password')">
+                                    <span class="show-icon">👁️</span>
+                                </button>
+                            </div>
+                            <span class="form-error" id="confirm-password-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="accept-terms" required>
+                            <span>أوافق على <a href="#" class="link-text">الشروط والأحكام</a> و <a href="#"
+                                    class="link-text">سياسة
+                                    الخصوصية</a> و <a href="#" class="link-text">شروط الأسر
+                                    المستضيفة</a></span>
+                        </label>
+                    </div>
+
+                    <!-- Info Box -->
+                    <div
+                        style="padding: var(--space-lg); background: var(--color-bg-light); border-radius: var(--radius-lg); border-right: 4px solid var(--color-secondary); margin-bottom: var(--space-lg);">
+                        <p style="margin: 0; font-size: var(--font-size-sm); color: var(--color-text-light);">
+                            <strong>📝 ملاحظة:</strong> بعد التسجيل، سيتم مراجعة طلبكم من قبل فريق كرم للتأكد من استيفاء
+                            جميع المعايير.
+                            سنتواصل معكم خلال 48 ساعة.
+                        </p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block btn-lg">
+                        تقديم الطلب
+                    </button>
+                </form>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span>أو</span>
+                </div>
+
+                <!-- Login Link -->
+                <div class="auth-links">
+                    <p class="text-center text-muted">
+                        لديك حساب بالفعل؟
+                        <a href="login.html" class="link-text">سجل دخولك</a>
+                    </p>
+                </div>
+
+                <!-- Other Register Types -->
+                <div class="auth-links mt-lg">
+                    <p class="text-center text-muted">أو سجل كـ:</p>
+                    <div class="register-options">
+                        <a href="visitor-register.html" class="btn btn-outline btn-sm">معتمر</a>
+                        <a href="company-register.html" class="btn btn-outline btn-sm">شركة عمرة</a>
+                    </div>
+                </div>
+
+                <!-- Back to Home -->
+                <div class="auth-footer">
+                    <a href="index.html" class="link-secondary">← العودة للرئيسية</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Side -->
+        <div class="info-side">
+            <div class="info-pattern"></div>
+            <div class="info-content">
+                <div class="info-text">
+                    <div class="info-icon">🏠</div>
+                    <h2 class="info-title">شارك كرمك<br>مع العالم</h2>
+                    <p class="info-description">
+                        انضم لعائلة كرم واستقبل ضيوف الرحمن في مجلسكم الأصيل
+                        واحصل على دخل إضافي مع الحفاظ على التراث
+                    </p>
+
+                    <div class="info-features">
+                        <div class="info-feature">
+                            <div class="feature-icon-sm">💰</div>
+                            <span>دخل إضافي مميز</span>
+                        </div>
+                        <div class="info-feature">
+                            <div class="feature-icon-sm">👥</div>
+                            <span>استقبال ضيوف من العالم</span>
+                        </div>
+                        <div class="info-feature">
+                            <div class="feature-icon-sm">🎯</div>
+                            <span>إدارة سهلة للحجوزات</span>
+                        </div>
+                        <div class="info-feature">
+                            <div class="feature-icon-sm">⭐</div>
+                            <span>دعم فني متواصل</span>
+                        </div>
+                    </div>
+
+                    <div
+                        style="margin-top: var(--space-2xl); padding: var(--space-lg); background: rgba(255,255,255,0.1); border-radius: var(--radius-lg); backdrop-filter: blur(10px);">
+                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: var(--font-size-sm);">
+                            💡 <strong>نصيحة:</strong> الأسر ذات التقييمات العالية تحصل على حجوزات أكثر بنسبة 70%
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js?v=2"></script>
+    <script src="js/main.js?v=2"></script>
+    <script src="js/auth.js?v=2"></script>
+    <script>
+        // 🧪 TEST MODE: Bypass Authentication Check
+        // This prevents redirection even if logged in as Operator
+        window.checkAuth = function () {
+            console.log('🛑 Auth check bypassed for testing');
+            // Also update UI to show we are in test mode
+            const container = document.querySelector('.container');
+            if (container) {
+                const badge = document.createElement('div');
+                badge.style.cssText = 'position: fixed; top: 10px; left: 10px; background: #ffc107; padding: 5px 10px; border-radius: 5px; z-index: 9999; font-weight: bold;';
+                badge.textContent = '🧪 Test Mode';
+                document.body.appendChild(badge);
+            }
+        };
+    </script>
+    <script>
+        // Show Google Maps help
+        function showMapsHelp() {
+            const helpText = `
+📍 كيفية الحصول على رابط موقع Google Maps:
+
+1️⃣ افتح Google Maps (maps.google.com)
+2️⃣ ابحث عن موقع مجلسكم
+3️⃣ اضغط على "مشاركة" أو "Share"
+4️⃣ اختر "نسخ الرابط" أو "Copy link"
+5️⃣ الصق الرابط في الحقل أعلاه
+
+✨ أو يمكنك إدخال الإحداثيات مباشرة (خط العرض والطول)
+            `;
+
+            if (typeof showToast !== 'undefined') {
+                showToast('مساعدة', helpText.trim(), 'info');
+            } else {
+                alert(helpText);
+            }
+        }
+
+        // Handle register form submission
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('family-register-form');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    if (typeof handleFamilyRegister === 'function') {
+                        await handleFamilyRegister();
+                    } else {
+                        console.error('handleFamilyRegister is not defined');
+                        alert('خطأ في تحميل النظام. يرجى تحديث الصفحة');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,208 @@
+<!-- Unified Footer Component -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <!-- About Section -->
+            <div class="footer-section">
+                <div class="footer-brand">
+                    <img src="assets/logo.png" alt="كرم" class="footer-logo">
+                    <h3>كرم | Karam</h3>
+                </div>
+                <p class="footer-description" data-i18n="footerAbout">
+                    منصة كرم هي منصة رائدة لربط المعتمرين بالأسر المضيافة في مكة والمدينة المنورة.
+                </p>
+                <div class="social-links">
+                    <a href="#" class="social-link">📱</a>
+                    <a href="#" class="social-link">📧</a>
+                    <a href="#" class="social-link">🌐</a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="footer-section">
+                <h4 class="footer-title" data-i18n="quickLinks">روابط سريعة</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html" data-i18n="home">الرئيسية</a></li>
+                    <li><a href="browse-families-calendar.html" data-i18n="browse">استعراض الأسر</a></li>
+                    <li><a href="souvenirs.html" data-i18n="gifts">الهدايا</a></li>
+                    <li><a href="#about" data-i18n="about">من نحن</a></li>
+                </ul>
+            </div>
+
+            <!-- For Families -->
+            <div class="footer-section">
+                <h4 class="footer-title">للأسر المضيفة</h4>
+                <ul class="footer-links">
+                    <li><a href="family-register.html">تسجيل أسرة</a></li>
+                    <li><a href="family-dashboard.html">لوحة التحكم</a></li>
+                    <li><a href="#">دليل الاستضافة</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div class="footer-section">
+                <h4 class="footer-title" data-i18n="contact">تواصل معنا</h4>
+                <ul class="footer-contact">
+                    <li>📞 +966 XX XXX XXXX</li>
+                    <li>📧 info@karam.sa</li>
+                    <li>📍 مكة المكرمة، المملكة العربية السعودية</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>
+                © 2024 منصة كرم | Karam Platform.
+                <span data-i18n="allRightsReserved">جميع الحقوق محفوظة</span>
+            </p>
+            <div class="footer-links-inline">
+                <a href="#">سياسة الخصوصية</a>
+                <span>|</span>
+                <a href="#">شروط الاستخدام</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .footer {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        color: white;
+        padding: var(--space-4xl) 0 var(--space-xl);
+        margin-top: var(--space-4xl);
+    }
+
+    .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1.5fr;
+        gap: var(--space-3xl);
+        margin-bottom: var(--space-3xl);
+    }
+
+    .footer-section {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+
+    .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        margin-bottom: var(--space-sm);
+    }
+
+    .footer-logo {
+        width: 32px;
+        height: 32px;
+    }
+
+    .footer-brand h3 {
+        margin: 0;
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-bold);
+    }
+
+    .footer-description {
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.6;
+    }
+
+    .social-links {
+        display: flex;
+        gap: var(--space-sm);
+        margin-top: var(--space-sm);
+    }
+
+    .social-link {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-full);
+        text-decoration: none;
+        font-size: var(--font-size-lg);
+        transition: all var(--transition-base);
+    }
+
+    .social-link:hover {
+        background: var(--color-primary);
+        transform: translateY(-2px);
+    }
+
+    .footer-title {
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-bold);
+        margin: 0 0 var(--space-md);
+        color: white;
+    }
+
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .footer-links a,
+    .footer-contact li {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        transition: color var(--transition-base);
+    }
+
+    .footer-links a:hover {
+        color: white;
+        padding-inline-start: var(--space-xs);
+    }
+
+    .footer-contact {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .footer-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: var(--space-xl);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .footer-links-inline {
+        display: flex;
+        gap: var(--space-md);
+    }
+
+    .footer-links-inline a {
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        transition: color var(--transition-base);
+    }
+
+    .footer-links-inline a:hover {
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .footer-grid {
+            grid-template-columns: 1fr;
+            gap: var(--space-2xl);
+        }
+
+        .footer-bottom {
+            flex-direction: column;
+            gap: var(--space-md);
+            text-align: center;
+        }
+    }
+</style>

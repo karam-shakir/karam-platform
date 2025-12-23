@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم المشغل - كرم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+</head>
+
+<body class="dashboard-page">
+    <!-- Navigation -->
+    <nav class="dashboard-nav">
+        <div class="container">
+            <div class="nav-brand">
+                <img src="assets/logo.png" alt="كرم" class="logo">
+                <h1>لوحة تحكم المشغل</h1>
+            </div>
+            <div class="nav-user">
+                <span id="operator-name">مشغل</span>
+                <button onclick="logout()" class="btn btn-text">تسجيل الخروج</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+            <nav class="sidebar-nav">
+                <a href="#overview" class="nav-item active" onclick="showSection('overview')">
+                    <span class="icon">📊</span>
+                    <span>نظرة عامة</span>
+                </a>
+                <a href="#pricing" class="nav-item" onclick="showSection('pricing')">
+                    <span class="icon">💰</span>
+                    <span>إدارة الأسعار</span>
+                </a>
+                <a href="#bookings" class="nav-item" onclick="showSection('bookings')">
+                    <span class="icon">📅</span>
+                    <span>إدارة الحجوزات</span>
+                </a>
+                <a href="#discount-codes" class="nav-item" onclick="showSection('discount-codes')">
+                    <span class="icon">🎟️</span>
+                    <span>أكواد الخصم</span>
+                </a>
+                <a href="#financials" class="nav-item" onclick="showSection('financials')">
+                    <span class="icon">📈</span>
+                    <span>التقارير المالية</span>
+                </a>
+                <a href="#families" class="nav-item" onclick="showSection('families')">
+                    <span class="icon">🏠</span>
+                    <span>الأسر</span>
+                </a>
+                <a href="#settings" class="nav-item" onclick="showSection('settings')">
+                    <span class="icon">⚙️</span>
+                    <span>الإعدادات</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Panel -->
+        <main class="dashboard-main">
+
+            <!-- Section: Overview -->
+            <section id="overview-section" class="dashboard-section active">
+                <div class="section-header">
+                    <h2>نظرة عامة</h2>
+                    <p class="text-muted">ملخص أداء المنصة</p>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-value" id="total-revenue">0 ر.س</div>
+                        <div class="stat-label">إجمالي الإيرادات</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="platform-commission">0 ر.س</div>
+                        <div class="stat-label">عمولة المنصة</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-bookings">0</div>
+                        <div class="stat-label">إجمالي الحجوزات</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="active-families">0</div>
+                        <div class="stat-label">الأسر النشطة</div>
+                    </div>
+                </div>
+
+                <!-- Charts Placeholder -->
+                <div class="card mt-xl">
+                    <h3>الإيرادات الشهرية</h3>
+                    <canvas id="revenue-chart" style="max-height: 300px;"></canvas>
+                </div>
+            </section>
+
+            <!-- Section: Pricing Management -->
+            <section id="pricing-section" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h2>إدارة الأسعار</h2>
+                    <p class="text-muted">تحكم في أسعار الباقات والتسعير الديناميكي</p>
+                </div>
+
+                <!-- Package Pricing -->
+                <div class="card">
+                    <h3>أسعار الباقات</h3>
+                    <div id="packages-list">
+                        <!-- سيتم ملؤها بـ JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Dynamic Pricing Rules -->
+                <div class="card mt-xl">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
+                        <h3>قواعد التسعير الديناميكي</h3>
+                        <button onclick="showAddPricingRuleModal()" class="btn btn-primary">+ إضافة قاعدة</button>
+                    </div>
+                    <div id="pricing-rules-list">
+                        <!-- سيتم ملؤها بـ JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Bookings Management -->
+            <section id="bookings-section" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h2>إدارة الحجوزات</h2>
+                    <p class="text-muted">متابعة الحجوزات القادمة واليومية</p>
+                </div>
+
+                <!-- Tomorrow's Bookings -->
+                <div class="card">
+                    <h3>حجوزات الغد 📅</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>رقم الحجز</th>
+                                <th>الأسرة</th>
+                                <th>الزائر</th>
+                                <th>التاريخ</th>
+                                <th>الوقت</th>
+                                <th>الضيوف</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tomorrow-bookings-table">
+                            <!-- سيتم ملؤها بـ JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- All Upcoming Bookings -->
+                <div class="card mt-xl">
+                    <h3>جميع الحجوزات القادمة</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>رقم الحجز</th>
+                                <th>الأسرة</th>
+                                <th>الزائر</th>
+                                <th>التاريخ</th>
+                                <th>الوقت</th>
+                                <th>المبلغ</th>
+                                <th>الحالة</th>
+                                <th>التفاصيل</th>
+                            </tr>
+                        </thead>
+                        <tbody id="upcoming-bookings-table">
+                            <!-- سيتم ملؤها بـ JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section: Discount Codes -->
+            <section id="discount-codes-section" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h2>أكواد الخصم</h2>
+                    <p class="text-muted">إدارة أكواد الخصم والعروض</p>
+                </div>
+
+                <div class="card">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
+                        <h3>قائمة أكواد الخصم</h3>
+                        <button onclick="showAddDiscountCodeModal()" class="btn btn-primary">+ إضافة كود خصم</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>الكود</th>
+                                <th>النوع</th>
+                                <th>القيمة</th>
+                                <th>الصلاحية</th>
+                                <th>الاستخدام</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="discount-codes-table">
+                            <!-- سيتم ملؤها بـ JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section: Financial Reports -->
+            <section id="financials-section" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h2>التقارير المالية</h2>
+                            <p class="text-muted">تقارير مفصلة عن الإيرادات والأرباح</p>
+                        </div>
+                        <button onclick="printFinancialReport()" class="btn btn-secondary">
+                            🖨️ طباعة التقرير
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Summary Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="this-month-revenue">0 ر.س</div>
+                        <div class="stat-label">إيرادات هذا الشهر</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="pending-payouts">0 ر.س</div>
+                        <div class="stat-label">دفعات معلقة</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="paid-this-month">0 ر.س</div>
+                        <div class="stat-label">مدفوع هذا الشهر</div>
+                    </div>
+                </div>
+
+                <!-- Family Earnings Table -->
+                <div class="card mt-xl">
+                    <h3>أرباح الأسر</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>الأسرة</th>
+                                <th>الحجوزات</th>
+                                <th>الإيرادات</th>
+                                <th>العمولة (15%)</th>
+                                <th>الصافي</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="family-earnings-table">
+                            <!-- سيتم ملؤها بـ JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section: Families Management -->
+            <section id="families-section" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h2>إدارة الأسر</h2>
+                    <p class="text-muted">الموافقة على الأسر الجديدة وإدارة الأسر المسجلة</p>
+                </div>
+
+                <!-- Pending Approvals -->
+                <div class="card">
+                    <h3>الأسر بانتظار الموافقة</h3>
+                    <div id="pending-families-list">
+                        <!-- سيتم ملؤها بـ JavaScript -->
+                    </div>
+                </div>
+
+                <!-- All Families -->
+                <div class="card mt-xl">
+                    <h3>جميع الأسر</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>المدينة</th>
+                                <th>السعة</th>
+                                <th>التقييم</th>
+                                <th>الحجوزات</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-families-table">
+                            <!-- سيتم ملؤها بـ JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section: Settings -->
+            <section id="settings-section" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h2>إعدادات المنصة</h2>
+                </div>
+
+                <div class="card">
+                    <h3>الإعدادات العامة</h3>
+                    <form id="settings-form">
+                        <div class="form-group">
+                            <label>نسبة العمولة (%)</label>
+                            <input type="number" id="commission-rate" class="form-input" min="0" max="100" step="0.1"
+                                value="15">
+                        </div>
+                        <div class="form-group">
+                            <label>الحد الأدنى للحجز المسبق (أيام)</label>
+                            <input type="number" id="min-booking-days" class="form-input" min="0" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>الحد الأقصى للحجز المسبق (أيام)</label>
+                            <input type="number" id="max-booking-days" class="form-input" min="1" value="90">
+                        </div>
+                        <button type="submit" class="btn btn-primary">حفظ الإعدادات</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/operator-dashboard.js"></script>
+    <script src="js/operator-dashboard-extended.js"></script>
+
+    <style>
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--space-lg);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: var(--space-md);
+            text-align: right;
+            border-bottom: 1px solid var(--color-border-light);
+        }
+
+        .data-table th {
+            background: var(--color-bg);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text);
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--color-bg-light);
+        }
+
+        .package-item {
+            display: grid;
+            grid-template-columns: 1fr 150px 150px 100px;
+            gap: var(--space-lg);
+            padding: var(--space-lg);
+            background: var(--color-bg-light);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            align-items: center;
+        }
+
+        .rule-item {
+            padding: var(--space-lg);
+            background: var(--color-bg-light);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            border-right: 4px solid var(--color-primary);
+        }
+
+        .family-approval-card {
+            background: var(--color-bg-light);
+            padding: var(--space-lg);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            border: 1px solid var(--color-border);
+        }
+
+        .family-approval-card .btn-group {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+        }
+    </style>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js?v=2"></script>
+    <script src="js/main.js?v=2"></script>
+
+    <script>
+        console.log('✅ Operator Dashboard loading - NO AUTH CHECK');
+
+        // Get user if exists
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        document.getElementById('operator-name').textContent = user.full_name || 'مشغل';
+
+        // Logout
+        function logout() {
+            localStorage.clear();
+            location.href = 'index.html';
+        }
+
+        // Show section
+        function showSection(id) {
+            console.log('Section:', id);
+        }
+
+        console.log('✅ Ready');
+    </script>
+</body>
+
+</html>
