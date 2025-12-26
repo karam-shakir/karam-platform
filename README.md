@@ -236,15 +236,15 @@ npx serve
 ## 🎨 التصميم
 
 ### الألوان الرئيسية
-- **Primary**: `#667eea` (بنفسجي)
-- **Secondary**: `#764ba2` (أرجواني)
-- **Success**: `#28a745` (أخضر)
-- **Danger**: `#dc3545` (أحمر)
-- **Warning**: `#ffc107` (أصفر)
+- **Primary**: `#1e3a8a` (Royal Blue - أزرق ملكي)
+- **Secondary**: `#f59e0b` (Gold - ذهبي)
+- **Success**: `#10b981` (أخضر)
+- **Danger**: `#ef4444` (أحمر)
+- **Warning**: `#f59e0b` (ذهبي)
 
 ### الخطوط
-- **Arabic**: Segoe UI, system fonts
-- **English**: Segoe UI, system fonts
+- **Arabic**: Tajawal (Google Fonts)
+- **English**: Inter, system fonts
 
 ---
 
@@ -323,8 +323,8 @@ git clone https://github.com/YOUR_USERNAME/karam-platform.git
 ## 👨‍💻 المطور
 
 **Dr. Shakir Alhuthali**  
-📧 Email: [your-email@example.com]  
-🌐 Website: [your-website.com]
+📧 Email: shakir@mail.net.sa  
+🌐 LinkedIn: https://www.linkedin.com/in/areeshi/
 
 ---
 
