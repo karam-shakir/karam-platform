@@ -39,14 +39,6 @@ async function loadBookings(userId) {
         today.setHours(0, 0, 0, 0);
 
         const all = data || [];
-        const upcoming = all.filter(b => new Date(b.booking_date) >= today && b.booking_status !== 'cancelled');
-        const completed = all.filter(b => new Date(b.booking_date) < today || b.booking_status === 'completed');
-        const cancelled = all.filter(b => b.booking_status === 'cancelled');
-
-        document.getElementById('all-count').textContent = all.length;
-        document.getElementById('upcoming-count').textContent = upcoming.length;
-        document.getElementById('completed-count').textContent = completed.length;
-        document.getElementById('cancelled-count').textContent = cancelled.length;
 
         renderBookings(all);
 
