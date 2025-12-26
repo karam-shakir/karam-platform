@@ -76,7 +76,6 @@ async function searchFamilies() {
                 families!inner(
                     id,
                     family_name,
-                    location,
                     city
                 )
             `)
@@ -135,7 +134,7 @@ function renderMajalisList(majalisList) {
                         </div>
                     </div>
                 </div>
-                <p class="family-location">📍 ${m.families?.location || m.families?.city || 'مكة المكرمة'}</p>
+                <p class="family-location">📍 ${m.families?.city || 'مكة المكرمة'}</p>
                 <div class="family-features">
                     <span class="feature-badge">${m.majlis_type === 'men' ? '👨 رجالي' : '👩 نسائي'}</span>
                     <span class="feature-badge">👥 ${m.capacity} شخص</span>
@@ -169,7 +168,7 @@ function openBookingModal(majlis) {
     document.getElementById('selected-majlis-id').value = majlis.id;
     document.getElementById('selected-majlis-price').value = majlis.base_price;
     document.getElementById('modal-majlis-name').textContent = majlis.majlis_name;
-    document.getElementById('modal-majlis-location').textContent = `📍 ${majlis.families?.location || majlis.families?.city || ''}`;
+    document.getElementById('modal-majlis-location').textContent = `📍 ${majlis.families?.city || 'المدينة'}`;
 
     // Set price
     document.getElementById('price-per-person').textContent = `${majlis.base_price} ر.س`;
