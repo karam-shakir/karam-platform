@@ -4,147 +4,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نجح الدفع - كرم</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
-        rel="stylesheet">
+    <title>نجاح الدفع - منصة كرم</title>
     <link rel="stylesheet" href="styles/design-system.css">
     <link rel="stylesheet" href="styles/main.css">
     <style>
         .success-container {
             max-width: 600px;
-            margin: 0 auto;
-            padding: var(--space-4xl) var(--space-xl);
+            margin: 100px auto;
             text-align: center;
+            padding: 40px;
         }
 
         .success-icon {
-            font-size: 120px;
-            margin-bottom: var(--space-2xl);
-            animation: bounceIn 0.8s ease;
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 1s;
         }
 
-        @keyframes bounceIn {
-            0% {
-                transform: scale(0);
-                opacity: 0;
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
             }
 
             50% {
-                transform: scale(1.1);
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
+                transform: translateY(-20px);
             }
         }
 
         .success-card {
             background: white;
-            padding: var(--space-3xl);
-            border-radius: var(--radius-2xl);
-            box-shadow: var(--shadow-xl);
-            margin-bottom: var(--space-2xl);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
         }
 
-        .success-title {
-            font-size: var(--font-size-4xl);
-            font-weight: var(--font-weight-bold);
+        .success-card h1 {
             color: var(--color-success);
-            margin-bottom: var(--space-md);
+            margin-bottom: 15px;
         }
 
-        .success-message {
-            color: var(--color-text-light);
-            margin-bottom: var(--space-2xl);
-            font-size: var(--font-size-lg);
-        }
-
-        .booking-details {
-            background: var(--color-bg-light);
-            padding: var(--space-xl);
-            border-radius: var(--radius-lg);
-            margin-bottom: var(--space-2xl);
+        .booking-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
             text-align: right;
         }
 
-        .detail-row {
+        .info-item {
             display: flex;
             justify-content: space-between;
-            padding: var(--space-md) 0;
-            border-bottom: 1px solid var(--color-border-light);
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
         }
 
-        .detail-row:last-child {
+        .info-item:last-child {
             border-bottom: none;
         }
 
-        .actions {
+        .buttons {
             display: flex;
-            gap: var(--space-md);
-            justify-content: center;
-            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--color-primary);
+            border: 2px solid var(--color-primary);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
     </style>
 </head>
 
-<body>
+<body class="rtl">
     <div class="success-container">
         <div class="success-icon">✅</div>
 
         <div class="success-card">
-            <h1 class="success-title">تم الحجز بنجاح!</h1>
-            <p class="success-message">
-                شكراً لك! تم استلام دفعتك وتأكيد حجزك.<br>
-                سيتم إرسال تفاصيل الحجز إلى بريدك الإلكتروني.
-            </p>
+            <h1>تم الدفع بنجاح!</h1>
+            <p>تم تأكيد حجزك وسيتم التواصل معك قريباً</p>
 
-            <div class="booking-details" id="payment-details">
-                <div class="detail-row">
-                    <span class="text-muted">رقم العملية:</span>
-                    <strong id="payment-id">-</strong>
-                </div>
-                <div class="detail-row">
-                    <span class="text-muted">المبلغ المدفوع:</span>
-                    <strong id="amount">-</strong>
-                </div>
-                <div class="detail-row">
-                    <span class="text-muted">طريقة الدفع:</span>
-                    <strong id="payment-method">-</strong>
-                </div>
-                <div class="detail-row">
-                    <span class="text-muted">التاريخ:</span>
-                    <strong id="payment-date">-</strong>
-                </div>
+            <div class="booking-info" id="booking-details">
+                <div>جاري تحميل تفاصيل الحجز...</div>
             </div>
 
-            <div class="actions">
-                <a href="index.html" class="btn btn-primary">العودة للرئيسية</a>
-                <a href="browse-families-calendar.html" class="btn btn-secondary">حجز آخر</a>
-                <button onclick="window.print()" class="btn btn-outline">طباعة</button>
+            <div class="buttons">
+                <a href="family-bookings.html" class="btn btn-primary">عرض حجوزاتي</a>
+                <a href="browse-families-calendar.html" class="btn btn-secondary">تصفح المزيد</a>
             </div>
         </div>
-
-        <p class="text-sm text-muted">
-            في حال وجود أي استفسارات، يرجى التواصل معنا عبر البريد الإلكتروني أو الدعم.
-        </p>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/main.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/config-enhanced.js"></script>
+    <script src="js/supabase-client.js"></script>
     <script>
-        // Get payment ID from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const paymentId = urlParams.get('payment_id');
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookingId = urlParams.get('booking_id');
+            const paymentId = urlParams.get('payment_id');
 
-        if (paymentId) {
-            document.getElementById('payment-id').textContent = paymentId;
-            document.getElementById('amount').textContent = '---  ر.س';
-            document.getElementById('payment-method').textContent = 'بطاقة ائتمانية';
-            document.getElementById('payment-date').textContent = new Date().toLocaleDateString('ar-SA');
-        }
+            if (!bookingId) {
+                window.location.href = 'browse-families-calendar.html';
+                return;
+            }
+
+            // Load booking details
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('bookings')
+                    .select(`
+                        *,
+                        majlis:majlis_id (
+                            majlis_name
+                        )
+                    `)
+                    .eq('id', bookingId)
+                    .single();
+
+                if (error) throw error;
+
+                document.getElementById('booking-details').innerHTML = `
+                    <div class="info-item">
+                        <span>رقم الحجز:</span>
+                        <strong>${bookingId.substring(0, 8)}</strong>
+                    </div>
+                    <div class="info-item">
+                        <span>المجلس:</span>
+                        <strong>${data.majlis?.majlis_name || 'غير محدد'}</strong>
+                    </div>
+                    <div class="info-item">
+                        <span>التاريخ:</span>
+                        <strong>${new Date(data.booking_date).toLocaleDateString('ar-SA')}</strong>
+                    </div>
+                    <div class="info-item">
+                        <span>عدد الضيوف:</span>
+                        <strong>${data.guests_count} ضيف</strong>
+                    </div>
+                    <div class="info-item">
+                        <span>المبلغ المدفوع:</span>
+                        <strong style="color: var(--color-success);">${data.total_price} ر.س</strong>
+                    </div>
+                    ${paymentId ? `
+                    <div class="info-item">
+                        <span>رقم المعاملة:</span>
+                        <strong>${paymentId.substring(0, 12)}...</strong>
+                    </div>
+                    ` : ''}
+                `;
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('booking-details').innerHTML = `
+                    <div style="color: red;">حدث خطأ في تحميل التفاصيل</div>
+                `;
+            }
+        });
     </script>
 </body>
 
