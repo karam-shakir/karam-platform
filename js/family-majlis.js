@@ -185,22 +185,71 @@ class MajlisManager {
     }
 
     showAddModal() {
-        alert('ℹ️ ميزة إضافة المجالس من الواجهة ستكون متاحة قريباً!\n\nحالياً: يمكنك إضافة المجلس من Supabase Dashboard.');
+        // Reset form
+        document.getElementById('majlisForm').reset();
+        document.getElementById('majlis-id').value = '';
+        document.getElementById('modal-title').textContent = '➕ إضافة مجلس جديد';
+
+        // Show modal
+        document.getElementById('majlisModal').classList.add('active');
     }
-    showAddModal() {
-        alert('ℹ️ ميزة إضافة المجالس من الواجهة ستكون متاحة قريباً!\n\nحالياً: يمكنك إضافة المجلس من Supabase Dashboard.');
+
+    closeModal() {
+        document.getElementById('majlisModal').classList.remove('active');
+    }
+
+    async saveMajlis(e) {
+        e.preventDefault();
+
+        const formData = {
+            majlis_name: document.getElementById('majlis-name').value,
+            majlis_type: document.getElementById('majlis-type').value,
+            capacity: parseInt(document.getElementById('capacity').value),
+            base_price: parseFloat(document.getElementById('base-price').value),
+            description_ar: document.getElementById('description-ar').value || null,
+            description_en: document.getElementById('description-en').value || null,
+            location: document.getElementById('location').value || null,
+            maps_url: document.getElementById('maps-url').value || null,
+            is_active: document.getElementById('is-active').checked,
+            family_id: this.familyData.id
+        };
+
+        // Get amenities
+        const amenities = [];
+        document.querySelectorAll('.amenity:checked').forEach(cb => {
+            amenities.push(cb.value);
+        });
+        formData.amenities = amenities;
+
+        try {
+            const majlisId = document.getElementById('majlis-id').value;
+
+            if (majlisId) {
+                // Update
+                const { error } = await karamDB.update('majlis', formData, { id: majlisId });
+                if (error) throw error;
+                alert('✅ تم تحديث المجلس بنجاح!');
+            } else {
+                // Insert
+                const { error } = await karamDB.insert('majlis', formData);
+                if (error) throw error;
+                alert('✅ تم إضافة المجلس بنجاح!');
+            }
+
+            this.closeModal();
+            await this.loadMajlis();
+            await this.loadStats();
+        } catch (error) {
+            console.error('Error saving majlis:', error);
+            alert('❌ حدث خطأ: ' + error.message);
+        }
     }
 }
 
 // Initialize
 const majlisManager = new MajlisManager();
 
-// Global functions for onclick
+// Global functions for onclick - CRITICAL for buttons to work!
 window.majlisEdit = (index) => majlisManager.editMajlis(index);
 window.majlisToggle = (index) => majlisManager.toggleMajlis(index);
 window.majlisDelete = (index) => majlisManager.deleteMajlis(index);
-
-// Global functions for onclick
-window.majlisEdit = (i) => majlisManager.editMajlis(i);
-window.majlisToggle = (i) => majlisManager.toggleMajlis(i);
-window.majlisDelete = (i) => majlisManager.deleteMajlis(i);
