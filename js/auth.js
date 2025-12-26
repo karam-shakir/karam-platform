@@ -410,6 +410,16 @@ class KaramAuth {
     // ============================================
 
     redirectToDashboard() {
+        // Check if there's a redirect parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectTo = urlParams.get('redirect');
+
+        if (redirectTo) {
+            window.location.href = redirectTo;
+            return;
+        }
+
+        // Default dashboard redirect
         const userType = this.getUserType();
 
         const dashboards = {
@@ -424,7 +434,7 @@ class KaramAuth {
 
     requireAuth(allowedTypes = []) {
         if (!this.isAuthenticated()) {
-            const currentPath = window.location.pathname;
+            const currentPath = window.location.pathname + window.location.search;
             window.location.href = `login.html?redirect=${encodeURIComponent(currentPath)}`;
             return false;
         }
