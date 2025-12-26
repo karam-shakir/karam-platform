@@ -187,10 +187,18 @@ class MajlisManager {
     showAddModal() {
         alert('ℹ️ ميزة إضافة المجالس من الواجهة ستكون متاحة قريباً!\n\nحالياً: يمكنك إضافة المجلس من Supabase Dashboard.');
     }
+    showAddModal() {
+        alert('ℹ️ ميزة إضافة المجالس من الواجهة ستكون متاحة قريباً!\n\nحالياً: يمكنك إضافة المجلس من Supabase Dashboard.');
+    }
 }
 
 // Initialize
 const majlisManager = new MajlisManager();
+
+// Global functions for onclick
+window.majlisEdit = (index) => majlisManager.editMajlis(index);
+window.majlisToggle = (index) => majlisManager.toggleMajlis(index);
+window.majlisDelete = (index) => majlisManager.deleteMajlis(index);
 
 // Global functions for onclick
 window.majlisEdit = (i) => majlisManager.editMajlis(i);
