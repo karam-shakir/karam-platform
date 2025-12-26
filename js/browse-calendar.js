@@ -3,6 +3,15 @@
 // Fixed: Better query and error logging
 // ============================================
 
+// Logout function
+async function logout() {
+    if (confirm('هل تريد تسجيل الخروج؟')) {
+        await window.supabaseClient.auth.signOut();
+        window.location.href = 'login.html';
+    }
+}
+window.logout = logout;
+
 let selectedMajlis = null;
 let searchFilters = {
     date: null,
