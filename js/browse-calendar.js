@@ -218,7 +218,11 @@ async function submitBooking(e) {
     const guests = parseInt(document.getElementById('booking-guests').value);
     const notes = document.getElementById('booking-notes').value;
     const pricePerPerson = parseFloat(document.getElementById('selected-majlis-price').value);
-    const totalPrice = guests * pricePerPerson;
+
+    // Calculate with VAT
+    const subtotal = guests * pricePerPerson;
+    const vat = subtotal * 0.15; // 15% VAT
+    const totalPrice = subtotal + vat;
 
     try {
         const { data: { user }, error: userError } = await window.supabaseClient.auth.getUser();
