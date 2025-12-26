@@ -67,10 +67,12 @@ async function loadBookingDetails() {
 function renderBookingSummary(booking) {
     const container = document.getElementById('booking-details');
 
-    // Calculate VAT
-    const subtotal = parseFloat(booking.total_price);
-    const vatAmount = subtotal * 0.15;
-    const totalWithVat = subtotal + vatAmount;
+    // Reverse calculate VAT (total_price already includes VAT from booking)
+    // If total = subtotal + (subtotal * 0.15) = subtotal * 1.15
+    // Then subtotal = total / 1.15
+    const totalWithVat = parseFloat(booking.total_price);
+    const subtotal = totalWithVat / 1.15;
+    const vatAmount = totalWithVat - subtotal;
 
     container.innerHTML = `
         <div class="summary-item">
