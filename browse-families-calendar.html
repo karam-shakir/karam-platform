@@ -642,6 +642,15 @@
     <script src="js/supabase-client.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/auth.js"></script>
+    <script>
+        // Show visitor nav if logged in
+        (async () => {
+            const { data: { user } } = await window.supabaseClient.auth.getUser();
+            if (user) {
+                document.getElementById('visitor-nav').style.display = 'block';
+            }
+        })();
+    </script>
     <script src="js/browse-calendar.js"></script>
     <script>
         // Force attach checkout handler
