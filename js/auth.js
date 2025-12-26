@@ -415,7 +415,7 @@ class KaramAuth {
         const dashboards = {
             operator: 'operator-dashboard.html',
             family: 'family-dashboard.html',
-            visitor: 'visitor-dashboard.html',
+            visitor: 'browse-families-calendar.html', // Visitors go to browse page
             company: 'company-dashboard.html'
         };
 
