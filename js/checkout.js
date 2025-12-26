@@ -98,8 +98,8 @@ function renderBookingSummary(booking) {
 function initializeMoyasar() {
     console.log('🔧 Initializing Moyasar...');
 
-    // Test mode - replace with your actual test key
-    const MOYASAR_TEST_KEY = 'pk_test_vcFUHJDBq23FDXJNGVkUhJNy5ZPR3eQ4b9s2';
+    // Moyasar Test Key - Updated
+    const MOYASAR_TEST_KEY = 'pk_test_1au5CTZmjPNnL4e84CcWxzkzujJeLVdjS3yuTFrC';
 
     Moyasar.init({
         element: '#moyasar-form',
