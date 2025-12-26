@@ -178,7 +178,7 @@ async function handlePaymentSuccess(payment) {
             .from('bookings')
             .update({
                 payment_status: 'paid',
-                payment_method: payment.source.type,
+                payment_method: 'moyasar', // Fixed value instead of payment.source.type
                 transaction_id: payment.id,
                 booking_status: 'confirmed'
             })
