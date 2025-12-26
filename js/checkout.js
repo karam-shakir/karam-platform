@@ -67,12 +67,22 @@ async function loadBookingDetails() {
 function renderBookingSummary(booking) {
     const container = document.getElementById('booking-details');
 
-    // Reverse calculate VAT (total_price already includes VAT from booking)
-    // If total = subtotal + (subtotal * 0.15) = subtotal * 1.15
-    // Then subtotal = total / 1.15
+    // Reverse calculate to show price breakdown clearly
     const totalWithVat = parseFloat(booking.total_price);
-    const subtotal = totalWithVat / 1.15;
-    const vatAmount = totalWithVat - subtotal;
+    const guestCount = booking.guests_count;
+
+    // Price per person after VAT
+    const pricePerPersonWithVat = totalWithVat / guestCount;
+
+    // Price per person before VAT
+    const pricePerPersonBeforeVat = pricePerPersonWithVat / 1.15;
+
+    // VAT per person
+    const vatPerPerson = pricePerPersonWithVat - pricePerPersonBeforeVat;
+
+    // Totals
+    const subtotalAllGuests = pricePerPersonBeforeVat * guestCount;
+    const vatTotal = vatPerPerson * guestCount;
 
     container.innerHTML = `
         <div class="summary-item">
@@ -89,18 +99,26 @@ function renderBookingSummary(booking) {
         </div>
         <div class="summary-item">
             <span>عدد الضيوف:</span>
-            <span>${booking.guests_count} ضيف</span>
+            <span>${guestCount} ضيف</span>
         </div>
         <div class="summary-item">
-            <span>المبلغ الأساسي:</span>
-            <span>${subtotal.toFixed(2)} ر.س</span>
+            <span>سعر الشخص الواحد:</span>
+            <span>${pricePerPersonBeforeVat.toFixed(2)} ر.س</span>
+        </div>
+        <div class="summary-item">
+            <span>سعر الشخص بعد الضريبة (15%):</span>
+            <span>${pricePerPersonWithVat.toFixed(2)} ر.س</span>
+        </div>
+        <div class="summary-item" style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #ddd;">
+            <span>المبلغ الأساسي (${guestCount} × ${pricePerPersonBeforeVat.toFixed(2)}):</span>
+            <span>${subtotalAllGuests.toFixed(2)} ر.س</span>
         </div>
         <div class="summary-item">
             <span>ضريبة القيمة المضافة (15%):</span>
-            <span>${vatAmount.toFixed(2)} ر.س</span>
+            <span>${vatTotal.toFixed(2)} ر.س</span>
         </div>
         <div class="summary-item">
-            <span>إجمالي المبلغ:</span>
+            <span>الإجمالي النهائي:</span>
             <span>${totalWithVat.toFixed(2)} ر.س</span>
         </div>
     `;
