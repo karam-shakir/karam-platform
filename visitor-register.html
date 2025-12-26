@@ -9,7 +9,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="styles/design-system.css">
     <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/auth.css">
+    <link rel="stylesheet" href="styles/pages-core.css">
 </head>
 
 <body class="auth-page">
@@ -17,14 +17,14 @@
         <div class="auth-side">
             <div class="auth-box">
                 <div class="auth-logo">
-                    <img src="assets/logo.png" alt="كرم">
+                    <img src="images/logo.png" alt="كرم">
                 </div>
                 <div class="auth-header">
                     <h1 class="auth-title">إنشاء حساب كمعتمر</h1>
                     <p class="auth-subtitle">ابدأ رحلتك في تجربة الضيافة الأصيلة</p>
                 </div>
 
-                <form id="visitor-register-form" class="auth-form" onsubmit="handleSubmit(event)">
+                <form id="visitor-register-form" class="auth-form">
                     <div class="form-group">
                         <label class="form-label">الاسم الكامل *</label>
                         <input type="text" id="full-name" class="form-input" placeholder="اسمك الكامل" required>
@@ -54,6 +54,20 @@
                             <option value="jordan">الأردن</option>
                             <option value="other">أخرى</option>
                         </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">الجنس *</label>
+                        <div class="radio-group" style="display: flex; gap: var(--space-md);">
+                            <label class="radio-label" style="flex: 1; justify-content: center;">
+                                <input type="radio" name="gender" value="male" required>
+                                <span>ذكر</span>
+                            </label>
+                            <label class="radio-label" style="flex: 1; justify-content: center;">
+                                <input type="radio" name="gender" value="female">
+                                <span>أنثى</span>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="form-grid">
@@ -136,93 +150,25 @@
 
     <div id="toast-container"></div>
 
+    <!-- Supabase SDK & Auth -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
     <script>
-        console.log('✅ Script loaded!');
-
-        // Supabase config
-        const SUPABASE_URL = 'https://mdkhvsvkqlhtikhpkwkf.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ka2h2c3ZrcWxodGlraHBrd2tmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyNTM1NTAsImV4cCI6MjA4MDgyOTU1MH0.zabhAeKeIVAU8YTKmOHcEJf0vYCKJUrS9-RgkRg14ZY';
-
-        // Toast function
-        function showToast(title, message, type) {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<div class="toast-content"><div class="toast-title">${title}</div><p>${message}</p></div>`;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 5000);
-        }
-
-        // Form submit handler
-        async function handleSubmit(e) {
+        document.getElementById('visitor-register-form').addEventListener('submit', async function (e) {
             e.preventDefault();
-            console.log('✅ Form submitted!');
 
-            const btn = document.getElementById('submit-btn');
-            btn.disabled = true;
-            btn.textContent = 'جاري التسجيل...';
-
-            const formData = {
-                fullName: document.getElementById('full-name').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                nationality: document.getElementById('nationality').value,
-                password: document.getElementById('password').value,
-                confirmPassword: document.getElementById('confirm-password').value
-            };
-
-            // Validation
-            if (formData.password !== formData.confirmPassword) {
-                showToast('خطأ', 'كلمتا المرور غير متطابقتين', 'error');
-                btn.disabled = false;
-                btn.textContent = 'إنشاء حساب';
-                return;
+            // Try namespace first, then fallback
+            if (window.Karam && window.Karam.Auth && window.Karam.Auth.handleVisitorRegister) {
+                await Karam.Auth.handleVisitorRegister();
+            } else if (window.handleVisitorRegister) {
+                await window.handleVisitorRegister();
+            } else {
+                console.error('Registration handler not found');
+                alert('حدث خطأ في تحميل الصفحة. يرجى التحديث والمحاولة مرة أخرى.');
             }
-
-            try {
-                // Check if Supabase is loaded
-                if (typeof window.supabase !== 'undefined') {
-                    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-                    const { data, error } = await supabase.auth.signUp({
-                        email: formData.email,
-                        password: formData.password,
-                        options: {
-                            data: {
-                                full_name: formData.fullName,
-                                phone: formData.phone,
-                                nationality: formData.nationality,
-                                role: 'umrah_visitor'
-                            }
-                        }
-                    });
-
-                    if (error) throw error;
-
-                    showToast('نجح', 'تم التسجيل بنجاح! تحقق من بريدك الإلكتروني', 'success');
-                    console.log('✅ Registered with Supabase:', data);
-
-                    setTimeout(() => window.location.href = 'login.html', 2000);
-                } else {
-                    // Mock mode
-                    console.warn('⚠️ Supabase not loaded - Mock registration');
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-
-                    showToast('نجح', 'تم التسجيل بنجاح! (وضع تجريبي)', 'success');
-                    console.log('📝 Mock registration:', formData);
-
-                    setTimeout(() => window.location.href = 'login.html', 2000);
-                }
-            } catch (error) {
-                console.error('❌ Error:', error);
-                showToast('خطأ', error.message || 'فشل التسجيل', 'error');
-                btn.disabled = false;
-                btn.textContent = 'إنشاء حساب';
-            }
-        }
-
-        console.log('✅ All ready!');
+        });
     </script>
 </body>
 

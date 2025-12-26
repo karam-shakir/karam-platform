@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة العوائل - منصة كرم</title>
+    <link rel="stylesheet" href="styles/unified-dashboards.css">
+</head>
+
+<body class="rtl operator-dash">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>منصة كرم</h1>
+            <p>لوحة تحكم المشغل</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="/operator-dashboard.html" class="nav-item">
+                <span class="icon">📊</span>
+                <span>لوحة التحكم</span>
+            </a>
+            <a href="/operator-families.html" class="nav-item active">
+                <span class="icon">👨‍👩‍👧</span>
+                <span>إدارة العوائل</span>
+            </a>
+            <a href="/operator-bookings.html" class="nav-item">
+                <span class="icon">📅</span>
+                <span>الحجوزات</span>
+            </a>
+            <a href="/operator-finance.html" class="nav-item">
+                <span class="icon">💰</span>
+                <span>الإدارة المالية</span>
+            </a>
+            <a href="/operator-sms.html" class="nav-item">
+                <span class="icon">📱</span>
+                <span>إدارة الرسائل النصية</span>
+            </a>
+            <a href="/operator-coupons.html" class="nav-item">
+                <span class="icon">🎟️</span>
+                <span>الكوبونات</span>
+            </a>
+            <a href="/operator-settings.html" class="nav-item">
+                <span class="icon">⚙️</span>
+                <span>الإعدادات</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button onclick="karamAuth.logout()" class="btn-logout">
+                <span class="icon">🚪</span>
+                <span>تسجيل خروج</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <h2>👨‍👩‍👧 إدارة العوائل</h2>
+            </div>
+            <div class="top-bar-right">
+                <button data-lang-toggle class="btn-lang">
+                    <span>English</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="dashboard-container">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👨‍👩‍👧</div>
+                    <div class="stat-info">
+                        <h3 id="total-families">0</h3>
+                        <p>إجمالي العوائل</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-info">
+                        <h3 id="pending-families">0</h3>
+                        <p>معلقة</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <h3 id="active-families">0</h3>
+                        <p>نشطة</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏠</div>
+                    <div class="stat-info">
+                        <h3 id="total-majlis">0</h3>
+                        <p>المجالس</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="familiesManager.switchTab('pending')">
+                    ⏳ معلقة (<span id="pending-count">0</span>)
+                </button>
+                <button class="tab" onclick="familiesManager.switchTab('active')">
+                    ✅ نشطة (<span id="active-count">0</span>)
+                </button>
+                <button class="tab" onclick="familiesManager.switchTab('all')">
+                    📋 الكل
+                </button>
+            </div>
+
+            <!-- Tab Content: Pending -->
+            <div id="tab-pending" class="tab-content active">
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>اسم العائلة</th>
+                                <th>المدينة</th>
+                                <th>الجوال</th>
+                                <th>تاريخ التسجيل</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pending-tbody">
+                            <tr>
+                                <td colspan="6" class="text-center">جاري التحميل...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab Content: Active -->
+            <div id="tab-active" class="tab-content">
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>اسم العائلة</th>
+                                <th>المدينة</th>
+                                <th>المجالس</th>
+                                <th>الحجوزات</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="active-tbody">
+                            <tr>
+                                <td colspan="6" class="text-center">جاري التحميل...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab Content: All -->
+            <div id="tab-all" class="tab-content">
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>اسم العائلة</th>
+                                <th>المدينة</th>
+                                <th>الموافقة</th>
+                                <th>الحالة</th>
+                                <th>تاريخ التسجيل</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-tbody">
+                            <tr>
+                                <td colspan="6" class="text-center">جاري التحميل...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Family Details Modal -->
+    <div id="family-modal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; overflow-y:auto; padding:20px;">
+        <div style="max-width:800px; margin:50px auto; background:white; border-radius:12px; padding:40px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:30px;">
+                <h2 id="modal-title">تفاصيل العائلة</h2>
+                <button onclick="familiesManager.closeModal()"
+                    style="background:none; border:none; font-size:24px; cursor:pointer;">✕</button>
+            </div>
+
+            <div id="family-details"></div>
+
+            <div style="margin-top:30px; display:flex; gap:10px; justify-content:flex-end;">
+                <button class="btn-approve" onclick="familiesManager.approveFamilyFromModal()">✅ موافقة</button>
+                <button class="btn-reject" onclick="familiesManager.rejectFamilyFromModal()">❌ رفض</button>
+                <button onclick="familiesManager.closeModal()"
+                    style="padding:10px 20px; border:1px solid #ddd; background:white; border-radius:8px; cursor:pointer;">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-client.js"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/operator-families.js"></script>
+</body>
+
+</html>

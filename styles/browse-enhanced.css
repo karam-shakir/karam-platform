@@ -1,0 +1,343 @@
+/* ===================================
+   Enhanced Browse Page Styles
+   تحسينات صفحة تصفح المجالس
+   =================================== */
+
+/* Navbar Logo Styling */
+.browse-page .navbar .logo {
+    width: 50px;
+    height: auto;
+    margin-left: 10px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.browse-page .nav-brand a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.browse-page .nav-brand h1 {
+    margin: 0;
+    font-size: var(--font-size-2xl);
+    color: var(--color-primary);
+    font-weight: var(--font-weight-extrabold);
+}
+
+/* Search Section with Golden Theme */
+.browse-page .search-section {
+    background: linear-gradient(135deg, #B8956A 0%, #9F7D47 100%);
+    padding: var(--space-4xl) 0 var(--space-3xl);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative Pattern */
+.browse-page .search-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        repeating-linear-gradient(45deg,
+            transparent,
+            transparent 20px,
+            rgba(255, 255, 255, 0.05) 20px,
+            rgba(255, 255, 255, 0.05) 40px);
+    pointer-events: none;
+}
+
+.browse-page .search-section h1 {
+    color: white;
+    text-align: center;
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-extrabold);
+    margin-bottom: var(--space-2xl);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+.browse-page .search-box {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-xl);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-md);
+    position: relative;
+    z-index: 1;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.browse-page .search-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.browse-page .search-field label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+    margin-bottom: var(--space-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.browse-page .search-field input,
+.browse-page .search-field select {
+    padding: var(--space-md);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family);
+    background: white;
+    color: var(--color-text);
+    transition: all var(--transition-base);
+}
+
+.browse-page .search-field input:focus,
+.browse-page .search-field select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(184, 149, 106, 0.1);
+}
+
+.browse-page .btn-search {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+    padding: var(--space-md) var(--space-2xl);
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+}
+
+.browse-page .btn-search:hover {
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+/* Results Section */
+.browse-page .results-section {
+    padding: var(--space-3xl) 0;
+    background: var(--color-bg-light);
+}
+
+.browse-page .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-2xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 2px solid var(--color-primary);
+}
+
+.browse-page .results-header h2 {
+    font-size: var(--font-size-3xl);
+    color: var(--color-text);
+    margin: 0;
+}
+
+.browse-page .results-header h2 span {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-extrabold);
+}
+
+.browse-page .sort-options {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.browse-page .sort-options label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-light);
+}
+
+.browse-page .sort-options select {
+    padding: var(--space-sm) var(--space-lg);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family);
+    background: white;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.browse-page .sort-options select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+/* Majalis Results Grid */
+.browse-page .majalis-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-xl);
+    margin-bottom: var(--space-2xl);
+}
+
+/* Majlis Card */
+.browse-page .majlis-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-base);
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.browse-page .majlis-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--color-primary);
+}
+
+.browse-page .majlis-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.browse-page .majlis-card:hover .majlis-image {
+    transform: scale(1.1);
+}
+
+.browse-page .majlis-info {
+    padding: var(--space-lg);
+}
+
+.browse-page .majlis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-md);
+}
+
+.browse-page .majlis-name {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    margin: 0;
+}
+
+.browse-page .majlis-price {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    white-space: nowrap;
+}
+
+.browse-page .majlis-location {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-md);
+}
+
+.browse-page .majlis-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
+}
+
+.browse-page .feature-badge {
+    background: var(--color-bg-light);
+    color: var(--color-text);
+    padding: 4px var(--space-sm);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+}
+
+.browse-page .majlis-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border-light);
+}
+
+.browse-page .btn-view-details {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+    padding: var(--space-sm) var(--space-lg);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.browse-page .btn-view-details:hover {
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+    transform: translateX(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+/* No Results State */
+.browse-page #no-results {
+    text-align: center;
+    padding: var(--space-4xl);
+}
+
+.browse-page #no-results h3 {
+    color: var(--color-text);
+    margin: var(--space-lg) 0;
+}
+
+.browse-page #no-results p {
+    color: var(--color-text-light);
+    margin-bottom: var(--space-xl);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .browse-page .search-box {
+        grid-template-columns: 1fr;
+        padding: var(--space-lg);
+    }
+
+    .browse-page .results-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-md);
+    }
+
+    .browse-page .majalis-results {
+        grid-template-columns: 1fr;
+    }
+}

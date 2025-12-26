@@ -1,465 +1,270 @@
-/**
- * Operator Dashboard - Karam Platform
- * لوحة تحكم المشغل
- */
+// ============================================
+// Operator Dashboard - Main JavaScript
+// ============================================
 
-// Global state
-let platformStats = {};
-
-// Initialize
-document.addEventListener('DOMContentLoaded', async () => {
-    // Check authentication
-    const user = JSON.parse(localStorage.getItem('karam_user') || 'null');
-    if (!user || user.user_type !== 'admin') {
-        window.location.href = 'login.html';
-        return;
+class OperatorDashboard {
+    constructor() {
+        this.stats = {};
+        this.charts = {};
+        this.init();
     }
 
-    // Load all data
-    await loadOverview();
-    await loadPricing();
-    await loadBookings();
-    await loadDiscountCodes();
-    await loadFinancials();
-    await loadFamilies();
-    await loadSettings();
-});
-
-// Load Overview
-async function loadOverview() {
-    try {
-        // Get total revenue from bookings
-        const { data: bookings, error: bookingsError } = await supabase
-            .from('bookings')
-            .select('total_amount, created_at');
-
-        if (bookingsError) throw bookingsError;
-
-        const totalRevenue = bookings.reduce((sum, b) => sum + parseFloat(b.total_amount || 0), 0);
-        const platformCommission = totalRevenue * 0.15;
-
-        // Get active families count
-        const { count: familiesCount } = await supabase
-            .from('host_families')
-            .select('*', { count: 'exact', head: true })
-            .eq('status', 'approved');
-
-        // Update stats
-        document.getElementById('total-revenue').textContent = `${totalRevenue.toFixed(2)} ر.س`;
-        document.getElementById('platform-commission').textContent = `${platformCommission.toFixed(2)} ر.س`;
-        document.getElementById('total-bookings').textContent = bookings.length;
-        document.getElementById('active-families').textContent = familiesCount || 0;
-
-        platformStats = {
-            totalRevenue,
-            platformCommission,
-            totalBookings: bookings.length,
-            activeFamilies: familiesCount
-        };
-
-    } catch (error) {
-        console.error('Error loading overview:', error);
-        showToast('خطأ', 'فشل تحميل النظرة العامة', 'error');
-    }
-}
-
-// Load Pricing
-async function loadPricing() {
-    try {
-        // Load packages
-        const { data: packages, error: packagesError } = await supabase
-            .from('packages')
-            .select('*')
-            .order('price', { ascending: true });
-
-        if (packagesError) throw packagesError;
-
-        const packagesList = document.getElementById('packages-list');
-        if (!packagesList) return;
-
-        packagesList.innerHTML = packages.map(pkg => `
-            <div class="package-item">
-                <div>
-                    <strong>${pkg.name}</strong>
-                    <p class="text-sm text-muted">${pkg.description || ''}</p>
-                </div>
-                <div>
-                    <input type="number" value="${pkg.price}" class="form-input" 
-                           onchange="updatePackagePrice('${pkg.id}', this.value)">
-                    <small class="text-muted">ر.س للشخص</small>
-                </div>
-                <div>
-                    <label class="checkbox-label">
-                        <input type="checkbox" ${pkg.is_featured ? 'checked' : ''} 
-                               onchange="toggleFeatured('${pkg.id}', this.checked)">
-                        <span>مميز</span>
-                    </label>
-                </div>
-                <div>
-                    <button class="btn btn-sm btn-text">تعديل</button>
-                </div>
-            </div>
-        `).join('');
-
-        // Load dynamic pricing rules
-        const { data: rules, error: rulesError } = await supabase
-            .from('dynamic_pricing')
-            .select('*')
-            .order('priority', { ascending: false });
-
-        if (rulesError && rulesError.code !== 'PGRST116') throw rulesError;
-
-        const rulesList = document.getElementById('pricing-rules-list');
-        if (!rulesList) return;
-
-        if (!rules || rules.length === 0) {
-            rulesList.innerHTML = '<p class="text-muted">لا توجد قواعد تسعير ديناميكي</p>';
+    async init() {
+        // Check authentication
+        if (!karamAuth.requireAuth(['operator'])) {
             return;
         }
 
-        rulesList.innerHTML = rules.map(rule => `
-            <div class="rule-item">
-                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-sm);">
-                    <strong>${getRuleTypeLabel(rule.rule_type)}</strong>
-                    <span class="status-badge ${rule.is_active ? 'status-confirmed' : 'status-pending'}">
-                        ${rule.is_active ? 'نشط' : 'معطل'}
-                    </span>
-                </div>
-                <div class="text-sm text-muted">
-                    ${rule.adjustment_type === 'percentage' ? '+' : ''}${rule.adjustment_value}${rule.adjustment_type === 'percentage' ? '%' : ' ر.س'}
-                    ${rule.valid_from ? `من ${rule.valid_from}` : ''}
-                    ${rule.valid_until ? ` إلى ${rule.valid_until}` : ''}
-                </div>
-                <div style="margin-top: var(--space-sm);">
-                    <button class="btn btn-sm btn-text" onclick="editPricingRule('${rule.id}')">تعديل</button>
-                    <button class="btn btn-sm btn-text" style="color: var(--color-error);" 
-                            onclick="deletePricingRule('${rule.id}')">حذف</button>
-                </div>
-            </div>
-        `).join('');
-
-    } catch (error) {
-        console.error('Error loading pricing:', error);
-        showToast('خطأ', 'فشل تحميل الأسعار', 'error');
+        // Load dashboard data
+        await this.loadStats();
+        await this.loadRecentBookings();
+        await this.loadTopFamilies();
+        await this.initCharts();
     }
-}
 
-// Load Financials
-async function loadFinancials() {
-    try {
-        // Get earnings grouped by family
-        const { data: earnings, error } = await supabase
-            .from('family_earnings')
-            .select(`
-                *,
-                host_families(family_name)
-            `)
-            .order('created_at', { ascending: false });
+    // ============================================
+    // Load Statistics
+    // ============================================
 
-        if (error && error.code !== 'PGRST116') throw error;
+    async loadStats() {
+        try {
+            // Get overall stats from view
+            const { data: stats, error } = await karamDB.select('operator_dashboard_stats', {
+                single: true
+            });
 
-        if (!earnings || earnings.length === 0) {
-            document.getElementById('family-earnings-table').innerHTML = `
-                <tr><td colspan="7" class="text-center text-muted">لا توجد بيانات مالية</td></tr>
-            `;
+            if (error) throw error;
+
+            this.stats = stats;
+            this.updateStatsUI();
+
+        } catch (error) {
+            console.error('Error loading stats:', error);
+        }
+    }
+
+    updateStatsUI() {
+        document.getElementById('total-families').textContent =
+            this.stats.total_families || 0;
+
+        document.getElementById('pending-families').textContent =
+            this.stats.pending_families || 0;
+
+        document.getElementById('total-bookings').textContent =
+            this.stats.total_bookings || 0;
+
+        // Get platform wallet balance
+        this.loadPlatformBalance();
+    }
+
+    async loadPlatformBalance() {
+        try {
+            const { data, error } = await karamDB.select('platform_wallet', {
+                eq: { id: '00000000-0000-0000-0000-000000000001' },
+                single: true
+            });
+
+            if (error) throw error;
+
+            document.getElementById('platform-balance').textContent =
+                i18n.formatCurrency(data.balance);
+
+        } catch (error) {
+            console.error('Error loading platform balance:', error);
+        }
+    }
+
+    // ============================================
+    // Load Recent Bookings
+    // ============================================
+
+    async loadRecentBookings() {
+        try {
+            const { data, error } = await karamDB.select('bookings', {
+                select: `
+                    id,
+                    booking_number,
+                    booking_date,
+                    total_amount,
+                    booking_status,
+                    majlis!inner(
+                        families!inner(family_name)
+                    )
+                `,
+                order: { column: 'created_at', ascending: false },
+                limit: 5
+            });
+
+            if (error) throw error;
+
+            this.renderRecentBookings(data);
+
+        } catch (error) {
+            console.error('Error loading recent bookings:', error);
+        }
+    }
+
+    renderRecentBookings(bookings) {
+        const tbody = document.querySelector('#recent-bookings-table tbody');
+
+        if (!bookings || bookings.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center">لا توجد حجوزات</td></tr>';
             return;
         }
 
-        // Group by family
-        const familyData = {};
-        earnings.forEach(earning => {
-            const familyId = earning.family_id;
-            if (!familyData[familyId]) {
-                familyData[familyId] = {
-                    name: earning.host_families?.family_name || 'غير معروف',
-                    count: 0,
-                    total: 0,
-                    commission: 0,
-                    net: 0,
-                    pending: 0
-                };
-            }
-            familyData[familyId].count++;
-            familyData[familyId].total += parseFloat(earning.total_amount || 0);
-            familyData[familyId].commission += parseFloat(earning.platform_commission || 0);
-            familyData[familyId].net += parseFloat(earning.net_amount || 0);
-            if (earning.status === 'pending') {
-                familyData[familyId].pending += parseFloat(earning.net_amount || 0);
-            }
-        });
-
-        // Render table
-        const table = document.getElementById('family-earnings-table');
-        table.innerHTML = Object.entries(familyData).map(([familyId, data]) => `
+        tbody.innerHTML = bookings.map(booking => `
             <tr>
-                <td>${data.name}</td>
-                <td>${data.count}</td>
-                <td>${data.total.toFixed(2)} ر.س</td>
-                <td>${data.commission.toFixed(2)} ر.س</td>
-                <td><strong>${data.net.toFixed(2)} ر.س</strong></td>
+                <td>${booking.booking_number}</td>
+                <td>${booking.majlis.families.family_name}</td>
+                <td>${i18n.formatDate(booking.booking_date)}</td>
+                <td>${i18n.formatCurrency(booking.total_amount)}</td>
                 <td>
-                    ${data.pending > 0 ?
-                `<span class="status-badge status-pending">${data.pending.toFixed(2)} معلق</span>` :
-                '<span class="status-badge status-confirmed">مدفوع</span>'
-            }
-                </td>
-                <td>
-                    ${data.pending > 0 ?
-                `<button class="btn btn-sm btn-primary" onclick="processPayout('${familyId}')">دفع</button>` :
-                '-'
-            }
+                    <span class="badge badge-${this.getStatusClass(booking.booking_status)}">
+                        ${this.getStatusText(booking.booking_status)}
+                    </span>
                 </td>
             </tr>
         `).join('');
-
-        // Update stats
-        const thisMonth = earnings.filter(e => {
-            const date = new Date(e.created_at);
-            return date.getMonth() === new Date().getMonth();
-        });
-
-        document.getElementById('this-month-revenue').textContent =
-            `${thisMonth.reduce((sum, e) => sum + parseFloat(e.total_amount || 0), 0).toFixed(2)} ر.س`;
-
-        document.getElementById('pending-payouts').textContent =
-            `${earnings.filter(e => e.status === 'pending').reduce((sum, e) => sum + parseFloat(e.net_amount || 0), 0).toFixed(2)} ر.س`;
-
-    } catch (error) {
-        console.error('Error loading financials:', error);
-        showToast('خطأ', 'فشل تحميل التقارير المالية', 'error');
     }
-}
 
-// Load Families
-async function loadFamilies() {
-    try {
-        // Pending families
-        const { data: pending, error: pendingError } = await supabase
-            .from('host_families')
-            .select('*')
-            .eq('status', 'pending')
-            .order('created_at', { ascending: false });
+    getStatusClass(status) {
+        const classes = {
+            'pending': 'warning',
+            'confirmed': 'success',
+            'completed': 'info',
+            'cancelled': 'danger'
+        };
+        return classes[status] || 'secondary';
+    }
 
-        if (pendingError) throw pendingError;
+    getStatusText(status) {
+        const texts = {
+            'pending': 'قيد الانتظار',
+            'confirmed': 'مؤكد',
+            'completed': 'مكتمل',
+            'cancelled': 'ملغي'
+        };
+        return texts[status] || status;
+    }
 
-        const pendingList = document.getElementById('pending-families-list');
-        if (!pendingList) return;
+    // ============================================
+    // Load Top Families
+    // ============================================
 
-        if (!pending || pending.length === 0) {
-            pendingList.innerHTML = '<p class="text-muted">لا توجد أسر بانتظار الموافقة</p>';
-        } else {
-            pendingList.innerHTML = pending.map(family => `
-                <div class="family-approval-card">
-                    <h4>${family.family_name}</h4>
-                    <div class="text-sm text-muted">
-                        📍 ${family.city === 'makkah' ? 'مكة المكرمة' : 'المدينة المنورة'}<br>
-                        👥 السعة: ${family.capacity || 0}<br>
-                        📅 تاريخ التسجيل: ${new Date(family.created_at).toLocaleDateString('ar-SA')}
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-success" onclick="approveFamily('${family.id}')">موافقة</button>
-                        <button class="btn btn-error" onclick="rejectFamily('${family.id}')">رفض</button>
-                        <button class="btn btn-text" onclick="viewFamilyDetails('${family.id}')">التفاصيل</button>
-                    </div>
-                </div>
-            `).join('');
+    async loadTopFamilies() {
+        try {
+            const { data, error } = await karamDB.rpc('get_top_families', {
+                limit_count: 5
+            });
+
+            if (error) throw error;
+
+            this.renderTopFamilies(data);
+
+        } catch (error) {
+            console.error('Error loading top families:', error);
+        }
+    }
+
+    renderTopFamilies(families) {
+        const tbody = document.querySelector('#top-families-table tbody');
+
+        if (!families || families.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center">لا توجد بيانات</td></tr>';
+            return;
         }
 
-        // All families
-        const { data: all, error: allError } = await supabase
-            .from('host_families')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (allError) throw allError;
-
-        const allTable = document.getElementById('all-families-table');
-        if (!allTable) return;
-
-        allTable.innerHTML = all.map(family => `
+        tbody.innerHTML = families.map(family => `
             <tr>
                 <td>${family.family_name}</td>
-                <td>${family.city === 'makkah' ? 'مكة' : 'المدينة'}</td>
-                <td>${family.capacity || 0}</td>
-                <td>${family.rating || '-'} ⭐</td>
-                <td>${family.total_bookings || 0}</td>
-                <td>
-                    <span class="status-badge status-${family.status}">
-                        ${getStatusLabel(family.status)}
-                    </span>
-                </td>
-                <td>
-                    <button class="btn btn-sm btn-text" onclick="viewFamilyDetails('${family.id}')">عرض</button>
-                </td>
+                <td>${family.booking_count}</td>
+                <td>${i18n.formatCurrency(family.total_revenue)}</td>
             </tr>
         `).join('');
+    }
 
-    } catch (error) {
-        console.error('Error loading families:', error);
-        showToast('خطأ', 'فشل تحميل الأسر', 'error');
+    // ============================================
+    // Initialize Charts
+    // ============================================
+
+    async initCharts() {
+        await this.initBookingsChart();
+        await this.initRevenueChart();
+    }
+
+    async initBookingsChart() {
+        try {
+            const { data, error } = await karamDB.select('monthly_booking_trends', {
+                order: { column: 'month', ascending: true },
+                limit: 6
+            });
+
+            if (error) throw error;
+
+            const ctx = document.getElementById('bookings-chart').getContext('2d');
+
+            this.charts.bookings = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => {
+                        const date = new Date(d.month);
+                        return i18n.formatDate(date, { month: 'short', year: 'numeric' });
+                    }),
+                    datasets: [{
+                        label: 'الحجوزات',
+                        data: data.map(d => d.booking_count),
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+        } catch (error) {
+            console.error('Error initializing bookings chart:', error);
+        }
+    }
+
+    async initRevenueChart() {
+        try {
+            const { data, error } = await karamDB.select('city_performance', {});
+
+            if (error) throw error;
+
+            const ctx = document.getElementById('revenue-chart').getContext('2d');
+
+            this.charts.revenue = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.map(d => d.city === 'mecca' ? 'مكة' : 'المدينة'),
+                    datasets: [{
+                        data: data.map(d => d.total_revenue),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(54, 162, 235, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+        } catch (error) {
+            console.error('Error initializing revenue chart:', error);
+        }
     }
 }
 
-// Load Settings
-async function loadSettings() {
-    try {
-        const { data: settings, error } = await supabase
-            .from('platform_settings')
-            .select('*');
-
-        if (error) throw error;
-
-        settings.forEach(setting => {
-            if (setting.setting_key === 'commission_rate') {
-                document.getElementById('commission-rate').value = setting.setting_value.percentage || 15;
-            } else if (setting.setting_key === 'booking_advance_days') {
-                document.getElementById('min-booking-days').value = setting.setting_value.min || 1;
-                document.getElementById('max-booking-days').value = setting.setting_value.max || 90;
-            }
-        });
-
-        // Settings form submit
-        document.getElementById('settings-form').addEventListener('submit', saveSettings);
-
-    } catch (error) {
-        console.error('Error loading settings:', error);
-    }
-}
-
-// Save Settings
-async function saveSettings(e) {
-    e.preventDefault();
-
-    const commissionRate = document.getElementById('commission-rate').value;
-    const minDays = document.getElementById('min-booking-days').value;
-    const maxDays = document.getElementById('max-booking-days').value;
-
-    showLoading();
-
-    try {
-        // Update commission
-        await supabase
-            .from('platform_settings')
-            .update({ setting_value: { percentage: parseFloat(commissionRate) } })
-            .eq('setting_key', 'commission_rate');
-
-        // Update booking advance days
-        await supabase
-            .from('platform_settings')
-            .update({ setting_value: { min: parseInt(minDays), max: parseInt(maxDays) } })
-            .eq('setting_key', 'booking_advance_days');
-
-        hideLoading();
-        showToast('نجح', 'تم حفظ الإعدادات', 'success');
-
-    } catch (error) {
-        hideLoading();
-        console.error('Error saving settings:', error);
-        showToast('خطأ', 'فشل حفظ الإعدادات', 'error');
-    }
-}
-
-// Approve Family
-async function approveFamily(familyId) {
-    if (!confirm('هل تريد الموافقة على هذه الأسرة؟')) return;
-
-    showLoading();
-    try {
-        const { error } = await supabase
-            .from('host_families')
-            .update({ status: 'approved', is_featured: true })
-            .eq('id', familyId);
-
-        if (error) throw error;
-
-        hideLoading();
-        showToast('نجح', 'تمت الموافقة على الأسرة', 'success');
-        await loadFamilies();
-
-    } catch (error) {
-        hideLoading();
-        console.error('Error approving family:', error);
-        showToast('خطأ', 'فشلت الموافقة', 'error');
-    }
-}
-
-// Reject Family
-async function rejectFamily(familyId) {
-    const reason = prompt('الرجاء إدخال سبب الرفض:');
-    if (!reason) return;
-
-    showLoading();
-    try {
-        const { error } = await supabase
-            .from('host_families')
-            .update({ status: 'rejected' })
-            .eq('id', familyId);
-
-        if (error) throw error;
-
-        hideLoading();
-        showToast('نجح', 'تم رفض الأسرة', 'success');
-        await loadFamilies();
-
-    } catch (error) {
-        hideLoading();
-        console.error('Error rejecting family:', error);
-        showToast('خطأ', 'فشل الرفض', 'error');
-    }
-}
-
-// Helper Functions
-function showSection(section) {
-    document.querySelectorAll('.dashboard-section').forEach(s => s.style.display = 'none');
-    document.getElementById(`${section}-section`).style.display = 'block';
-
-    document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => item.classList.remove('active'));
-    document.querySelector(`[href="#${section}"]`).classList.add('active');
-}
-
-function getRuleTypeLabel(type) {
-    const labels = {
-        weekend: 'عطلة نهاية الأسبوع',
-        holiday: 'عطلة رسمية',
-        peak_hours: 'ساعات الذروة',
-        last_minute: 'حجز لحظة أخيرة',
-        early_bird: 'حجز مبكر'
-    };
-    return labels[type] || type;
-}
-
-function getStatusLabel(status) {
-    const labels = {
-        pending: 'قيد المراجعة',
-        approved: 'معتمد',
-        rejected: 'مرفوض',
-        suspended: 'موقوف'
-    };
-    return labels[status] || status;
-}
-
-function logout() {
-    localStorage.removeItem('karam_user');
-    window.location.href = 'login.html';
-}
-
-// Placeholder functions
-function updatePackagePrice(id, price) {
-    console.log('Update package', id, 'to', price);
-    // TODO: Implement
-}
-
-function toggleFeatured(id, featured) {
-    console.log('Toggle featured', id, featured);
-    // TODO: Implement
-}
-
-function processPayout(familyId) {
-    console.log('Process payout for', familyId);
-    // TODO: Implement
-}
-
-function viewFamilyDetails(id) {
-    alert('عرض تفاصيل الأسرة: ' + id);
-    // TODO: Implement
-}
+// Initialize dashboard
+const dashboard = new OperatorDashboard();

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإدارة المالية - منصة كرم</title>
+    <link rel="stylesheet" href="styles/unified-dashboards.css">
+    <style>
+        .finance-container {
+            padding: 20px;
+        }
+
+        .wallet-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .wallet-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .wallet-card.success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .wallet-card.warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .wallet-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .wallet-card .amount {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .wallet-card .sub-info {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0 20px 0;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead {
+            background: #f8f9fa;
+        }
+
+        .data-table th {
+            padding: 15px;
+            text-align: right;
+            font-weight: bold;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-approve {
+            background: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-approve:hover {
+            background: #218838;
+        }
+
+        .btn-reject {
+            background: #dc3545;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-reject:hover {
+            background: #c82333;
+        }
+
+        .btn-complete {
+            background: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-complete:hover {
+            background: #0056b3;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .balance-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 8px;
+        }
+
+        .balance-indicator.sufficient {
+            background: #28a745;
+        }
+
+        .balance-indicator.insufficient {
+            background: #dc3545;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body class="rtl operator-dash">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>منصة كرم</h1>
+            <p>لوحة تحكم المشغل</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="/operator-dashboard.html" class="nav-item">
+                <span class="icon">📊</span>
+                <span>لوحة التحكم</span>
+            </a>
+            <a href="/operator-families.html" class="nav-item">
+                <span class="icon">👨‍👩‍👧</span>
+                <span>إدارة العوائل</span>
+            </a>
+            <a href="/operator-bookings.html" class="nav-item">
+                <span class="icon">📅</span>
+                <span>الحجوزات</span>
+            </a>
+            <a href="/operator-finance.html" class="nav-item active">
+                <span class="icon">💰</span>
+                <span>الإدارة المالية</span>
+            </a>
+            <a href="/operator-sms.html" class="nav-item">
+                <span class="icon">📱</span>
+                <span>إدارة الرسائل النصية</span>
+            </a>
+            <a href="/operator-coupons.html" class="nav-item">
+                <span class="icon">🎟️</span>
+                <span>الكوبونات</span>
+            </a>
+            <a href="/operator-settings.html" class="nav-item">
+                <span class="icon">⚙️</span>
+                <span>الإعدادات</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button onclick="karamAuth.logout()" class="btn-logout">
+                <span class="icon">🚪</span>
+                <span>تسجيل خروج</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <h2>💰 الإدارة المالية</h2>
+            </div>
+            <div class="top-bar-right">
+                <button data-lang-toggle class="btn-lang">
+                    <span id="current-lang">English</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="finance-container">
+            <!-- Wallet Overview Cards -->
+            <div class="wallet-cards">
+                <div class="wallet-card">
+                    <h3>💰 رصيد المنصة الرئيسي</h3>
+                    <div class="amount" id="platform-balance">0 ر.س</div>
+                    <div class="sub-info">إجمالي الإيرادات المحصلة</div>
+                </div>
+
+                <div class="wallet-card success">
+                    <h3>✅ إجمالي المدفوعات للعوائل</h3>
+                    <div class="amount" id="total-paid">0 ر.س</div>
+                    <div class="sub-info">المبالغ التي تم صرفها</div>
+                </div>
+
+                <div class="wallet-card warning">
+                    <h3>⏳ دفعات معلقة</h3>
+                    <div class="amount" id="pending-amount">0 ر.س</div>
+                    <div class="sub-info" id="pending-count">0 دفعة قيد الانتظار</div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="financeManager.switchTab('payouts')">
+                    💸 الدفعات المعلقة
+                </button>
+                <button class="tab" onclick="financeManager.switchTab('withdrawals')">
+                    🏦 طلبات السحب
+                </button>
+                <button class="tab" onclick="financeManager.switchTab('history')">
+                    📜 السجل المالي
+                </button>
+            </div>
+
+            <!-- Tab Content: Pending Payouts -->
+            <div id="tab-payouts" class="tab-content active">
+                <div class="section-header">
+                    <h2>الدفعات المعلقة للعوائل</h2>
+                    <button class="btn-approve" onclick="financeManager.processAllAutomaticPayouts()">
+                        ⚡ معالجة الدفعات التلقائية
+                    </button>
+                </div>
+
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>العائلة</th>
+                                <th>رقم الحجز</th>
+                                <th>المبلغ</th>
+                                <th>تاريخ الاستحقاق</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payouts-tbody">
+                            <tr>
+                                <td colspan="6" style="text-align:center;">جاري التحميل...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab Content: Withdrawal Requests -->
+            <div id="tab-withdrawals" class="tab-content">
+                <div class="section-header">
+                    <h2>طلبات السحب من العوائل</h2>
+                </div>
+
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>العائلة</th>
+                                <th>المبلغ</th>
+                                <th>البنك</th>
+                                <th>IBAN</th>
+                                <th>الرصيد المتاح</th>
+                                <th>تاريخ الطلب</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="withdrawals-tbody">
+                            <tr>
+                                <td colspan="7" style="text-align:center;">جاري التحميل...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab Content: History -->
+            <div id="tab-history" class="tab-content">
+                <div class="section-header">
+                    <h2>سجل المعاملات المالية</h2>
+                </div>
+
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>التاريخ</th>
+                                <th>النوع</th>
+                                <th>المبلغ</th>
+                                <th>الوصف</th>
+                                <th>الرصيد بعد العملية</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-tbody">
+                            <tr>
+                                <td colspan="5" style="text-align:center;">جاري التحميل...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-client.js"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/operator-finance.js"></script>
+</body>
+
+</html>

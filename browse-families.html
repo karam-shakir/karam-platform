@@ -4,123 +4,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="تصفح الأسر المستضيفة في مكة والمدينة">
-    <title>تصفح الأسر المستضيفة - كرم</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
-        rel="stylesheet">
+    <title>تصفح المجالس - منصة كرم</title>
     <link rel="stylesheet" href="styles/design-system.css">
     <link rel="stylesheet" href="styles/main.css">
-
-    <!-- Language and Components -->
-    <script src="js/language.js" defer></script>
-    <script src="js/components-loader.js" defer></script>
-    <link rel="stylesheet" href="styles/browse.css">
-    <link rel="stylesheet" href="styles/payment.css">
+    <link rel="stylesheet" href="styles/pages.css">
+    <link rel="stylesheet" href="styles/pages-core.css">
+    <link rel="stylesheet" href="styles/browse-enhanced.css">
 </head>
 
-<body>
-    <!-- Unified Header -->
-    <div id="header-container"></div>
-
-    <!-- Hero Section -->
-    <section class="browse-hero">
+<body class="rtl browse-page">
+    <!-- Navigation -->
+    <nav class="navbar">
         <div class="container">
-            <h1 class="browse-title">اختر تجربة الضيافة المثالية</h1>
-            <p class="browse-subtitle">استكشف الأسر المستضيفة في مكة المكرمة والمدينة المنورة</p>
+            <div class="nav-brand">
+                <a href="/index.html">
+                    <img src="images/logo.png" alt="منصة كرم" class="logo">
+                    <h1>كرم</h1>
+                </a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/index.html">الرئيسية</a></li>
+                <li><a href="/browse-families.html" class="active">تصفح المجالس</a></li>
+                <li><a href="/about.html">من نحن</a></li>
+                <li><a href="/contact.html">اتصل بنا</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="/login.html" class="btn-login">تسجيل الدخول</a>
+            </div>
         </div>
-    </section>
+    </nav>
 
-    <!-- Filters & Search -->
-    <section class="filters-section">
+    <!-- Search Section -->
+    <section class="search-section">
         <div class="container">
-            <div class="filters-bar">
-                <div class="search-box">
-                    <input type="text" id="search-input" class="search-input" placeholder="ابحث عن أسرة..."
-                        onkeyup="filterFamilies()">
-                    <button class="search-btn">🔍</button>
-                </div>
-
-                <div class="filters">
-                    <select id="city-filter" class="filter-select" onchange="filterFamilies()">
+            <h1>ابحث عن مجلسك المثالي</h1>
+            <div class="search-box">
+                <div class="search-field">
+                    <label>📍 المدينة</label>
+                    <select id="city-filter">
                         <option value="">جميع المدن</option>
-                        <option value="makkah">مكة المكرمة</option>
-                        <option value="madinah">المدينة المنورة</option>
-                    </select>
-
-                    <select id="package-filter" class="filter-select" onchange="filterFamilies()">
-                        <option value="">جميع الباقات</option>
-                        <option value="simple">ضيافة بسيطة</option>
-                        <option value="meal">وجبة كاملة</option>
-                    </select>
-
-                    <select id="sort-filter" class="filter-select" onchange="sortFamilies()">
-                        <option value="rating">الأعلى تقييماً</option>
-                        <option value="price-low">السعر: من الأقل للأعلى</option>
-                        <option value="price-high">السعر: من الأعلى للأقل</option>
+                        <option value="mecca">مكة المكرمة</option>
+                        <option value="medina">المدينة المنورة</option>
                     </select>
                 </div>
+
+                <div class="search-field">
+                    <label>👥 نوع المجلس</label>
+                    <select id="type-filter">
+                        <option value="">الكل</option>
+                        <option value="men">رجالي</option>
+                        <option value="women">نسائي</option>
+                    </select>
+                </div>
+
+                <div class="search-field">
+                    <label>💰 السعر الأقصى</label>
+                    <input type="number" id="price-filter" placeholder="مثال: 500" min="0" step="50">
+                </div>
+
+                <div class="search-field">
+                    <label>👥 السعة</label>
+                    <input type="number" id="capacity-filter" placeholder="عدد الأشخاص" min="1">
+                </div>
+
+                <button onclick="browseMajalis.applyFilters()" class="btn-search">
+                    🔍 بحث
+                </button>
             </div>
         </div>
     </section>
 
-    <!-- Families Grid -->
-    <section class="families-section">
+    <!-- Results Section -->
+    <section class="results-section">
         <div class="container">
             <div class="results-header">
-                <h2>الأسر المتاحة</h2>
-                <span class="results-count" id="results-count">جاري التحميل...</span>
-            </div>
-
-            <div class="families-grid" id="families-grid">
-                <!-- Families will be loaded here dynamically -->
-                <div class="loading-state">
-                    <div class="spinner"></div>
-                    <p>جاري تحميل الأسر المستضيفة...</p>
+                <h2>النتائج (<span id="results-count">0</span>)</h2>
+                <div class="sort-options">
+                    <label>ترتيب حسب:</label>
+                    <select id="sort-by" onchange="browseMajalis.applyFilters()">
+                        <option value="recent">الأحدث</option>
+                        <option value="price-low">السعر: من الأقل للأعلى</option>
+                        <option value="price-high">السعر: من الأعلى للأقل</option>
+                        <option value="capacity">السعة</option>
+                    </select>
                 </div>
             </div>
 
-            <!-- Pagination -->
-            <div class="pagination" id="pagination" style="display: none;">
-                <!-- Pagination will be generated dynamically -->
+            <!-- Results Grid -->
+            <div class="majalis-results" id="majalis-results">
+                <p class="text-center">جاري التحميل...</p>
+            </div>
+
+            <!-- No Results -->
+            <div id="no-results" style="display:none; text-align:center; padding:60px;">
+                <div style="font-size:80px; margin-bottom:20px;">🔍</div>
+                <h3>لا توجد نتائج</h3>
+                <p style="color:#666; margin:20px 0;">جرّب تعديل معايير البحث</p>
+                <button onclick="browseMajalis.resetFilters()" class="btn-primary">إعادة تعيين</button>
             </div>
         </div>
     </section>
 
-    <!-- Unified Footer -->
-    <div id="footer-container"></div>
+    <!-- Majlis Details Modal -->
+    <div id="majlis-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="modal-majlis-name">تفاصيل المجلس</h2>
+                <button onclick="browseMajalis.closeModal()" class="btn-close">✕</button>
+            </div>
 
-    <!-- Cart Sidebar -->
-    <div class="cart-sidebar" id="cart-sidebar">
-        <div class="cart-header">
-            <h3>سلة التسوق</h3>
-            <button class="close-cart" onclick="closeCart()">×</button>
-        </div>
-        <div class="cart-body" id="cart-items">
-            <div class="empty-cart">
-                <p>سلتك فارغة</p>
-                <p class="text-muted">أضف باقة لتبدأ الحجز</p>
+            <div class="modal-body" id="majlis-details">
+                <!-- Populated by JavaScript -->
             </div>
-        </div>
-        <div class="cart-footer">
-            <div class="cart-total">
-                <span>المجموع:</span>
-                <span id="cart-total">0 ريال</span>
+
+            <div class="modal-footer">
+                <button onclick="browseMajalis.addToCart()" class="btn-primary btn-large" id="book-btn">
+                    ➕ إضافة للعربة
+                </button>
+                <button onclick="browseMajalis.closeModal()" class="btn-secondary">إغلاق</button>
             </div>
-            <button class="btn btn-primary btn-block" onclick="proceedToCheckout()">
-                إتمام الحجز
-            </button>
         </div>
     </div>
 
-    <div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <img src="images/logo.png" alt="منصة كرم" class="logo" style="width:60px; margin-bottom:10px;">
+                    <h3>منصة كرم</h3>
+                    <p>منصة ضيافة سعودية أصيلة</p>
+                </div>
+                <div class="footer-col">
+                    <h4>روابط سريعة</h4>
+                    <ul>
+                        <li><a href="/index.html">الرئيسية</a></li>
+                        <li><a href="/about.html">عن المنصة</a></li>
+                        <li><a href="/contact.html">اتصل بنا</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>تواصل معنا</h4>
+                    <p>📧 info@karam.sa</p>
+                    <p>📱 +966 50 000 0000</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 منصة كرم. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/main.js"></script>
-    <script src="js/browse.js"></script>
-    <script src="js/cart.js"></script>
-    <script src="js/payment.js"></script>
+    <script src="/js/supabase-client.js"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/browse-majalis.js"></script>
 </body>
 
 </html>

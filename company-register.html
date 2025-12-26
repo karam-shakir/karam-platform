@@ -12,7 +12,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="styles/design-system.css">
     <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/auth.css">
+    <link rel="stylesheet" href="styles/pages-core.css">
 </head>
 
 <body class="auth-page">
@@ -259,13 +259,19 @@
     <div id="toast-container"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
     <script src="js/main.js"></script>
     <script src="js/auth.js"></script>
     <script>
         // Handle register form submission
         document.getElementById('company-register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await handleCompanyRegister();
+            if (Karam.Auth && typeof Karam.Auth.handleCompanyRegister === 'function') {
+                await Karam.Auth.handleCompanyRegister();
+            } else {
+                console.error('Karam.Auth.handleCompanyRegister is not defined');
+                alert('خطأ في تحميل النظام. يرجى تحديث الصفحة');
+            }
         });
     </script>
 </body>

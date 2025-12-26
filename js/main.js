@@ -217,7 +217,7 @@ const Auth = {
             });
 
             AppState.user = data.user;
-            Utils.storage.set('user', data.user);
+            Utils.storage.set('karam_user', data.user);
             Utils.storage.set('token', data.access_token);
 
             Utils.showToast('نجح', 'تم تسجيل الدخول بنجاح', 'success');
@@ -247,11 +247,11 @@ const Auth = {
     },
 
     isAuthenticated() {
-        return !!Utils.storage.get('user');
+        return !!Utils.storage.get('karam_user');
     },
 
     getUser() {
-        return Utils.storage.get('user');
+        return Utils.storage.get('karam_user');
     }
 };
 

@@ -1,556 +1,475 @@
-// ===================================
-// Authentication JavaScript
-// ===================================
+// ============================================
+// Karam Platform - Authentication System
+// نظام المصادقة المتكامل
+// ============================================
+// Version: 2.0
+// Author: Dr. Shakir Alhuthali
+// Supports: Operators, Families, Visitors, Companies
+// ============================================
 
-// Utils and API are already loaded from main.js
+// ============================================
+// Authentication Class
+// ============================================
 
-// Supabase client is already initialized in config.js
-// We'll use the global supabase variable from there
+class KaramAuth {
+    constructor() {
+        this.currentUser = null;
+        this.currentUserProfile = null;
+        this.redirectAfterLogin = null;
 
-// Verify Supabase is available
-if (typeof supabase !== 'undefined') {
-    console.log('✅ auth.js: Using Supabase client from config.js');
-} else {
-    console.warn('⚠️ auth.js: Supabase client not found - running in mock mode');
-}
-
-// Toggle password visibility
-function togglePassword(inputId) {
-    const input = document.getElementById(inputId);
-    const button = input.nextElementSibling;
-
-    if (input.type === 'password') {
-        input.type = 'text';
-        button.querySelector('.show-icon').textContent = '👁️‍🗨️';
-    } else {
-        input.type = 'password';
-        button.querySelector('.show-icon').textContent = '👁️';
-    }
-}
-
-// Validate form fields
-function validateEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-}
-
-function validatePhone(phone) {
-    const re = /^05[0-9]{8}$/;
-    return re.test(phone);
-}
-
-function validatePassword(password) {
-    return password.length >= 6;
-}
-
-// Show error message
-function showError(elementId, message) {
-    const errorElement = document.getElementById(elementId);
-    if (errorElement) {
-        errorElement.textContent = message;
-        errorElement.style.display = 'block';
-    }
-}
-
-// Clear error message
-function clearError(elementId) {
-    const errorElement = document.getElementById(elementId);
-    if (errorElement) {
-        errorElement.textContent = '';
-        errorElement.style.display = 'none';
-    }
-}
-
-// Clear all errors
-function clearAllErrors() {
-    document.querySelectorAll('.form-error').forEach(el => {
-        el.textContent = '';
-        el.style.display = 'none';
-    });
-}
-
-// Show toast notification
-function showToast(title, message, type = 'info') {
-    let container = document.getElementById('toast-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'toast-container';
-        container.className = 'toast-container';
-        document.body.appendChild(container);
+        // Initialize on load
+        this.init();
     }
 
-    const icons = {
-        success: '✓',
-        error: '✗',
-        warning: '⚠',
-        info: 'ℹ'
-    };
+    async init() {
+        // Check for existing session
+        const { session } = await karamDB.getCurrentSession();
 
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `
-        <div class="toast-icon">${icons[type]}</div>
-        <div class="toast-content">
-            <div class="toast-title">${title}</div>
-            <p class="toast-message">${message}</p>
-        </div>
-    `;
+        if (session) {
+            await this.loadUserProfile();
+        }
 
-    container.appendChild(toast);
-
-    setTimeout(() => {
-        toast.style.animation = 'fadeOut 0.3s ease-out';
-        setTimeout(() => toast.remove(), 300);
-    }, 5000);
-}
-
-// Show loading state
-function showLoading(button) {
-    button.disabled = true;
-    button.dataset.originalText = button.textContent;
-    button.innerHTML = '<div class="spinner" style="width: 24px; height: 24px; border-width: 3px;"></div>';
-}
-
-// Hide loading state
-function hideLoading(button) {
-    button.disabled = false;
-    button.textContent = button.dataset.originalText;
-}
-
-// ===== LOGIN =====
-async function handleLogin() {
-    clearAllErrors();
-
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    const rememberMe = document.getElementById('remember-me')?.checked;
-    const submitButton = document.querySelector('button[type="submit"]');
-
-    // Validation
-    if (!validateEmail(email)) {
-        showError('email-error', 'البريد الإلكتروني غير صحيح');
-        return;
+        // Check for redirect parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        this.redirectAfterLogin = urlParams.get('redirect');
     }
 
-    if (!validatePassword(password)) {
-        showError('password-error', 'كلمة المرور يجب أن تكون 6 أحرف على الأقل');
-        return;
+    // ============================================
+    // User Profile Management
+    // ============================================
+
+    async loadUserProfile() {
+        const { user } = await karamDB.getCurrentUser();
+
+        if (!user) {
+            this.currentUser = null;
+            this.currentUserProfile = null;
+            return null;
+        }
+
+        this.currentUser = user;
+
+        // Get user profile
+        const { data, error } = await karamDB.select('user_profiles', {
+            eq: { id: user.id },
+            single: true
+        });
+
+        if (error) {
+            console.error('Error loading profile:', error);
+            return null;
+        }
+
+        this.currentUserProfile = data;
+        return data;
     }
 
-    showLoading(submitButton);
+    getUserType() {
+        return this.currentUserProfile?.user_type || null;
+    }
 
-    try {
-        if (supabase) {
-            // Real Supabase authentication
-            const { data, error } = await supabase.auth.signInWithPassword({
+    isOperator() {
+        return this.getUserType() === 'operator';
+    }
+
+    isFamily() {
+        return this.getUserType() === 'family';
+    }
+
+    isVisitor() {
+        return this.getUserType() === 'visitor';
+    }
+
+    isCompany() {
+        return this.getUserType() === 'company';
+    }
+
+    isAuthenticated() {
+        return this.currentUser !== null;
+    }
+
+    // ============================================
+    // Registration
+    // ============================================
+
+    async register(userData) {
+        const { userType, email, password, ...profileData } = userData;
+
+        try {
+            // 1. Create auth user
+            const { data: authData, error: authError } = await window.supabaseClient.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        user_type: userType
+                    }
+                }
+            });
+
+            if (authError) throw authError;
+
+            const userId = authData.user.id;
+
+            // 2. Create user profile
+            const { error: profileError } = await karamDB.insert('user_profiles', {
+                id: userId,
+                email,
+                user_type: userType,
+                full_name: profileData.full_name || profileData.family_name || profileData.company_name
+            });
+
+            if (profileError) throw profileError;
+
+            // 3. Create type-specific record
+            let typeRecord;
+
+            switch (userType) {
+                case 'family':
+                    typeRecord = await this.createFamilyRecord(userId, profileData);
+                    break;
+                case 'visitor':
+                    typeRecord = await this.createVisitorRecord(userId, profileData);
+                    break;
+                case 'company':
+                    typeRecord = await this.createCompanyRecord(userId, profileData);
+                    break;
+                case 'operator':
+                    // Operators are created manually by system admins
+                    throw new Error('Operator accounts must be created by system administrators');
+            }
+
+            if (typeRecord.error) throw typeRecord.error;
+
+            return {
+                success: true,
+                user: authData.user,
+                message: 'تم التسجيل بنجاح! يرجى تفعيل حسابك عبر البريد الإلكتروني'
+            };
+
+        } catch (error) {
+            console.error('Registration error:', error);
+            return {
+                success: false,
+                error: error.message || 'حدث خطأ أثناء التسجيل'
+            };
+        }
+    }
+
+    async createFamilyRecord(userId, data) {
+        return await karamDB.insert('families', {
+            user_id: userId,
+            family_name: data.family_name,
+            contact_phone: data.contact_phone,
+            city: data.city,
+            address: data.address,
+            description_ar: data.description_ar || '',
+            description_en: data.description_en || ''
+        }, { select: '*' });
+    }
+
+    async createVisitorRecord(userId, data) {
+        return await karamDB.insert('visitors', {
+            user_id: userId,
+            full_name: data.full_name,
+            phone: data.phone,
+            nationality: data.nationality || 'saudi',
+            national_id: data.national_id
+        }, { select: '*' });
+    }
+
+    async createCompanyRecord(userId, data) {
+        return await karamDB.insert('companies', {
+            user_id: userId,
+            company_name: data.company_name,
+            registration_number: data.registration_number,
+            responsible_person_name: data.responsible_person_name,
+            responsible_person_phone: data.responsible_person_phone,
+            office_address: data.office_address,
+            city: data.city
+        }, { select: '*' });
+    }
+
+    // ============================================
+    // Login
+    // ============================================
+
+    async login(email, password) {
+        try {
+            const { data, error } = await window.supabaseClient.auth.signInWithPassword({
                 email,
                 password
             });
 
             if (error) throw error;
 
-            // Store user data
-            localStorage.setItem('user', JSON.stringify(data.user));
-            if (rememberMe) {
-                localStorage.setItem('remember_me', 'true');
-            }
+            // Load user profile
+            await this.loadUserProfile();
 
-            showToast('نجح', 'تم تسجيل الدخول بنجاح', 'success');
+            // Redirect based on user type
+            this.redirectAfterLogin ?
+                window.location.href = this.redirectAfterLogin :
+                this.redirectToDashboard();
 
-            // Redirect based on user role
-            setTimeout(() => {
-                redirectByRole(data.user.user_metadata.role || 'umrah_visitor');
-            }, 1000);
-        } else {
-            // Mock authentication for development
-            console.log('Login attempt:', { email, password });
-
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // Mock user data
-            const mockUser = {
-                id: 'mock-user-id',
-                email: email,
-                role: 'umrah_visitor',
-                full_name: 'مستخدم تجريبي'
+            return {
+                success: true,
+                user: data.user,
+                userType: this.getUserType()
             };
 
-            localStorage.setItem('user', JSON.stringify(mockUser));
-            showToast('نجح', 'تم تسجيل الدخول بنجاح (وضع تجريبي)', 'success');
+        } catch (error) {
+            console.error('Login error:', error);
 
-            setTimeout(() => {
-                redirectByRole(mockUser.role);
-            }, 1000);
+            let message = 'حدث خطأ أثناء تسجيل الدخول';
+
+            if (error.message.includes('Invalid login credentials')) {
+                message = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+            } else if (error.message.includes('Email not confirmed')) {
+                message = 'يرجى تفعيل حسابك عبر البريد الإلكتروني أولاً';
+            }
+
+            return {
+                success: false,
+                error: message
+            };
         }
-    } catch (error) {
-        console.error('Login error:', error);
-        showToast('خطأ', error.message || 'فشل تسجيل الدخول. يرجى المحاولة مرة أخرى', 'error');
-    } finally {
-        hideLoading(submitButton);
-    }
-}
-
-// ===== VISITOR REGISTER =====
-async function handleVisitorRegister() {
-    clearAllErrors();
-
-    const fullName = document.getElementById('full-name').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const nationality = document.getElementById('nationality').value;
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
-    const acceptTerms = document.getElementById('accept-terms').checked;
-    const newsletter = document.getElementById('newsletter')?.checked || false;
-    const submitButton = document.querySelector('button[type="submit"]');
-
-    // Validation
-    let hasError = false;
-
-    if (!fullName) {
-        showError('name-error', 'الاسم مطلوب');
-        hasError = true;
     }
 
-    if (!validateEmail(email)) {
-        showError('email-error', 'البريد الإلكتروني غير صحيح');
-        hasError = true;
+    // ============================================
+    // Logout
+    // ============================================
+
+    async logout() {
+        try {
+            const { error } = await karamDB.signOut();
+
+            if (error) throw error;
+
+            this.currentUser = null;
+            this.currentUserProfile = null;
+
+            // Redirect to home or login
+            window.location.href = 'index.html';
+
+            return { success: true };
+
+        } catch (error) {
+            console.error('Logout error:', error);
+            return {
+                success: false,
+                error: 'حدث خطأ أثناء تسجيل الخروج'
+            };
+        }
     }
 
-    if (!validatePhone(phone)) {
-        showError('phone-error', 'رقم الجوال غير صحيح (يجب أن يبدأ بـ 05)');
-        hasError = true;
-    }
+    // ============================================
+    // Password Reset
+    // ============================================
 
-    if (!nationality) {
-        showError('nationality-error', 'يرجى اختيار الجنسية');
-        hasError = true;
-    }
-
-    if (!validatePassword(password)) {
-        showError('password-error', 'كلمة المرور يجب أن تكون 6 أحرف على الأقل');
-        hasError = true;
-    }
-
-    if (password !== confirmPassword) {
-        showError('confirm-password-error', 'كلمتا المرور غير متطابقتين');
-        hasError = true;
-    }
-
-    if (!acceptTerms) {
-        showToast('تنبيه', 'يجب الموافقة على الشروط والأحكام', 'warning');
-        hasError = true;
-    }
-
-    if (hasError) return;
-
-    showLoading(submitButton);
-
-    try {
-        if (supabase) {
-            // Real Supabase registration
-            const { data, error } = await supabase.auth.signUp({
-                email,
-                password,
-                options: {
-                    data: {
-                        full_name: fullName,
-                        phone,
-                        nationality,
-                        role: 'umrah_visitor',
-                        newsletter
-                    }
-                }
+    async requestPasswordReset(email) {
+        try {
+            const { error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/reset-password.html`
             });
 
             if (error) throw error;
 
-            showToast('نجح', 'تم التسجيل بنجاح! تحقق من بريدك الإلكتروني', 'success');
+            return {
+                success: true,
+                message: 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني'
+            };
 
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 2000);
-        } else {
-            // Mock registration
-            console.log('Register attempt:', { fullName, email, phone, nationality });
-
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            showToast('نجح', 'تم التسجيل بنجاح! (وضع تجريبي)', 'success');
-
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 2000);
+        } catch (error) {
+            console.error('Password reset error:', error);
+            return {
+                success: false,
+                error: 'حدث خطأ أثناء إرسال رابط إعادة التعيين'
+            };
         }
-    } catch (error) {
-        console.error('Register error:', error);
-        showToast('خطأ', error.message || 'فشل التسجيل. يرجى المحاولة مرة أخرى', 'error');
-    } finally {
-        hideLoading(submitButton);
-    }
-}
-
-// ===== FAMILY REGISTER =====
-async function handleFamilyRegister() {
-    clearAllErrors();
-
-    const familyName = document.getElementById('family-name').value.trim();
-    const city = document.getElementById('city').value;
-    const address = document.getElementById('address').value.trim();
-    const capacity = document.getElementById('capacity').value;
-    const contactName = document.getElementById('contact-name').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const description = document.getElementById('description').value.trim();
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
-    const acceptTerms = document.getElementById('accept-terms').checked;
-
-    // Get selected packages
-    const packages = Array.from(document.querySelectorAll('input[name="packages"]:checked'))
-        .map(cb => cb.value);
-
-    const submitButton = document.querySelector('button[type="submit"]');
-
-    // Validation
-    let hasError = false;
-
-    if (!familyName) {
-        showError('family-name-error', 'اسم الأسرة مطلوب');
-        hasError = true;
     }
 
-    if (!city) {
-        showError('city-error', 'المدينة مطلوبة');
-        hasError = true;
+    async updatePassword(newPassword) {
+        try {
+            const { error } = await window.supabaseClient.auth.updateUser({
+                password: newPassword
+            });
+
+            if (error) throw error;
+
+            return {
+                success: true,
+                message: 'تم تحديث كلمة المرور بنجاح'
+            };
+
+        } catch (error) {
+            console.error('Password update error:', error);
+            return {
+                success: false,
+                error: 'حدث خطأ أثناء تحديث كلمة المرور'
+            };
+        }
     }
 
-    if (!address) {
-        showError('address-error', 'العنوان مطلوب');
-        hasError = true;
+    // ============================================
+    // Email & Phone Verification
+    // ============================================
+
+    async sendEmailVerification() {
+        try {
+            const { error } = await window.supabaseClient.auth.resend({
+                type: 'signup',
+                email: this.currentUser.email
+            });
+
+            if (error) throw error;
+
+            return {
+                success: true,
+                message: 'تم إرسال رابط التفعيل إلى بريدك الإلكتروني'
+            };
+
+        } catch (error) {
+            return {
+                success: false,
+                error: 'حدث خطأ أثناء إرسال رابط التفعيل'
+            };
+        }
     }
 
-    if (!capacity || capacity < 1) {
-        showError('capacity-error', 'السعة الاستيعابية مطلوبة');
-        hasError = true;
+    async sendPhoneVerification(phone) {
+        try {
+            // Generate OTP code
+            const { data, error } = await karamDB.rpc('generate_verification_code', {
+                p_user_id: this.currentUser.id,
+                p_type: 'phone',
+                p_contact_info: phone
+            });
+
+            if (error) throw error;
+
+            // TODO: Integrate with SMS provider to send the code
+            console.log('OTP Code:', data);
+
+            return {
+                success: true,
+                message: 'تم إرسال رمز التحقق إلى رقم جوالك',
+                code: data // Remove in production!
+            };
+
+        } catch (error) {
+            return {
+                success: false,
+                error: 'حدث خطأ أثناء إرسال رمز التحقق'
+            };
+        }
     }
 
-    if (packages.length === 0) {
-        showError('packages-error', 'يجب اختيار باقة واحدة على الأقل');
-        hasError = true;
+    async verifyPhoneCode(code) {
+        try {
+            const { data, error } = await karamDB.update(
+                'verification_codes',
+                { verified: true, verified_at: new Date().toISOString() },
+                {
+                    user_id: this.currentUser.id,
+                    code: code,
+                    verification_type: 'phone',
+                    verified: false
+                }
+            );
+
+            if (error || !data || data.length === 0) {
+                throw new Error('Invalid or expired code');
+            }
+
+            // Update user profile
+            const userType = this.getUserType();
+            const tableName = userType === 'family' ? 'families' :
+                userType === 'visitor' ? 'visitors' : 'companies';
+
+            await karamDB.update(
+                tableName,
+                { phone_verified: true, phone_verified_at: new Date().toISOString() },
+                { user_id: this.currentUser.id }
+            );
+
+            return {
+                success: true,
+                message: 'تم تأكيد رقم الجوال بنجاح'
+            };
+
+        } catch (error) {
+            return {
+                success: false,
+                error: 'رمز التحقق غير صحيح أو منتهي الصلاحية'
+            };
+        }
     }
 
-    if (!validateEmail(email)) {
-        showError('email-error', 'البريد الإلكتروني غير صحيح');
-        hasError = true;
-    }
+    // ============================================
+    // Navigation & Redirection
+    // ============================================
 
-    if (!validatePhone(phone)) {
-        showError('phone-error', 'رقم الجوال غير صحيح');
-        hasError = true;
-    }
+    redirectToDashboard() {
+        const userType = this.getUserType();
 
-    if (password !== confirmPassword) {
-        showError('confirm-password-error', 'كلمتا المرور غير متطابقتين');
-        hasError = true;
-    }
-
-    if (!acceptTerms) {
-        showToast('تنبيه', 'يجب الموافقة على الشروط والأحكام', 'warning');
-        hasError = true;
-    }
-
-    if (hasError) return;
-
-    showLoading(submitButton);
-
-    try {
-        const familyData = {
-            family_name: familyName,
-            city,
-            address,
-            capacity: parseInt(capacity),
-            contact_name: contactName,
-            email,
-            phone,
-            description,
-            packages,
-            role: 'host_family'
+        const dashboards = {
+            operator: 'operator-dashboard.html',
+            family: 'family-dashboard.html',
+            visitor: 'visitor-dashboard.html',
+            company: 'company-dashboard.html'
         };
 
-        if (supabase) {
-            // Real registration
-            const { data, error } = await supabase.auth.signUp({
-                email,
-                password,
-                options: {
-                    data: familyData
-                }
-            });
+        window.location.href = dashboards[userType] || 'index.html';
+    }
 
-            if (error) throw error;
-        } else {
-            // Mock
-            console.log('Family register:', familyData);
-            await new Promise(resolve => setTimeout(resolve, 1500));
+    requireAuth(allowedTypes = []) {
+        if (!this.isAuthenticated()) {
+            const currentPath = window.location.pathname;
+            window.location.href = `login.html?redirect=${encodeURIComponent(currentPath)}`;
+            return false;
         }
 
-        showToast('نجح', 'تم تقديم الطلب بنجاح! سنتواصل معك خلال 48 ساعة', 'success');
-
-        setTimeout(() => {
-            window.location.href = 'index.html';
-        }, 3000);
-    } catch (error) {
-        console.error('Register error:', error);
-        showToast('خطأ', error.message || 'فشل التسجيل. يرجى المحاولة مرة أخرى', 'error');
-    } finally {
-        hideLoading(submitButton);
-    }
-}
-
-// ===== COMPANY REGISTER =====
-async function handleCompanyRegister() {
-    clearAllErrors();
-
-    const companyName = document.getElementById('company-name').value.trim();
-    const commercialRegistration = document.getElementById('commercial-registration').value.trim();
-    const companyType = document.getElementById('company-type').value;
-    const licenseNumber = document.getElementById('license-number').value.trim();
-    const companyAddress = document.getElementById('company-address').value.trim();
-    const contactPerson = document.getElementById('contact-person').value.trim();
-    const position = document.getElementById('position').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const expectedVisitors = document.getElementById('expected-visitors').value;
-    const website = document.getElementById('website')?.value.trim() || '';
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
-    const acceptTerms = document.getElementById('accept-terms').checked;
-
-    const submitButton = document.querySelector('button[type="submit"]');
-
-    // Validation
-    let hasError = false;
-
-    if (!companyName) {
-        showError('company-name-error', 'اسم الشركة مطلوب');
-        hasError = true;
-    }
-
-    if (!commercialRegistration || !commercialRegistration.match(/^[0-9]{10}$/)) {
-        showError('cr-error', 'رقم السجل التجاري يجب أن يكون 10 أرقام');
-        hasError = true;
-    }
-
-    if (!companyType) {
-        showError('company-type-error', 'نوع الشركة مطلوب');
-        hasError = true;
-    }
-
-    if (!validateEmail(email)) {
-        showError('email-error', 'البريد الإلكتروني غير صحيح');
-        hasError = true;
-    }
-
-    if (!validatePhone(phone)) {
-        showError('phone-error', 'رقم الجوال غير صحيح');
-        hasError = true;
-    }
-
-    if (password !== confirmPassword) {
-        showError('confirm-password-error', 'كلمتا المرور غير متطابقتين');
-        hasError = true;
-    }
-
-    if (!acceptTerms) {
-        showToast('تنبيه', 'يجب الموافقة على الشروط والأحكام', 'warning');
-        hasError = true;
-    }
-
-    if (hasError) return;
-
-    showLoading(submitButton);
-
-    try {
-        const companyData = {
-            company_name: companyName,
-            commercial_registration: commercialRegistration,
-            company_type: companyType,
-            license_number: licenseNumber,
-            company_address: companyAddress,
-            contact_person: contactPerson,
-            position,
-            email,
-            phone,
-            expected_visitors: expectedVisitors,
-            website,
-            role: 'company'
-        };
-
-        if (supabase) {
-            const { data, error } = await supabase.auth.signUp({
-                email,
-                password,
-                options: {
-                    data: companyData
-                }
-            });
-
-            if (error) throw error;
-        } else {
-            console.log('Company register:', companyData);
-            await new Promise(resolve => setTimeout(resolve, 1500));
+        if (allowedTypes.length > 0 && !allowedTypes.includes(this.getUserType())) {
+            alert('ليس لديك صلاحية للوصول لهذه الصفحة');
+            this.redirectToDashboard();
+            return false;
         }
 
-        showToast('نجح', 'تم تقديم الطلب بنجاح! سنتواصل معك قريباً للتفعيل', 'success');
-
-        setTimeout(() => {
-            window.location.href = 'index.html';
-        }, 3000);
-    } catch (error) {
-        console.error('Register error:', error);
-        showToast('خطأ', error.message || 'فشل التسجيل. يرجى المحاولة مرة أخرى', 'error');
-    } finally {
-        hideLoading(submitButton);
+        return true;
     }
-}
 
-// Redirect by user role
-function redirectByRole(role) {
-    switch (role) {
-        case 'umrah_visitor':
-            window.location.href = 'visitor-dashboard.html';
-            break;
-        case 'host_family':
-            window.location.href = 'family-dashboard.html';
-            break;
-        case 'company':
-            window.location.href = 'company-dashboard.html';
-            break;
-        case 'admin':
-        case 'operator':
-            window.location.href = 'admin-dashboard.html';
-            break;
-        default:
-            window.location.href = 'index.html';
-    }
-}
+    // ============================================
+    // Session Check
+    // ============================================
 
-// Check if user is already logged in
-function checkAuth() {
-    const user = localStorage.getItem('user');
-    if (user) {
-        const userData = JSON.parse(user);
-        // If on auth page and already logged in, redirect
-        if (window.location.pathname.includes('login') ||
-            window.location.pathname.includes('register')) {
-            redirectByRole(userData.role);
+    async checkSession() {
+        const { session } = await karamDB.getCurrentSession();
+
+        if (!session) {
+            this.currentUser = null;
+            this.currentUserProfile = null;
+            return false;
         }
+
+        if (!this.currentUserProfile) {
+            await this.loadUserProfile();
+        }
+
+        return true;
     }
 }
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    checkAuth();
-});
+// ============================================
+// Initialize Global Instance
+// ============================================
+
+// Create instance and attach to window for global access
+window.karamAuth = new KaramAuth();
+const karamAuth = window.karamAuth;
+
+// Export for use in other modules
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { karamAuth };
+}
+
+console.log('✅ Karam Auth System initialized');

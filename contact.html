@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اتصل بنا - منصة كرم</title>
+    <link rel="stylesheet" href="styles/pages.css">
+</head>
+
+<body class="rtl">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="index.html" style="display:flex; align-items:center; gap:12px; text-decoration:none;">
+                    <img src="images/logo.png" alt="منصة كرم" style="height:70px;">
+                    <h1
+                        style="margin:0; font-size:28px; background: linear-gradient(135deg, #B8956A 0%, #5A6F4C 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">
+                        كرم</h1>
+                </a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">الرئيسية</a></li>
+                <li><a href="about.html">عن المنصة</a></li>
+                <li><a href="contact.html" class="active">اتصل بنا</a></li>
+                <li><a href="faq.html">الأسئلة الشائعة</a></li>
+                <li><a href="login.html" class="btn-nav-login">تسجيل الدخول</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">تواصل معنا</h1>
+            <p class="hero-subtitle">نحن هنا للإجابة على استفساراتك</p>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section">
+        <div class="container">
+            <div class="contact-grid">
+                <!-- Contact Form -->
+                <div class="contact-form-container">
+                    <h2>📧 أرسل لنا رسالة</h2>
+                    <form id="contactForm" class="contact-form">
+                        <div class="form-group">
+                            <label>الاسم الكامل</label>
+                            <input type="text" required placeholder="أحمد محمد">
+                        </div>
+
+                        <div class="form-group">
+                            <label>البريد الإلكتروني</label>
+                            <input type="email" required placeholder="email@example.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label>رقم الجوال</label>
+                            <input type="tel" placeholder="05xxxxxxxx">
+                        </div>
+
+                        <div class="form-group">
+                            <label>نوع الاستفسار</label>
+                            <select required>
+                                <option value="">اختر نوع الاستفسار</option>
+                                <option value="general">استفسار عام</option>
+                                <option value="family">استفسار عائلة</option>
+                                <option value="visitor">استفسار زائر</option>
+                                <option value="company">استفسار شركة</option>
+                                <option value="technical">مشكلة تقنية</option>
+                                <option value="complaint">شكوى</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>الرسالة</label>
+                            <textarea rows="6" required placeholder="اكتب رسالتك هنا..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-submit">إرسال الرسالة</button>
+                    </form>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="contact-info">
+                    <h2>📞 معلومات الاتصال</h2>
+
+                    <div class="info-card">
+                        <div class="info-icon">📧</div>
+                        <div class="info-content">
+                            <h4>البريد الإلكتروني</h4>
+                            <p>info@karm.sa</p>
+                            <p>support@karm.sa</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">📱</div>
+                        <div class="info-content">
+                            <h4>الهاتف</h4>
+                            <p>+966556777063</p>
+                            <p>متاح: 24/7</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">📍</div>
+                        <div class="info-content">
+                            <h4>العنوان</h4>
+                            <p>مكة المكرمة</p>
+                            <p>المملكة العربية السعودية</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">⏰</div>
+                        <div class="info-content">
+                            <h4>ساعات العمل</h4>
+                            <p>طوال أيام الأسبوع</p>
+                            <p>24 ساعة</p>
+                        </div>
+                    </div>
+
+                    <div class="social-links">
+                        <h4>تابعنا</h4>
+                        <div class="social-icons">
+                            <a href="#" class="social-icon">📘</a>
+                            <a href="#" class="social-icon">📸</a>
+                            <a href="#" class="social-icon">🐦</a>
+                            <a href="#" class="social-icon">📺</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Quick Links -->
+    <section class="section bg-light">
+        <div class="container">
+            <div class="section-header">
+                <h2>🔍 تبحث عن إجابة سريعة؟</h2>
+                <p>ربما تجدها في الأسئلة الشائعة</p>
+            </div>
+            <div class="faq-quick-links">
+                <a href="faq.html#families" class="quick-link-card">
+                    <h4>👨‍👩‍👧 للعوائل</h4>
+                    <p>أسئلة خاصة بالعوائل المضيفة</p>
+                </a>
+                <a href="faq.html#visitors" class="quick-link-card">
+                    <h4>🧳 للزوار</h4>
+                    <p>أسئلة خاصة بالزوار</p>
+                </a>
+                <a href="faq.html#payment" class="quick-link-card">
+                    <h4>💳 الدفع</h4>
+                    <p>أسئلة عن الدفع والمحفظة</p>
+                </a>
+                <a href="faq.html#general" class="quick-link-card">
+                    <h4>❓ عامة</h4>
+                    <p>أسئلة عامة عن المنصة</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <img src="images/logo.png" alt="منصة كرم" style="height:60px; margin-bottom:12px;">
+                    <h3>كرم</h3>
+                    <p>منصة ضيافة سعودية أصيلة</p>
+                </div>
+                <div class="footer-col">
+                    <h4>روابط سريعة</h4>
+                    <ul>
+                        <li><a href="about.html">عن المنصة</a></li>
+                        <li><a href="contact.html">اتصل بنا</a></li>
+                        <li><a href="faq.html">الأسئلة الشائعة</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>تواصل معنا</h4>
+                    <p>📧 info@karm.sa</p>
+                    <p>📱 +966556777063</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 منصة كرم. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/i18n.js"></script>
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            alert('✅ تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.');
+            this.reset();
+        });
+    </script>
+</body>
+
+</html>

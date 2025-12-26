@@ -12,7 +12,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="styles/design-system.css">
     <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/auth.css">
+    <link rel="stylesheet" href="styles/pages-core.css">
 </head>
 
 <body class="auth-page">
@@ -122,6 +122,24 @@
                             rows="4"></textarea>
                         <span class="form-error" id="description-error"></span>
                         <small class="text-muted">اكتب وصفاً جذاباً يعرّف المعتمرين بتجربتكم الفريدة</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">نوع المجلس (من تستقبلون؟) *</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="majlis_type" value="men" checked>
+                                <span>مجلس رجال (للمعتمرين الرجال فقط)</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="majlis_type" value="women">
+                                <span>مجلس نساء (للمعتمرات النساء فقط)</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="majlis_type" value="both">
+                                <span>مجلس عائلي (يوجد قسمين منفصلين)</span>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -276,9 +294,9 @@
     <div id="toast-container"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js?v=2"></script>
-    <script src="js/main.js?v=2"></script>
-    <script src="js/auth.js?v=2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
     <script>
         // Show Google Maps help
         function showMapsHelp() {
@@ -307,11 +325,14 @@
             if (form) {
                 form.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    if (typeof handleFamilyRegister === 'function') {
-                        await handleFamilyRegister();
+                    // Try namespace first, then fallback
+                    if (window.Karam && window.Karam.Auth && window.Karam.Auth.handleFamilyRegister) {
+                        await Karam.Auth.handleFamilyRegister();
+                    } else if (window.handleFamilyRegister) {
+                        await window.handleFamilyRegister();
                     } else {
-                        console.error('handleFamilyRegister is not defined');
-                        alert('خطأ في تحميل النظام. يرجى تحديث الصفحة');
+                        console.error('Registration handler not found');
+                        alert('حدث خطأ في تحميل الصفحة. يرجى التحديث والمحاولة مرة أخرى.');
                     }
                 });
             }

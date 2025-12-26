@@ -16,12 +16,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Check authentication
 async function checkAuth() {
     try {
-        if (!supabase) {
+        if (!supabaseClient) {
             window.location.href = 'login.html';
             return;
         }
 
-        const { data: { user }, error } = await supabase.auth.getUser();
+        const { data: { user }, error } = await supabaseClient.auth.getUser();
 
         if (error || !user) {
             window.location.href = 'login.html';
@@ -29,7 +29,7 @@ async function checkAuth() {
         }
 
         // Get company profile
-        const { data: company } = await supabase
+        const { data: company } = await supabaseClient
             .from('companies')
             .select(`
                 *,
@@ -62,7 +62,7 @@ async function loadDashboardData() {
 // Load bookings
 async function loadBookings() {
     try {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
             .from('bookings')
             .select(`
                 *,
@@ -256,7 +256,7 @@ function switchTab(tabName, event) {
 // Logout
 async function logout() {
     try {
-        await supabase.auth.signOut();
+        await supabaseClient.auth.signOut();
         window.location.href = 'index.html';
     } catch (error) {
         console.error('Logout error:', error);

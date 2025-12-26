@@ -4,37 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="سلة الحجوزات">
-    <title>سلة الحجوزات - كرم</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
-        rel="stylesheet">
+    <title>العربة - منصة كرم</title>
     <link rel="stylesheet" href="styles/design-system.css">
     <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/cart.css">
+    <link rel="stylesheet" href="styles/pages.css">
+    <link rel="stylesheet" href="styles/pages-core.css">
+    <link rel="stylesheet" href="styles/cart-enhanced.css">
 </head>
 
-<body>
-    <!-- Navbar -->
+<body class="rtl cart-page">
+    <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
-            <div class="nav-content">
-                <div class="nav-brand">
-                    <a href="index.html">
-                        <img src="assets/logo.png" alt="كرم" class="logo">
-                    </a>
-                </div>
-                <ul class="nav-links">
-                    <li><a href="index.html" class="nav-link">الرئيسية</a></li>
-                    <li><a href="browse-families.html" class="nav-link">تصفح الأسر</a></li>
-                    <li><a href="souvenirs.html" class="nav-link">متجر الهدايا</a></li>
-                </ul>
-                <div class="nav-actions">
-                    <button class="btn btn-text" id="user-menu-btn">
-                        <span id="user-name">حسابي</span>
-                    </button>
-                </div>
+            <div class="nav-brand">
+                <a href="/index.html">
+                    <img src="images/logo.png" alt="منصة كرم" class="logo">
+                    <h1>كرم</h1>
+                </a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/index.html">الرئيسية</a></li>
+                <li><a href="/browse-families.html">تصفح المجالس</a></li>
+                <li><a href="/cart.html" class="active">العربة (<span id="cart-count">0</span>)</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button onclick="karamAuth.logout()" class="btn-login">تسجيل خروج</button>
             </div>
         </div>
     </nav>
@@ -42,114 +36,166 @@
     <!-- Cart Section -->
     <section class="cart-section">
         <div class="container">
-            <h1 class="page-title">سلة الحجوزات</h1>
+            <h1>🛒 عربة التسوق</h1>
 
             <div class="cart-container">
                 <!-- Cart Items -->
-                <div class="cart-items-wrapper">
-                    <div id="cart-items-list">
-                        <!-- Items will be loaded dynamically -->
-                        <div class="empty-cart-placeholder">
-                            <div class="empty-icon">🛒</div>
-                            <h3>سلتك فارغة</h3>
-                            <p>ابدأ بتصفح الأسر المستضيفة وأضف حجوزاتك</p>
-                            <a href="browse-families.html" class="btn btn-primary">تصفح الأسر</a>
-                        </div>
+                <div class="cart-items">
+                    <div id="cart-list">
+                        <!-- Populated by JavaScript -->
+                    </div>
+
+                    <!-- Empty Cart -->
+                    <div id="empty-cart" style="display:none; text-align:center; padding:80px 40px;">
+                        <div style="font-size:100px; margin-bottom:20px;">🛒</div>
+                        <h3>العربة فارغة</h3>
+                        <p style="color:#666; margin:20px 0;">ابدأ بإضافة مجالس للعربة</p>
+                        <a href="/browse-families.html" class="btn-primary">
+                            تصفح المجالس
+                        </a>
                     </div>
                 </div>
 
                 <!-- Cart Summary -->
-                <div class="cart-summary">
-                    <h3>ملخص الحجز</h3>
-                    <div class="summary-details">
-                        <div class="summary-row">
-                            <span>عدد الحجوزات:</span>
-                            <span id="total-items">0</span>
+                <div class="cart-summary" id="cart-summary-section" style="display:none;">
+                    <h3>ملخص الطلب</h3>
+
+                    <div class="summary-row">
+                        <span>عدد المجالس</span>
+                        <strong id="total-items">0</strong>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>المجموع الفرعي</span>
+                        <strong id="subtotal">0 ريال</strong>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>رسوم الخدمة (5%)</span>
+                        <strong id="service-fee">0 ريال</strong>
+                    </div>
+
+                    <div class="summary-row total">
+                        <span>المجموع الكلي</span>
+                        <strong id="total">0 ريال</strong>
+                    </div>
+
+                    <!-- Booking Details -->
+                    <div class="booking-details">
+                        <h4>تفاصيل الحجز</h4>
+
+                        <div class="form-group">
+                            <label>📅 تاريخ الزيارة</label>
+                            <input type="date" id="visit-date" required min="">
                         </div>
-                        <div class="summary-row">
-                            <span>المجموع الفرعي:</span>
-                            <span id="subtotal">0 ريال</span>
+
+                        <div class="form-group">
+                            <label>⏰ وقت الزيارة</label>
+                            <select id="visit-time" required>
+                                <option value="">اختر الوقت</option>
+                                <option value="morning">صباحاً (8:00 - 12:00)</option>
+                                <option value="afternoon">ظهراً (12:00 - 16:00)</option>
+                                <option value="evening">مساءً (16:00 - 20:00)</option>
+                                <option value="night">ليلاً (20:00 - 24:00)</option>
+                            </select>
                         </div>
-                        <div class="summary-row">
-                            <span>رسوم الخدمة:</span>
-                            <span id="service-fee">0 ريال</span>
+
+                        <div class="form-group">
+                            <label>👥 عدد الضيوف</label>
+                            <input type="number" id="guest-count" required min="1" placeholder="مثال: 10">
                         </div>
-                        <div class="summary-row discount" id="discount-row" style="display: none;">
-                            <span>الخصم:</span>
-                            <span id="discount-amount">-0 ريال</span>
-                        </div>
-                        <div class="summary-divider"></div>
-                        <div class="summary-row total">
-                            <span>المجموع الكلي:</span>
-                            <span id="total-price">0 ريال</span>
+
+                        <div class="form-group">
+                            <label>📝 ملاحظات إضافية (اختياري)</label>
+                            <textarea id="notes" rows="3" placeholder="اكتب أي ملاحظات أو طلبات خاصة..."></textarea>
                         </div>
                     </div>
 
-                    <!-- Coupon Code -->
-                    <div class="coupon-section">
-                        <input type="text" id="coupon-input" placeholder="كود الخصم" class="coupon-input">
-                        <button class="btn btn-secondary btn-sm" onclick="applyCoupon()">تطبيق</button>
-                    </div>
-
-                    <!-- Checkout Button -->
-                    <button class="btn btn-primary btn-block btn-lg" id="checkout-btn" onclick="proceedToCheckout()"
-                        disabled>
-                        المتابعة للدفع
+                    <button onclick="cartManager.proceedToCheckout()" class="btn-checkout">
+                        متابعة للدفع
                     </button>
-
-                    <!-- Trust Badges -->
-                    <div class="trust-badges">
-                        <div class="badge-item">
-                            <span>🔒</span>
-                            <span>دفع آمن</span>
-                        </div>
-                        <div class="badge-item">
-                            <span>✓</span>
-                            <span>ضمان الجودة</span>
-                        </div>
-                        <div class="badge-item">
-                            <span>💳</span>
-                            <span>Moyasar</span>
-                        </div>
-                    </div>
                 </div>
-            </div>
-
-            <!-- Continue Shopping -->
-            <div class="continue-shopping">
-                <a href="browse-families.html" class="btn-link">
-                    ← متابعة التصفح
-                </a>
             </div>
         </div>
     </section>
 
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>💳 إتمام الدفع</h2>
+                <button onclick="cartManager.closeCheckoutModal()" class="btn-close">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="checkout-summary">
+                    <h3>ملخص الطلب</h3>
+                    <div id="checkout-items-list"></div>
+                    <div class="checkout-total">
+                        <span>المجموع الكلي</span>
+                        <strong id="checkout-total">0 ريال</strong>
+                    </div>
+                </div>
+
+                <div class="payment-section">
+                    <h3>طريقة الدفع</h3>
+                    <p style="margin-bottom:20px; color:#666;">
+                        الدفع آمن ومشفر عبر بوابة Moyasar
+                    </p>
+
+                    <div id="payment-form">
+                        <!-- Moyasar payment form will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button onclick="cartManager.processPayment()" class="btn-primary btn-large" id="pay-btn">
+                    <span>💳 ادفع الآن</span>
+                    <div class="spinner" style="display:none;"></div>
+                </button>
+                <button onclick="cartManager.closeCheckoutModal()" class="btn-secondary">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <img src="assets/logo.png" alt="كرم" class="footer-logo">
-                    <p class="footer-description">نصل ضيوف الرحمن بأهل الكرم</p>
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <img src="images/logo.png" alt="منصة كرم" class="logo" style="width:60px; margin-bottom:10px;">
+                    <h3>منصة كرم</h3>
+                    <p>منصة ضيافة سعودية أصيلة</p>
                 </div>
-                <div class="footer-section">
-                    <h4 class="footer-title">روابط سريعة</h4>
-                    <ul class="footer-links">
-                        <li><a href="index.html">الرئيسية</a></li>
-                        <li><a href="browse-families.html">تصفح الأسر</a></li>
-                        <li><a href="souvenirs.html">متجر الهدايا</a></li>
+                <div class="footer-col">
+                    <h4>روابط سريعة</h4>
+                    <ul>
+                        <li><a href="/index.html">الرئيسية</a></li>
+                        <li><a href="/browse-families.html">تصفح المجالس</a></li>
+                        <li><a href="/faq.html">الأسئلة الشائعة</a></li>
                     </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>تواصل معنا</h4>
+                    <p>📧 info@karam.sa</p>
+                    <p>📱 +966 50 000 0000</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 كرم. جميع الحقوق محفوظة.</p>
+                <p>&copy; 2025 منصة كرم. جميع الحقوق محفوظة.</p>
             </div>
         </div>
     </footer>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/main.js"></script>
-    <script src="js/cart.js"></script>
+    <script src="https://cdn.moyasar.com/mpf/1.10.0/moyasar.js"></script>
+    <script src="/js/supabase-client.js"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/moyasar-payment.js"></script>
+    <script src="/js/cart.js"></script>
 </body>
 
 </html>

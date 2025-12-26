@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الرسائل النصية - منصة كرم</title>
+    <link rel="stylesheet" href="styles/unified-dashboards.css">
+    <style>
+        .sms-container {
+            padding: 20px;
+        }
+
+        .sms-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .balance-info h2 {
+            margin: 0 0 10px 0;
+            font-size: 48px;
+            font-weight: bold;
+        }
+
+        .balance-info p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .btn-recharge {
+            background: white;
+            color: #667eea;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-recharge:hover {
+            transform: scale(1.05);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .send-sms-form {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group select,
+        .form-group textarea,
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .char-counter {
+            text-align: left;
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .recipient-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .recipient-option {
+            padding: 10px 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .recipient-option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+            color: #667eea;
+        }
+
+        .btn-send {
+            background: #667eea;
+            color: white;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-send:hover {
+            background: #5568d3;
+        }
+
+        .sms-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .sms-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .sms-table th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: right;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .sms-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .sms-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .template-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .template-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .template-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .template-card h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .template-card p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-box h3 {
+            margin: 0;
+            font-size: 32px;
+            color: #667eea;
+        }
+
+        .stat-box p {
+            margin: 10px 0 0 0;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body class="rtl operator-dash">
+    <!-- Sidebar (same as dashboard) -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>منصة كرم</h1>
+            <p>لوحة تحكم المشغل</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="/operator-dashboard.html" class="nav-item">
+                <span class="icon">📊</span>
+                <span>لوحة التحكم</span>
+            </a>
+            <a href="/operator-families.html" class="nav-item">
+                <span class="icon">👨‍👩‍👧</span>
+                <span>إدارة العوائل</span>
+            </a>
+            <a href="/operator-bookings.html" class="nav-item">
+                <span class="icon">📅</span>
+                <span>الحجوزات</span>
+            </a>
+            <a href="/operator-finance.html" class="nav-item">
+                <span class="icon">💰</span>
+                <span>الإدارة المالية</span>
+            </a>
+            <a href="/operator-sms.html" class="nav-item active">
+                <span class="icon">📱</span>
+                <span>إدارة الرسائل النصية</span>
+            </a>
+            <a href="/operator-coupons.html" class="nav-item">
+                <span class="icon">🎟️</span>
+                <span>الكوبونات</span>
+            </a>
+            <a href="/operator-settings.html" class="nav-item">
+                <span class="icon">⚙️</span>
+                <span>الإعدادات</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button onclick="karamAuth.logout()" class="btn-logout">
+                <span class="icon">🚪</span>
+                <span>تسجيل خروج</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <h2>📱 إدارة الرسائل النصية</h2>
+            </div>
+            <div class="top-bar-right">
+                <button data-lang-toggle class="btn-lang">
+                    <span id="current-lang">English</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="sms-container">
+            <!-- Balance Card -->
+            <div class="balance-card">
+                <div class="balance-info">
+                    <p>رصيد الرسائل النصية</p>
+                    <h2 id="sms-balance">0</h2>
+                    <p>رسالة متاحة</p>
+                </div>
+                <button class="btn-recharge" onclick="smsManager.showRechargeModal()">
+                    ⚡ شحن الرصيد
+                </button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="smsManager.switchTab('send')">
+                    ✉️ إرسال رسالة
+                </button>
+                <button class="tab" onclick="smsManager.switchTab('history')">
+                    📜 سجل الرسائل
+                </button>
+                <button class="tab" onclick="smsManager.switchTab('templates')">
+                    📝 القوالب
+                </button>
+                <button class="tab" onclick="smsManager.switchTab('stats')">
+                    📊 الإحصائيات
+                </button>
+            </div>
+
+            <!-- Tab Content: Send SMS -->
+            <div id="tab-send" class="tab-content active">
+                <div class="send-sms-form">
+                    <h3>إرسال رسالة جديدة</h3>
+
+                    <div class="form-group">
+                        <label>المستلمون</label>
+                        <div class="recipient-options">
+                            <div class="recipient-option" data-type="all" onclick="smsManager.selectRecipient(this)">
+                                👥 الكل
+                            </div>
+                            <div class="recipient-option" data-type="families"
+                                onclick="smsManager.selectRecipient(this)">
+                                👨‍👩‍👧 العوائل فقط
+                            </div>
+                            <div class="recipient-option" data-type="visitors"
+                                onclick="smsManager.selectRecipient(this)">
+                                🧳 الزوار فقط
+                            </div>
+                            <div class="recipient-option" data-type="companies"
+                                onclick="smsManager.selectRecipient(this)">
+                                🏢 الشركات فقط
+                            </div>
+                            <div class="recipient-option" data-type="custom" onclick="smsManager.selectRecipient(this)">
+                                📝 أرقام محددة
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="custom-numbers-group" style="display:none;">
+                        <label>أرقام الجوال (رقم واحد لكل سطر)</label>
+                        <textarea id="custom-numbers" placeholder="05012345678
+05087654321"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>اختر قالب (اختياري)</label>
+                        <select id="template-select" onchange="smsManager.loadTemplate()">
+                            <option value="">-- اكتب رسالة جديدة --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>نص الرسالة</label>
+                        <textarea id="message-text" maxlength="650" oninput="smsManager.updateCharCount()"></textarea>
+                        <div class="char-counter">
+                            <span id="char-count">0</span> / 650 حرف
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn-send" onclick="smsManager.sendSMS()">
+                            📤 إرسال الرسالة
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: History -->
+            <div id="tab-history" class="tab-content">
+                <div class="sms-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>التاريخ</th>
+                                <th>المستلم</th>
+                                <th>الرسالة</th>
+                                <th>النوع</th>
+                                <th>الحالة</th>
+                                <th>التكلفة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sms-history-tbody">
+                            <tr>
+                                <td colspan="6" style="text-align: center;">جاري التحميل...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab Content: Templates -->
+            <div id="tab-templates" class="tab-content">
+                <div class="template-list" id="template-list">
+                    <!-- Templates will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Tab Content: Stats -->
+            <div id="tab-stats" class="tab-content">
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <h3 id="total-sent">0</h3>
+                        <p>إجمالي المرسلة</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 id="total-delivered">0</h3>
+                        <p>تم التوصيل</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 id="total-failed">0</h3>
+                        <p>فشلت</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 id="total-cost">0</h3>
+                        <p>إجمالي التكلفة</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Recharge Modal -->
+    <div id="recharge-modal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; display:flex; align-items:center; justify-content:center;">
+        <div style="background:white; padding:40px; border-radius:12px; max-width:400px; width:90%;">
+            <h3>شحن رصيد الرسائل</h3>
+            <div class="form-group">
+                <label>المبلغ (ريال)</label>
+                <input type="number" id="recharge-amount" placeholder="100" min="10">
+            </div>
+            <div class="form-group">
+                <label>ملاحظات</label>
+                <textarea id="recharge-notes" rows="3"></textarea>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn-send" onclick="smsManager.processRecharge()">تأكيد الشحن</button>
+                <button class="btn-recharge" onclick="smsManager.hideRechargeModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-client.js"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/operator-sms.js"></script>
+</body>
+
+</html>

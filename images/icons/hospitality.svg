@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+  <defs>
+    <linearGradient id="hosp" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#B8956A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5A6F4C;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <circle cx="40" cy="40" r="38" fill="url(#hosp)" opacity="0.1"/>
+  <path d="M25 35 Q20 40 25 45 L30 50 L35 45 L40 50 L45 45 L50 50 L55 45 Q60 40 55 35 L50 30 L45 35 L40 30 L35 35 L30 30 Z" fill="url(#hosp)"/>
+  <circle cx="32" cy="38" r="3" fill="white"/>
+  <circle cx="48" cy="38" r="3" fill="white"/>
+</svg>

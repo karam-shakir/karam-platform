@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تم الحجز بنجاح - كرم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-xl);
+        }
+
+        .success-container {
+            background: white;
+            max-width: 600px;
+            width: 100%;
+            padding: var(--space-3xl);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-xl);
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: var(--space-lg);
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .success-title {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-success);
+            margin-bottom: var(--space-md);
+        }
+
+        .success-message {
+            font-size: var(--font-size-lg);
+            color: var(--color-text);
+            margin-bottom: var(--space-2xl);
+            line-height: 1.8;
+        }
+
+        .booking-ref {
+            background: var(--color-bg-light);
+            padding: var(--space-lg);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-2xl);
+        }
+
+        .booking-ref-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-light);
+            margin-bottom: var(--space-xs);
+        }
+
+        .booking-ref-number {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary);
+            font-family: monospace;
+        }
+
+        .actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .next-steps {
+            margin-top: var(--space-2xl);
+            padding-top: var(--space-2xl);
+            border-top: 2px solid var(--color-border-light);
+            text-align: right;
+        }
+
+        .next-steps h3 {
+            color: var(--color-primary);
+            margin-bottom: var(--space-md);
+        }
+
+        .next-steps ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .next-steps li {
+            padding: var(--space-sm);
+            margin-bottom: var(--space-sm);
+            font-size: var(--font-size-base);
+        }
+
+        .next-steps li::before {
+            content: "✓ ";
+            color: var(--color-success);
+            font-weight: var(--font-weight-bold);
+            margin-left: var(--space-xs);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="success-container">
+        <div class="success-icon">✅</div>
+        <h1 class="success-title">تم الحجز بنجاح!</h1>
+        <p class="success-message">
+            شكراً لك! تم استلام طلب حجزك وسيتم مراجعته من قبل فريقنا.<br>
+            ستصلك رسالة تأكيد قريباً على بريدك الإلكتروني.
+        </p>
+
+        <div class="booking-ref">
+            <div class="booking-ref-label">رقم الحجز</div>
+            <div class="booking-ref-number" id="booking-reference">KRM-XXXXX</div>
+        </div>
+
+        <div class="next-steps">
+            <h3>الخطوات القادمة</h3>
+            <ul>
+                <li>ستصلك رسالة تأكيد على بريدك الإلكتروني خلال 24 ساعة</li>
+                <li>يمكنك متابعة حالة حجزك من لوحة التحكم</li>
+                <li>سيتواصل معك فريق كرم لتأكيد التفاصيل النهائية</li>
+                <li>احتفظ برقم الحجز للمراجعة</li>
+            </ul>
+        </div>
+
+        <div class="actions">
+            <a href="visitor-dashboard.html" class="btn btn-primary btn-lg">
+                📊 لوحة التحكم
+            </a>
+            <a href="browse-families-calendar.html" class="btn btn-secondary btn-lg">
+                🔍 تصفح المزيد
+            </a>
+            <a href="index.html" class="btn btn-text">
+                🏠 العودة للرئيسية
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Get booking reference from URL or localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookingId = urlParams.get('booking_id') || localStorage.getItem('last_booking_id') || 'KRM-' + Date.now().toString().slice(-5);
+
+        document.getElementById('booking-reference').textContent = bookingId;
+
+        // Clear cart after successful booking
+        localStorage.removeItem('karam_booking_cart');
+    </script>
+</body>
+
+</html>

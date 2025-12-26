@@ -19,30 +19,78 @@ const TIME_SLOTS = {
     night: { start: '20:00', end: '00:00', label: 'ليلاً' }
 };
 
+// UI Helper Functions
+function showLoading() {
+    if (window.Karam && window.Karam.Utils) {
+        window.Karam.Utils.showLoading();
+    } else {
+        console.log('Loading...');
+    }
+}
+
+function hideLoading() {
+    if (window.Karam && window.Karam.Utils) {
+        window.Karam.Utils.hideLoading();
+    } else {
+        console.log('Loading finished');
+    }
+}
+
+function showToast(title, message, type) {
+    if (window.Karam && window.Karam.Utils) {
+        window.Karam.Utils.showToast(title, message, type);
+    } else {
+        alert(`${title}: ${message}`);
+    }
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    initializeDatePicker();
-    updateCartDisplay();
+    console.log('🚀 Browse Calendar Page Loaded');
+
+    try {
+        initializeDatePicker();
+    } catch (e) {
+        console.error('Failed to init date picker:', e);
+    }
+
+    try {
+        updateCartDisplay();
+    } catch (e) {
+        console.error('Failed to update cart:', e);
+    }
 
     // Load families on first load (show all)
-    searchFamilies();
+    // Small delay to ensure Supabase is ready
+    setTimeout(() => {
+        searchFamilies();
+    }, 100);
 });
 
 // Initialize Date Picker
 function initializeDatePicker() {
-    flatpickr('#date-picker', {
-        locale: 'ar',
-        dateFormat: 'Y-m-d',
-        minDate: 'today',
-        maxDate: new Date().fp_incr(90),
-        onChange: (selectedDates, dateStr) => {
-            selectedDate = dateStr;
-        }
-    });
+    if (typeof flatpickr === 'undefined') {
+        console.error('❌ Flatpickr library not loaded!');
+        return;
+    }
+
+    try {
+        flatpickr('#date-picker', {
+            locale: 'ar',
+            dateFormat: 'Y-m-d',
+            minDate: 'today',
+            maxDate: new Date().fp_incr(90),
+            onChange: (selectedDates, dateStr) => {
+                selectedDate = dateStr;
+            }
+        });
+    } catch (err) {
+        console.error('❌ Error initializing Flatpickr:', err);
+    }
 }
 
 // Change Guest Count
-function changeGuestCount(delta) {
+window.changeGuestCount = function (delta) {
     const newCount = guestCount + delta;
     if (newCount >= 1 && newCount <= 50) {
         guestCount = newCount;
@@ -51,7 +99,7 @@ function changeGuestCount(delta) {
 }
 
 // Select Time Slot
-function selectTimeSlot(slot) {
+window.selectTimeSlot = function (slot) {
     const card = document.querySelector(`[data-slot="${slot}"]`);
 
     // Toggle selection (multiple selection)
@@ -72,48 +120,46 @@ function selectTimeSlot(slot) {
 }
 
 // Search Families
-async function searchFamilies() {
+// Search Families
+window.searchFamilies = async function () {
     selectedCity = document.getElementById('city-filter').value;
+    const selectedMajlisType = document.getElementById('majlis-filter').value;
 
     console.log('🔍 Search initiated:');
     console.log('- Date:', selectedDate);
     console.log('- Time slots:', selectedTimeSlot);
     console.log('- City:', selectedCity);
+    console.log('- Majlis Type:', selectedMajlisType);
     console.log('- Guests:', guestCount);
 
     showLoading();
 
     try {
-        // Check if supabase is initialized
-        if (!supabase) {
-            console.error('❌ Supabase not initialized!');
-            throw new Error('Supabase is not initialized. Please check your configuration.');
-        }
-
-        let query = supabase
+        // Fetch available families from Supabase
+        const { data: families, error } = await window.supabaseClient
             .from('host_families')
             .select(`
-                *,
-                user_profiles(full_name),
-                packages(*)
+                id,
+                family_name,
+                city,
+                address,
+                capacity,
+                description,
+                majlis_type,
+                amenities,
+                rating,
+                total_reviews,
+                created_at
             `)
-            .eq('status', 'approved');
-
-        // Filter by city
-        if (selectedCity) {
-            query = query.eq('city', selectedCity);
-        }
-
-        console.log('📡 Querying Supabase...');
-        const { data: families, error } = await query;
+            .eq('status', 'approved')
+            .order('created_at', { ascending: false });
 
         if (error) {
-            console.error('❌ Supabase error:', error);
-            throw error;
+            console.error('Supabase error:', error);
+            hideLoading();
+            showToast('خطأ', 'حدث خطأ أثناء البحث. حاول مرة أخرى.', 'error');
+            return;
         }
-
-        console.log('✅ Families from DB:', families?.length || 0);
-        console.log('Families data:', families);
 
         // If date and time are selected, filter by availability
         if (selectedDate && selectedTimeSlot.length > 0) {
@@ -121,35 +167,45 @@ async function searchFamilies() {
             availableFamilies = await filterByAvailability(families, selectedDate, selectedTimeSlot, guestCount);
         } else {
             console.log('📋 Showing all families (no date/time filter)');
-            availableFamilies = families;
+            availableFamilies = families || [];
         }
 
-        console.log('✅ Final families to display:', availableFamilies?.length || 0);
+        // Client-side filtering for capacity
+        availableFamilies = availableFamilies.filter(family => (family.capacity || 0) >= guestCount);
+
         displayFamilies(availableFamilies);
-        hideLoading();
 
     } catch (error) {
-        hideLoading();
         console.error('❌ Search error:', error);
-        showToast('خطأ', 'فشل البحث عن الأسر: ' + error.message, 'error');
+        if (typeof showToast === 'function') {
+            showToast('خطأ', 'فشل تحميل قائمة الأسر: ' + (error.message || 'خطأ غير معروف'), 'error');
+        } else {
+            console.error(error.message);
+        }
+        // Ensure UI shows empty state handled by displayFamilies
+        displayFamilies([]);
+    } finally {
+        hideLoading();
     }
 }
 
 // Filter families by availability
 async function filterByAvailability(families, date, timeSlot, guests) {
-    const slot = TIME_SLOTS[timeSlot];
-    if (!slot) return families;
+    // This function now expects timeSlot to be an array, but the RPC expects a single slot.
+    // For now, we'll use the first selected slot if multiple are selected.
+    const primarySlot = timeSlot.length > 0 ? TIME_SLOTS[timeSlot[0]] : null;
+    if (!primarySlot) return families; // If no slot selected, return all families
 
     const availableIds = [];
 
     for (const family of families) {
         try {
             // Check availability using the SQL function
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .rpc('get_available_families', {
                     p_date: date,
-                    p_start_time: slot.start,
-                    p_end_time: slot.end,
+                    p_start_time: primarySlot.start,
+                    p_end_time: primarySlot.end,
                     p_guest_count: guests
                 });
 
@@ -170,36 +226,46 @@ async function filterByAvailability(families, date, timeSlot, guests) {
     return families.filter(f => availableIds.includes(f.id));
 }
 
+// Helper function to format city names
+function formatCity(city) {
+    if (city === 'makkah') return 'مكة المكرمة';
+    if (city === 'madinah') return 'المدينة المنورة';
+    return city; // Default to original if not recognized
+}
+
+// Helper function to calculate price (assuming first package price for simplicity)
+function calculatePrice(family) {
+    return family.packages?.[0]?.price || 200; // Default price if no package
+}
+
 // Display Families
 function displayFamilies(families) {
     const grid = document.getElementById('families-grid');
-    const count = document.getElementById('results-count');
+    const countLabel = document.getElementById('results-count');
 
-    count.textContent = `${families.length} أسرة متاحة`;
+    countLabel.textContent = `${families.length} أسرة متاحة`;
 
     if (families.length === 0) {
         grid.innerHTML = `
-            <div class="empty-state" style="grid-column: 1/-1;">
-                <div class="empty-state-icon">😔</div>
-                <h3>لا توجد أسر متاحة</h3>
-                <p>جرب تغيير التاريخ أو الوقت أو المدينة</p>
+            <div class="empty-results" style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                <div style="font-size: 60px; margin-bottom: 20px;">🏠</div>
+                <h3>لا توجد أسر متاحة حالياً</h3>
+                <p class="text-muted">جرب تغيير معايير البحث أو اختيار وقت آخر</p>
             </div>
         `;
         return;
     }
 
     grid.innerHTML = families.map(family => {
+        // Real data usage: availableFamilies are already filtered by availability.
+        // We use capacity as proxy for remaining spots since RPC handled the logic.
+        const remainingSpots = family.capacity || 10;
         const isInCart = cart.some(item => item.familyId === family.id);
-        const basePackage = family.packages?.[0] || { name: 'باقة أساسية', price: 200 };
-
-        // Calculate availability
-        const availableSpots = family.capacity || 10;
-        const bookedSpots = Math.floor(Math.random() * 3); // Mock - replace with real data
-        const remainingSpots = availableSpots - bookedSpots;
+        const basePackage = family.packages?.[0] || { price: 200 }; // Ensure basePackage is defined
 
         let availabilityIcon = '✅';
-        if (remainingSpots <= 0) availabilityIcon = '❌';
-        else if (remainingSpots <= 3) availabilityIcon = '⚠️';
+        // Logic simplification: if it's in the list, it's available.
+        if (remainingSpots <= 3) availabilityIcon = '⚠️';
 
         return `
             <div class="family-card ${isInCart ? 'in-cart' : ''}" data-family-id="${family.id}">
@@ -244,7 +310,7 @@ function displayFamilies(families) {
                         </div>
                         <button 
                             onclick="addToCart('${family.id}', '${family.family_name}', ${basePackage.price})" 
-                            class="btn ${isInCart ? 'btn-success' : 'btn-primary'}}"
+                            class="btn ${isInCart ? 'btn-success' : 'btn-primary'}"
                             ${remainingSpots <= 0 ? 'disabled' : ''}>
                             ${isInCart ? '✓ في السلة' : remainingSpots <= 0 ? 'غير متاح' : '+ إضافة'}
                         </button>
@@ -257,16 +323,56 @@ function displayFamilies(families) {
 
 // Add to Cart
 function addToCart(familyId, familyName, price) {
-    if (!selectedDate || !selectedTimeSlot) {
+    if (!selectedDate || selectedTimeSlot.length === 0) {
         showToast('تنبيه', 'الرجاء اختيار التاريخ والوقت أولاً', 'warning');
         return;
     }
+
+    // --- Auth Check ---
+    const user = JSON.parse(localStorage.getItem('karam_user'));
+
+    if (!user) {
+        showToast('تنبيه', 'يجب تسجيل الدخول أو إنشاء حساب لإتمام الحجز', 'warning');
+        setTimeout(() => {
+            window.location.href = 'login.html?redirect=browse-families-calendar.html';
+        }, 1500);
+        return;
+    }
+
+    // Find the family object to check majlis type
+    const family = availableFamilies.find(f => f.id === familyId);
+
+    if (user && user.user_metadata && family) {
+        const userGender = user.user_metadata.gender; // 'male' or 'female'
+        const majlisType = family.majlis_type; // 'men', 'women', 'both'
+
+        let warningMessage = '';
+        let isMismatch = false;
+
+        // Check Mismatch
+        if (userGender === 'male' && majlisType === 'women') {
+            isMismatch = true;
+            warningMessage = `⚠️ تنبيه شديد:\n\nلقد قمت باختيار "مجلس نساء" وأنت مسجل كـ "ذكر".\n\nحسب سياسات المنصة، لا يُسمح للرجال بدخول مجالس النساء.\n\nفي حال إتمام الحجز وثبوت المخالفة عند الوصول:\n1- سيتم إلغاء استضافتكم فوراً.\n2- لن يتم استرداد المبلغ المدفوع نهائياً.\n\nهل تقر وتوافق على المتابعة تحت مسؤوليتك الشخصية؟`;
+        } else if (userGender === 'female' && majlisType === 'men') {
+            isMismatch = true;
+            warningMessage = `⚠️ تنبيه شديد:\n\nلقد قمت باختيار "مجلس رجال" وأنت مسجلة كـ "أنثى".\n\nحسب سياسات المنصة، لا يُسمح للنساء بدخول مجالس الرجال.\n\nفي حال إتمام الحجز وثبوت المخالفة عند الوصول:\n1- سيتم إلغاء استضافتكم فوراً.\n2- لن يتم استرداد المبلغ المدفوع نهائياً.\n\nهل تقرين وتوافقين على المتابعة تحت مسؤوليتك الشخصية؟`;
+        }
+
+        if (isMismatch) {
+            // Show custom confirmation dialog
+            if (!confirm(warningMessage)) {
+                return; // User cancelled
+            }
+        }
+    }
+    // ----------------------------------
 
     // Check if already in cart
     const existingIndex = cart.findIndex(item =>
         item.familyId === familyId &&
         item.date === selectedDate &&
-        item.timeSlot === selectedTimeSlot
+        // Check if ANY of the selected slots match (simplified for now, ideally exact set match)
+        item.timeSlot[0] === selectedTimeSlot[0]
     );
 
     if (existingIndex >= 0) {
@@ -317,7 +423,8 @@ function updateCartDisplay() {
             </div>
         `;
         cartTotal.style.display = 'none';
-        checkoutBtn.disabled = true;
+        checkoutBtn.style.pointerEvents = 'none';
+        checkoutBtn.style.opacity = '0.5';
         return;
     }
 
@@ -344,11 +451,16 @@ function updateCartDisplay() {
 
     totalAmount.textContent = `${total} ريال`;
     cartTotal.style.display = 'block';
-    checkoutBtn.disabled = false;
+
+    // Enable button (remove disabled style/behavior)
+    checkoutBtn.style.pointerEvents = 'auto';
+    checkoutBtn.style.opacity = '1';
+    // Validation removed for debugging
+    // checkoutBtn.onclick = window.validateCheckout;
 }
 
 // Remove from Cart
-function removeFromCart(index) {
+window.removeFromCart = function (index) {
     cart.splice(index, 1);
     localStorage.setItem('karam_booking_cart', JSON.stringify(cart));
     updateCartDisplay();
@@ -365,26 +477,40 @@ function viewCart() {
     document.querySelector('.cart-summary').scrollIntoView({ behavior: 'smooth' });
 }
 
-// Checkout
-function checkout() {
-    if (cart.length === 0) {
-        showToast('تنبيه', 'السلة فارغة', 'warning');
-        return;
+// Validate Checkout (for Anchor Tag)
+function validateCheckout(event) {
+    console.log('Validating checkout...');
+
+    // Safety check for empty cart
+    if (!cart || cart.length === 0) {
+        event.preventDefault(); // Stop navigation
+        if (typeof showToast === 'function') showToast('تنبيه', 'السلة فارغة', 'warning');
+        else alert('السلة فارغة');
+        return false;
     }
 
     // Check if user is logged in
-    const user = JSON.parse(localStorage.getItem('karam_user') || 'null');
+    const userString = localStorage.getItem('karam_user');
+    const user = userString ? JSON.parse(userString) : null;
+
     if (!user) {
-        showToast('تنبيه', 'يجب تسجيل الدخول أولاً', 'warning');
+        event.preventDefault(); // Stop navigation
+        if (typeof showToast === 'function') showToast('تنبيه', 'يجب تسجيل الدخول أولاً', 'warning');
+        else alert('يجب تسجيل الدخول أولاً');
+
         setTimeout(() => {
             window.location.href = 'login.html?redirect=browse-families-calendar.html';
-        }, 1500);
-        return;
+        }, 1000);
+        return false;
     }
 
-    // Proceed to checkout
-    showToast('جاري التحويل', 'جاري تحويلك لصفحة الدفع...', 'info');
-    setTimeout(() => {
-        window.location.href = 'checkout.html';
-    }, 1500);
+    // If all good, allow navigation
+    return true;
 }
+
+// Expose globally
+window.validateCheckout = validateCheckout;
+window.searchFamilies = searchFamilies;
+window.addToCart = addToCart;
+window.selectTimeSlot = selectTimeSlot;
+window.changeGuestCount = changeGuestCount;

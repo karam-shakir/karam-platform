@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأسئلة الشائعة - منصة كرم</title>
+    <link rel="stylesheet" href="styles/pages.css">
+</head>
+
+<body class="rtl">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="index.html" style="display:flex; align-items:center; gap:12px; text-decoration:none;">
+                    <img src="images/logo.png" alt="منصة كرم" style="height:70px;">
+                    <h1
+                        style="margin:0; font-size:28px; background: linear-gradient(135deg, #B8956A 0%, #5A6F4C 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">
+                        كرم</h1>
+                </a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">الرئيسية</a></li>
+                <li><a href="about.html">عن المنصة</a></li>
+                <li><a href="contact.html">اتصل بنا</a></li>
+                <li><a href="faq.html" class="active">الأسئلة الشائعة</a></li>
+                <li><a href="login.html" class="btn-nav-login">تسجيل الدخول</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">الأسئلة الشائعة</h1>
+            <p class="hero-subtitle">إجابات لأكثر الأسئلة شيوعاً</p>
+        </div>
+    </section>
+
+    <!-- FAQ Categories -->
+    <section class="section">
+        <div class="container">
+            <div class="faq-categories">
+                <a href="#general" class="faq-category">❓ عامة</a>
+                <a href="#families" class="faq-category">👨‍👩‍👧 للعوائل</a>
+                <a href="#visitors" class="faq-category">🧳 للزوار</a>
+                <a href="#payment" class="faq-category">💳 الدفع</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- General FAQ -->
+    <section id="general" class="section">
+        <div class="container">
+            <h2 class="faq-section-title">❓ أسئلة عامة</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>ما هي منصة كرم؟</h4>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>منصة كرم هي منصة سعودية تربط العوائل المضيفة في مكة والمدينة بالزوار والشركات السياحية،
+                            لتوفير تجربة ضيافة أصيلة وآمنة.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>كيف أسجل في المنصة؟</h4>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>اضغط على "تسجيل" في الصفحة الرئيسية، اختر نوع حسابك (عائلة/زائر/شركة)، وأكمل البيانات
+                            المطلوبة.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>هل المنصة آمنة؟</h4>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>نعم، نستخدم أعلى معايير الأمان لحماية بياناتك ومعاملاتك المالية. جميع العوائل تخضع للمراجعة
+                            والموافقة قبل القبول.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>ما هي المدن المتاحة؟</h4>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>حالياً نخدم مكة المكرمة والمدينة المنورة، ونخطط للتوسع لمدن أخرى قريباً.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Families FAQ -->
+    <section id="families" class="section bg-light">
+        <div class="container">
+            <h2 class="faq-section-title">👨‍👩‍👧 أسئلة العوائل المضيفة</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>كيف أسجل كعائلة مضيفة؟</h4>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>سجل كعائلة، أكمل البيانات المطلوبة، وانتظر الموافقة. سيتم مراجعة طلبك خلال 24-48 ساعة.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>كم تبلغ عمولة المنصة؟</h4>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>عمولة المنصة تبلغ 15% من قيمة الحجز، وهي تشمل جميع الخدمات والدعم الفني.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>متى أستلم أرباحي؟</h4>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>يتم تحويل الأرباح إلى محفظتك فوراً بعد إتمام الحجز. يمكنك طلب السحب في أي وقت بحد أدنى 50
+                            ريال.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>هل يمكنني إيقاف حسابي مؤقتاً؟</h4>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>نعم، يمكنك إيقاف توفر مجالسك مؤقتاً من لوحة التحكم دون إلغاء حسابك.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visitors FAQ -->
+    <section id="visitors" class="section">
+        <div class="container">
+            <h2 class="faq-section-title">🧳 أسئلة الزوار</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>كيف أحجز مجلساً؟</h4>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>ابحث عن المجلس المناسب، اختر التاريخ والوقت، أضف للعربة، وأكمل الدفع.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>هل يمكنني إلغاء الحجز؟</h4>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>نعم، حسب سياسة الإلغاء المحددة. الإلغاء قبل 48 ساعة: استرداد كامل، قبل 24 ساعة: 50%، أقل من
+                            ذلك: لا استرداد.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>ماذا لو لم تعجبني التجربة؟</h4>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>يمكنك تقديم شكوى عبر المنصة وسنراجعها خلال 24 ساعة. نحن ملتزمون برضاك التام.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>هل يمكنني حجز أكثر من مجلس؟</h4>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>نعم، يمكنك إضافة عدة مجالس لعربة التسوق والدفع دفعة واحدة.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Payment FAQ -->
+    <section id="payment" class="section bg-light">
+        <div class="container">
+            <h2 class="faq-section-title">💳 أسئلة الدفع</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>ما هي طرق الدفع المتاحة؟</h4>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>نقبل بطاقات الائتمان (فيزا، ماستركارد)، Apple Pay، و STC Pay عبر بوابة الدفع Moyasar الآمنة.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>هل الدفع آمن؟</h4>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>نعم، نستخدم بوابة Moyasar المعتمدة والمشفرة بأعلى معايير الأمان PCI DSS.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>كيف أطلب استرداد؟</h4>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>من صفحة الحجوزات، اضغط على إلغاء الحجز. سيتم معالجة الاسترداد تلقائياً حسب السياسة.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>متى يصل الاسترداد؟</h4>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>عادة خلال 5-7 أيام عمل حسب البنك المصدر لبطاقتك.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Still Have Questions -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>لم تجد إجابتك؟</h2>
+            <p>تواصل معنا مباشرة وسنساعدك خلال دقائق</p>
+            <div class="cta-buttons">
+                <a href="contact.html" class="btn-primary">اتصل بنا</a>
+                <a href="mailto:support@karm.sa" class="btn-secondary">📧 راسلنا</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <img src="images/logo.png" alt="منصة كرم" style="height:60px; margin-bottom:12px;">
+                    <h3>كرم</h3>
+                    <p>منصة ضيافة سعودية أصيلة</p>
+                </div>
+                <div class="footer-col">
+                    <h4>روابط سريعة</h4>
+                    <ul>
+                        <li><a href="about.html">عن المنصة</a></li>
+                        <li><a href="contact.html">اتصل بنا</a></li>
+                        <li><a href="faq.html">الأسئلة الشائعة</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>تواصل معنا</h4>
+                    <p>📧 info@karm.sa</p>
+                    <p>📱 +966556777063</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 منصة كرم. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/i18n.js"></script>
+    <script>
+        function toggleFAQ(element) {
+            const item = element.parentElement;
+            const icon = element.querySelector('.faq-icon');
+            const isOpen = item.classList.contains('active');
+
+            // Close all
+            document.querySelectorAll('.faq-item').forEach(i => {
+                i.classList.remove('active');
+                i.querySelector('.faq-icon').textContent = '+';
+            });
+
+            // Toggle current
+            if (!isOpen) {
+                item.classList.add('active');
+                icon.textContent = '−';
+            }
+        }
+    </script>
+</body>
+
+</html>

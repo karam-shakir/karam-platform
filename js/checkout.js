@@ -18,10 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (cart.length === 0) {
         showToast('تنبيه', 'السلة فارغة', 'warning');
+        // Redirect disabled for debugging
+        console.log('Cart is empty, but staying on page for debugging');
+        /*
         setTimeout(() => {
             window.location.href = 'browse-families-calendar.html';
         }, 2000);
         return;
+        */
     }
 
     // Load user info if logged in
@@ -174,7 +178,7 @@ async function applyDiscountCode() {
         const subtotal = cart.reduce((sum, booking) => sum + booking.price, 0);
 
         // Validate discount code
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
             .rpc('validate_discount_code', {
                 p_code: code,
                 p_family_id: firstBooking.familyId,
@@ -323,7 +327,7 @@ async function createBookings() {
             const visitorNames = visitorNamesData[i] || [];
 
             // Create booking
-            const { data: booking, error: bookingError } = await supabase
+            const { data: booking, error: bookingError } = await supabaseClient
                 .from('bookings')
                 .insert({
                     booking_number: bookingNumber,
@@ -344,7 +348,7 @@ async function createBookings() {
             if (bookingError) throw bookingError;
 
             // Create time slot
-            const { error: slotError } = await supabase
+            const { error: slotError } = await supabaseClient
                 .from('booking_time_slots')
                 .insert({
                     booking_id: booking.id,
@@ -410,7 +414,7 @@ async function handlePaymentSuccess(payment, bookingIds) {
     try {
         // Update booking status
         for (const bookingId of bookingIds) {
-            await supabase
+            await supabaseClient
                 .from('bookings')
                 .update({
                     status: 'confirmed',
@@ -419,7 +423,7 @@ async function handlePaymentSuccess(payment, bookingIds) {
                 .eq('id', bookingId);
 
             // Create payment record
-            await supabase
+            await supabaseClient
                 .from('payments')
                 .insert({
                     booking_id: bookingId,
@@ -436,14 +440,14 @@ async function handlePaymentSuccess(payment, bookingIds) {
             const netAmount = (payment.amount / 100) - commission;
 
             // Get family_id from booking
-            const { data: booking } = await supabase
+            const { data: booking } = await supabaseClient
                 .from('bookings')
                 .select('family_id')
                 .eq('id', bookingId)
                 .single();
 
             if (booking) {
-                await supabase
+                await supabaseClient
                     .from('family_earnings')
                     .insert({
                         family_id: booking.family_id,
@@ -478,7 +482,7 @@ async function handlePaymentFailure(error, bookingIds) {
     try {
         // Update booking status to cancelled
         for (const bookingId of bookingIds) {
-            await supabase
+            await supabaseClient
                 .from('bookings')
                 .update({
                     status: 'cancelled',

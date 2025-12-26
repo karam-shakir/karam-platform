@@ -1,0 +1,2367 @@
+/* ============================================
+   Karam Platform - Family Dashboard CSS
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #B8956A;
+    --primary-dark: #5568d3;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-gray: #f8f9fa;
+    --sidebar-width: 260px;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f6fa;
+    color: #333;
+    line-height: 1.6;
+}
+
+body.rtl {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Sidebar */
+.family-dash .sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: linear-gradient(180deg, #B8956A 0%, #5A6F4C 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.family-dash .sidebar-header {
+    padding: 30px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.family-dash .sidebar-header h1 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.family-dash .sidebar-header p {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.family-dash .sidebar-nav {
+    flex: 1;
+    padding: 20px 0;
+    overflow-y: auto;
+}
+
+.family-dash .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s;
+    border-right: 3px solid transparent;
+}
+
+.family-dash .nav-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-right-color: white;
+}
+
+.family-dash .nav-item.active {
+    background: rgba(255, 255, 255, 0.15);
+    border-right-color: white;
+    font-weight: bold;
+}
+
+.family-dash .nav-item .icon {
+    font-size: 20px;
+}
+
+.family-dash .sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.family-dash .btn-logout {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.family-dash .btn-logout:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.family-dash .main-content {
+    margin-right: var(--sidebar-width);
+    min-height: 100vh;
+    width: calc(100% - var(--sidebar-width));
+}
+
+/* Top Bar */
+.family-dash .top-bar {
+    background: white;
+    height: 70px;
+    padding: 0 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.family-dash .top-bar h2 {
+    font-size: 24px;
+}
+
+.family-dash .top-bar-right {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.family-dash .btn-lang {
+    padding: 8px 16px;
+    background: var(--light-gray);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.family-dash .notification-icon {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Dashboard Container */
+.family-dash .dashboard-container {
+    padding: 30px;
+}
+
+/* Welcome Card */
+.family-dash .welcome-card {
+    background: linear-gradient(135deg, #B8956A 0%, #5A6F4C 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+}
+
+.family-dash .welcome-content h2 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.family-dash .welcome-content p {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+.family-dash .welcome-image {
+    font-size: 80px;
+}
+
+/* Stats Grid */
+.family-dash .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.family-dash .stat-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s;
+}
+
+.family-dash .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.family-dash .stat-card.primary {
+    border-right: 4px solid var(--primary-color);
+}
+
+.family-dash .stat-card.success {
+    border-right: 4px solid var(--success-color);
+}
+
+.family-dash .stat-card.warning {
+    border-right: 4px solid var(--warning-color);
+}
+
+.family-dash .stat-card.info {
+    border-right: 4px solid var(--info-color);
+}
+
+.family-dash .stat-icon {
+    font-size: 48px;
+    opacity: 0.8;
+}
+
+.family-dash .stat-info h3 {
+    font-size: 32px;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.family-dash .stat-info p {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Two Columns */
+.family-dash .two-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* Card */
+.family-dash .card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.family-dash .card-header {
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.family-dash .card-header h3 {
+    margin: 0;
+}
+
+.family-dash .link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.family-dash .link:hover {
+    text-decoration: underline;
+}
+
+.family-dash .card-body {
+    padding: 20px;
+}
+
+/* Booking Item */
+.booking-item,
+.family-dash .transaction-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.booking-item:last-child,
+.family-dash .transaction-item:last-child {
+    border-bottom: none;
+}
+
+.booking-icon,
+.family-dash .transaction-icon {
+    font-size: 32px;
+}
+
+.booking-details,
+.family-dash .transaction-details {
+    flex: 1;
+}
+
+.booking-details strong,
+.family-dash .transaction-details strong {
+    display: block;
+    margin-bottom: 3px;
+}
+
+.booking-details small,
+.family-dash .transaction-details small {
+    color: #999;
+    font-size: 12px;
+}
+
+.booking-amount,
+.family-dash .transaction-amount {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--success-color);
+}
+
+.family-dash .transaction-amount.text-danger {
+    color: var(--danger-color);
+}
+
+/* Quick Actions */
+.family-dash .quick-actions {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.family-dash .quick-actions h3 {
+    margin-bottom: 20px;
+}
+
+.family-dash .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.family-dash .action-card {
+    background: var(--light-gray);
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s;
+}
+
+.family-dash .action-card:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-3px);
+}
+
+.family-dash .action-icon {
+    display: block;
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+/* Utilities */
+.family-dash .text-center {
+    text-align: center;
+}
+
+.family-dash .text-muted {
+    color: #999;
+}
+
+.family-dash .text-success {
+    color: var(--success-color);
+}
+
+.family-dash .text-danger {
+    color: var(--danger-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .family-dash .sidebar {
+        transform: translateX(100%);
+    }
+
+    .family-dash .main-content {
+        margin-right: 0;
+    }
+
+    .stats-grid,
+    .two-columns,
+    .family-dash .actions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .family-dash .welcome-card {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* ============================================
+   Bookings & Wallet Additional Styles
+   ============================================ */
+
+.family-dash .bookings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.family-dash .booking-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.family-dash .booking-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.family-dash .booking-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.family-dash .booking-card-header h4 {
+    margin: 0;
+    color: #333;
+}
+
+.family-dash .booking-card-body {
+    margin-bottom: 15px;
+}
+
+.family-dash .booking-card-body p {
+    margin: 8px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.family-dash .booking-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.family-dash .booking-price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.family-dash .booking-number {
+    color: #999;
+    font-size: 12px;
+}
+
+.family-dash .badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.family-dash .badge-success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.family-dash .badge-warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.family-dash .badge-danger {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.family-dash .badge-info {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.family-dash .badge-secondary {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.family-dash .transactions-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.family-dash .transactions-table th {
+    background: #f8f9fa;
+    padding: 15px;
+    text-align: right;
+    font-weight: bold;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.family-dash .transactions-table td {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.family-dash .transactions-table tr:hover {
+    background: #f8f9fa;
+}
+
+.family-dash .wallet-balance-card {
+    background: linear-gradient(135deg, #B8956A 0%, #5A6F4C 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+}
+
+.family-dash .balance-label {
+    font-size: 16px;
+    opacity: 0.9;
+    margin-bottom: 10px;
+}
+
+.family-dash .balance-amount {
+    font-size: 48px;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.family-dash .balance-info {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.family-dash .btn-withdraw {
+    padding: 14px 30px;
+    background: white;
+    color: #B8956A;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.family-dash .btn-withdraw:hover {
+    transform: scale(1.05);
+}
+
+.family-dash .wallet-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.family-dash .wallet-stat {
+    text-align: center;
+    padding: 15px;
+    border-right: 1px solid #e0e0e0;
+}
+
+.family-dash .wallet-stat:last-child {
+    border-right: none;
+}
+
+.family-dash .stat-label {
+    display: block;
+    color: #999;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.family-dash .stat-value {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    color: #B8956A;
+}
+
+.family-dash .tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.family-dash .tab {
+    padding: 12px 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #666;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+}
+
+.family-dash .tab.active {
+    color: #B8956A;
+    border-bottom-color: #B8956A;
+    font-weight: bold;
+}
+
+.family-dash .tab-content {
+    display: none;
+}
+
+.family-dash .tab-content.active {
+    display: block;
+}
+
+/* ============================================
+   Majlis Management Styles
+   ============================================ */
+
+.family-dash .btn-add {
+    padding: 10px 20px;
+    background: var(--success-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.family-dash .btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.family-dash .majlis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 24px;
+    margin-top: 30px;
+}
+
+.family-dash .majlis-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s;
+}
+
+.family-dash .majlis-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.family-dash .majlis-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.family-dash .majlis-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.family-dash .placeholder-image {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #B8956A 0%, #5A6F4C 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+}
+
+.family-dash .majlis-type-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.family-dash .majlis-content {
+    padding: 20px;
+}
+
+.family-dash .majlis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 12px;
+}
+
+.family-dash .majlis-header h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.family-dash .status-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.family-dash .status-badge.active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.family-dash .status-badge.inactive {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.family-dash .majlis-description {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.family-dash .majlis-info {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.family-dash .info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #555;
+}
+
+.family-dash .info-icon {
+    font-size: 18px;
+}
+
+.family-dash .amenities-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.family-dash .amenity-tag {
+    padding: 4px 10px;
+    background: #f0f0f0;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #666;
+}
+
+.family-dash .majlis-actions {
+    display: flex;
+    gap: 8px;
+    padding-top: 16px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.family-dash .majlis-actions button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.family-dash .btn-edit {
+    background: #B8956A;
+    color: white;
+}
+
+.family-dash .btn-edit:hover {
+    background: #5568d3;
+}
+
+.family-dash .btn-toggle {
+    background: #ffc107;
+    color: #333;
+}
+
+.family-dash .btn-toggle:hover {
+    background: #e0a800;
+}
+
+.family-dash .btn-delete {
+    background: #dc3545;
+    color: white;
+}
+
+.family-dash .btn-delete:hover {
+    background: #c82333;
+}
+
+/* Modal */
+.family-dash .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.family-dash .modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.family-dash .modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.family-dash .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.family-dash .modal-header h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.family-dash .btn-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #999;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.family-dash .btn-close:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.family-dash .modal-content form {
+    padding: 24px;
+}
+
+.family-dash .amenities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.family-dash .photos-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.family-dash .photo-preview-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.family-dash .photo-preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.family-dash .photo-preview-item button {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.family-dash .modal-footer {
+    display: flex;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.family-dash .modal-footer .btn-primary {
+    flex: 1;
+}
+
+.family-dash .btn-secondary {
+    padding: 14px 24px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.family-dash .btn-secondary:hover {
+    border-color: #999;
+    background: #f8f9fa;
+}
+
+
+/* ============================================
+   OPERATOR DASHBOARD STYLES
+   ============================================ */
+
+/* ============================================
+   Karam Platform - Operator Dashboard CSS
+   نظام التصميم المتكامل
+   ============================================ */
+
+/* ============================================
+   Reset & Base Styles
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #B8956A;
+    --primary-dark: #5568d3;
+    --secondary-color: #5A6F4C;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-gray: #f8f9fa;
+    --medium-gray: #e0e0e0;
+    --dark-gray: #333;
+    --sidebar-width: 260px;
+    --topbar-height: 70px;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f6fa;
+    color: var(--dark-gray);
+    line-height: 1.6;
+}
+
+body.rtl {
+    direction: rtl;
+    text-align: right;
+}
+
+.operator-dash body.ltr {
+    direction: ltr;
+    text-align: left;
+}
+
+/* ============================================
+   Layout
+   ============================================ */
+
+.operator-dash .sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: linear-gradient(180deg, #B8956A 0%, #5A6F4C 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.operator-dash .sidebar-header {
+    padding: 30px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.operator-dash .sidebar-header h1 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.operator-dash .sidebar-header p {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.operator-dash .sidebar-nav {
+    flex: 1;
+    padding: 20px 0;
+    overflow-y: auto;
+}
+
+.operator-dash .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s;
+    border-right: 3px solid transparent;
+}
+
+.operator-dash .nav-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-right-color: white;
+}
+
+.operator-dash .nav-item.active {
+    background: rgba(255, 255, 255, 0.15);
+    border-right-color: white;
+    font-weight: bold;
+}
+
+.operator-dash .nav-item .icon {
+    font-size: 20px;
+}
+
+.operator-dash .sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.operator-dash .btn-logout {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 14px;
+}
+
+.operator-dash .btn-logout:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.operator-dash .main-content {
+    margin-right: var(--sidebar-width);
+    min-height: 100vh;
+    width: calc(100% - var(--sidebar-width));
+}
+
+/* ============================================
+   Top Bar
+   ============================================ */
+
+.operator-dash .top-bar {
+    background: white;
+    height: var(--topbar-height);
+    padding: 0 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.operator-dash .top-bar h2 {
+    font-size: 24px;
+    color: var(--dark-gray);
+}
+
+.operator-dash .top-bar-right {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.operator-dash .btn-lang {
+    padding: 8px 16px;
+    background: var(--light-gray);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.operator-dash .btn-lang:hover {
+    background: var(--medium-gray);
+}
+
+.operator-dash .user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.operator-dash .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+/* ============================================
+   Dashboard Container
+   ============================================ */
+
+.operator-dash .dashboard-container {
+    padding: 30px;
+}
+
+/* ============================================
+   Stats Grid
+   ============================================ */
+
+.operator-dash .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.operator-dash .stat-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s;
+}
+
+.operator-dash .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.operator-dash .stat-icon {
+    font-size: 48px;
+    opacity: 0.8;
+}
+
+.operator-dash .stat-info h3 {
+    font-size: 32px;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.operator-dash .stat-info p {
+    color: #666;
+    font-size: 14px;
+}
+
+/* ============================================
+   Charts
+   ============================================ */
+
+.operator-dash .charts-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.operator-dash .chart-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.operator-dash .chart-card h3 {
+    margin-bottom: 20px;
+    color: var(--dark-gray);
+}
+
+.operator-dash .chart-card canvas {
+    max-height: 300px;
+}
+
+/* ============================================
+   Tables
+   ============================================ */
+
+.operator-dash .tables-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 20px;
+}
+
+.operator-dash .table-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.operator-dash .card-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--medium-gray);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.operator-dash .card-header h3 {
+    margin: 0;
+    color: var(--dark-gray);
+}
+
+.operator-dash .btn-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.operator-dash .btn-link:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+.operator-dash .table-container {
+    overflow-x: auto;
+}
+
+.operator-dash table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.operator-dash thead {
+    background: var(--light-gray);
+}
+
+.operator-dash th {
+    padding: 15px;
+    text-align: right;
+    font-weight: bold;
+    color: var(--dark-gray);
+    font-size: 14px;
+}
+
+.operator-dash td {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+}
+
+.operator-dash tr:hover {
+    background: var(--light-gray);
+}
+
+.operator-dash .text-center {
+    text-align: center !important;
+}
+
+/* ============================================
+   Badges
+   ============================================ */
+
+.operator-dash .badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.operator-dash .badge-success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.operator-dash .badge-warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.operator-dash .badge-danger {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.operator-dash .badge-info {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.operator-dash .badge-secondary {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+
+.operator-dash button {
+    font-family: inherit;
+}
+
+.operator-dash .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.operator-dash .btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.operator-dash .btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.operator-dash .btn-success {
+    background: var(--success-color);
+    color: white;
+}
+
+.operator-dash .btn-success:hover {
+    background: #218838;
+}
+
+.operator-dash .btn-danger {
+    background: var(--danger-color);
+    color: white;
+}
+
+.operator-dash .btn-danger:hover {
+    background: #c82333;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .operator-dash .sidebar {
+        width: 200px;
+    }
+
+    .operator-dash .main-content {
+        margin-right: 200px;
+    width: calc(100% - var(--sidebar-width));
+}
+
+    .charts-row,
+    .operator-dash .tables-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .operator-dash .sidebar {
+        transform: translateX(100%);
+        transition: transform 0.3s;
+    }
+
+    .operator-dash .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .operator-dash .main-content {
+        margin-right: 0;
+    width: calc(100% - var(--sidebar-width));
+}
+
+    .operator-dash .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .operator-dash .top-bar {
+        padding: 0 15px;
+    }
+
+    .operator-dash .dashboard-container {
+        padding: 15px;
+    }
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card,
+.chart-card,
+.operator-dash .table-card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* ============================================
+   Scrollbar Styling
+   ============================================ */
+
+.operator-dash ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.operator-dash ::-webkit-scrollbar-track {
+    background: var(--light-gray);
+}
+
+.operator-dash ::-webkit-scrollbar-thumb {
+    background: var(--medium-gray);
+    border-radius: 4px;
+}
+
+.operator-dash ::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+
+.operator-dash .mt-10 {
+    margin-top: 10px;
+}
+
+.operator-dash .mt-20 {
+    margin-top: 20px;
+}
+
+.operator-dash .mt-30 {
+    margin-top: 30px;
+}
+
+.operator-dash .mb-10 {
+    margin-bottom: 10px;
+}
+
+.operator-dash .mb-20 {
+    margin-bottom: 20px;
+}
+
+.operator-dash .mb-30 {
+    margin-bottom: 30px;
+}
+
+.operator-dash .p-10 {
+    padding: 10px;
+}
+
+.operator-dash .p-20 {
+    padding: 20px;
+}
+
+.operator-dash .p-30 {
+    padding: 30px;
+}
+
+.operator-dash .text-primary {
+    color: var(--primary-color);
+}
+
+.operator-dash .text-success {
+    color: var(--success-color);
+}
+
+.operator-dash .text-danger {
+    color: var(--danger-color);
+}
+
+.operator-dash .text-warning {
+    color: var(--warning-color);
+}
+
+.operator-dash .bg-primary {
+    background: var(--primary-color);
+}
+
+.operator-dash .bg-success {
+    background: var(--success-color);
+}
+
+.operator-dash .bg-danger {
+    background: var(--danger-color);
+}
+
+.operator-dash .bg-light {
+    background: var(--light-gray);
+}
+
+
+/* ============================================
+   VISITOR DASHBOARD STYLES
+   ============================================ */
+
+/* ============================================
+   Visitor Dashboard CSS
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #B8956A;
+    --success-color: #28a745;
+    --gradient: linear-gradient(135deg, #B8956A 0%, #5A6F4C 100%);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f6fa;
+    display: flex;
+}
+
+body.rtl {
+    direction: rtl;
+}
+
+/* Sidebar - Same as Family Dashboard */
+.visitor-dash .sidebar {
+    width: 260px;
+    background: white;
+    height: 100vh;
+    position: fixed;
+    right: 0;
+    top: 0;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.visitor-dash .sidebar-header {
+    padding: 30px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    background: var(--gradient);
+    color: white;
+}
+
+.visitor-dash .sidebar-header h1 {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.visitor-dash .sidebar-nav {
+    flex: 1;
+    padding: 20px 0;
+}
+
+.visitor-dash .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    color: #666;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.nav-item:hover,
+.visitor-dash .nav-item.active {
+    background: #f8f9ff;
+    color: var(--primary-color);
+    border-right: 3px solid var(--primary-color);
+}
+
+.visitor-dash .nav-item .icon {
+    font-size: 20px;
+}
+
+.visitor-dash .sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.visitor-dash .btn-logout {
+    width: 100%;
+    padding: 12px;
+    background: #f8f9fa;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.visitor-dash .btn-logout:hover {
+    background: #dc3545;
+    color: white;
+}
+
+/* Main Content */
+.visitor-dash .main-content {
+    margin-right: 260px;
+    width: calc(100% - 260px);
+    min-height: 100vh;
+
+}
+
+.visitor-dash .top-bar {
+    background: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.visitor-dash .btn-lang {
+    padding: 8px 20px;
+    background: var(--gradient);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.visitor-dash .dashboard-container {
+    padding: 30px;
+}
+
+/* Welcome Card */
+.visitor-dash .welcome-card {
+    background: var(--gradient);
+    color: white;
+    padding: 32px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.visitor-dash .welcome-content h2 {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.visitor-dash .btn-welcome {
+    padding: 12px 32px;
+    background: white;
+    color: var(--primary-color);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 700;
+    transition: all 0.3s;
+}
+
+.visitor-dash .btn-welcome:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Stats Grid */
+.visitor-dash .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.visitor-dash .stat-card {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.visitor-dash .stat-icon {
+    font-size: 40px;
+}
+
+.visitor-dash .stat-card h3 {
+    font-size: 28px;
+    margin-bottom: 4px;
+    color: var(--primary-color);
+}
+
+.visitor-dash .stat-card p {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Section Card */
+.visitor-dash .section-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.visitor-dash .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.visitor-dash .section-header h3 {
+    font-size: 20px;
+    color: #333;
+}
+
+.visitor-dash .section-header a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* Booking Item */
+.visitor-dash .booking-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 20px;
+    align-items: center;
+    padding: 20px;
+    border: 2px solid #f0f0f0;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    transition: all 0.3s;
+}
+
+.visitor-dash .booking-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.visitor-dash .booking-icon {
+    font-size: 48px;
+}
+
+.visitor-dash .booking-info h4 {
+    font-size: 18px;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+.visitor-dash .booking-info p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.visitor-dash .booking-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: #999;
+}
+
+.visitor-dash .booking-price {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Empty State */
+.visitor-dash .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.visitor-dash .empty-icon {
+    font-size: 80px;
+    margin-bottom: 16px;
+}
+
+.visitor-dash .empty-state p {
+    color: #666;
+    margin-bottom: 24px;
+}
+
+/* Quick Actions */
+.visitor-dash .quick-actions {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.visitor-dash .quick-actions h3 {
+    font-size: 20px;
+    margin-bottom: 24px;
+}
+
+.visitor-dash .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.visitor-dash .action-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.visitor-dash .action-card:hover {
+    background: #f0f0f0;
+    transform: translateY(-4px);
+}
+
+.visitor-dash .action-icon {
+    font-size: 36px;
+}
+
+.visitor-dash .action-text h4 {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.visitor-dash .action-text p {
+    font-size: 13px;
+    color: #666;
+}
+
+/* Utilities */
+.visitor-dash .text-center {
+    text-align: center;
+}
+
+.visitor-dash .btn-primary {
+    display: inline-block;
+    padding: 12px 32px;
+    background: var(--gradient);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.visitor-dash .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.visitor-dash #cart-badge {
+    background: #dc3545;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .visitor-dash .sidebar {
+        transform: translateX(100%);
+    }
+
+    .visitor-dash .main-content {
+        margin-right: 0;
+        width: 100%;
+    
+}
+
+    .visitor-dash .welcome-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+
+    .visitor-dash .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .visitor-dash .booking-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+}
+
+
+/* ============================================
+   DASHBOARD BASE STYLES
+   ============================================ */
+
+/* ===================================
+   Dashboard Styles - Karam Platform
+   =================================== */
+
+/* Dashboard Page */
+.company-dash .dashboard-page {
+    background: var(--color-bg);
+    min-height: 100vh;
+}
+
+/* Dashboard Navigation */
+.company-dash .dashboard-nav {
+    background: white;
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-lg) 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.company-dash .dashboard-nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.company-dash .dashboard-nav .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.company-dash .dashboard-nav .logo {
+    height: 40px;
+}
+
+.company-dash .dashboard-nav h1 {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    color: var(--color-primary);
+}
+
+.company-dash .dashboard-nav .nav-user {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+}
+
+/* Dashboard Container */
+.company-dash .dashboard-container {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: var(--space-2xl);
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--space-2xl);
+}
+
+/* Sidebar */
+.company-dash .dashboard-sidebar {
+    background: white;
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+}
+
+.company-dash .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.company-dash .sidebar-nav .nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    text-decoration: none;
+    transition: all var(--transition-base);
+    font-weight: var(--font-weight-medium);
+}
+
+.company-dash .sidebar-nav .nav-item:hover {
+    background: var(--color-bg);
+    color: var(--color-primary);
+}
+
+.company-dash .sidebar-nav .nav-item.active {
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
+}
+
+.company-dash .sidebar-nav .icon {
+    font-size: var(--font-size-xl);
+}
+
+/* Main Panel */
+.company-dash .dashboard-main {
+    background: white;
+    padding: var(--space-2xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+/* Sections */
+.company-dash .dashboard-section {
+    animation: fadeIn 0.3s ease;
+}
+
+.company-dash .dashboard-section.active {
+    display: block;
+}
+
+.company-dash .section-header {
+    margin-bottom: var(--space-2xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 2px solid var(--color-border-light);
+}
+
+.company-dash .section-header h2 {
+    margin: 0 0 var(--space-xs);
+    color: var(--color-primary);
+    font-size: var(--font-size-3xl);
+}
+
+/* Card */
+.company-dash .card {
+    background: var(--color-bg-light);
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border-light);
+    margin-bottom: var(--space-xl);
+}
+
+.company-dash .card h3 {
+    margin: 0 0 var(--space-sm);
+    color: var(--color-text);
+    font-size: var(--font-size-xl);
+}
+
+/* Stats Grid */
+.company-dash .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-2xl);
+}
+
+.company-dash .stat-card {
+    background: white;
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border-right: 4px solid var(--color-primary);
+    transition: all var(--transition-base);
+}
+
+.company-dash .stat-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.company-dash .stat-card.primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+    border: none;
+}
+
+.stat-card.primary .stat-value,
+.company-dash .stat-card.primary .stat-label {
+    color: white;
+}
+
+.company-dash .stat-value {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.company-dash .stat-label {
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+}
+
+/* Schedule Grid */
+.company-dash .schedule-grid {
+    display: grid;
+    gap: var(--space-md);
+}
+
+.company-dash .schedule-day {
+    background: white;
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.company-dash .schedule-day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.company-dash .day-name {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+}
+
+.company-dash .time-slots {
+    margin-top: var(--space-md);
+}
+
+.company-dash .checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-sm);
+}
+
+.company-dash .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--transition-base);
+}
+
+.company-dash .checkbox-label:hover {
+    background: var(--color-bg);
+}
+
+.company-dash .checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* Form Row */
+.company-dash .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+/* Bookings Table */
+.company-dash .bookings-table {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.company-dash .booking-item {
+    background: white;
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    transition: all var(--transition-base);
+}
+
+.company-dash .booking-item:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.company-dash .booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.company-dash .booking-number {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+}
+
+.company-dash .status-badge {
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.company-dash .status-confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.company-dash .status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.company-dash .status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.company-dash .status-completed {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.company-dash .booking-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-md);
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+}
+
+/* Earnings Table */
+.company-dash .earnings-table {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.company-dash .earning-item {
+    background: white;
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    display: grid;
+    grid-template-columns: 1fr 150px 100px;
+    align-items: center;
+    gap: var(--space-lg);
+}
+
+/* Flatpickr Custom Styles */
+.company-dash .flatpickr-calendar {
+    font-family: 'Tajawal', sans-serif !important;
+}
+
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .company-dash .dashboard-container {
+        grid-template-columns: 1fr;
+    }
+
+    .company-dash .dashboard-sidebar {
+        position: static;
+    }
+
+    .company-dash .sidebar-nav {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .company-dash .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}

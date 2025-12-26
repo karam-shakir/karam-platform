@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المحفظة - منصة كرم</title>
+    <link rel="stylesheet" href="styles/unified-dashboards.css">
+</head>
+
+<body class="rtl family-dash">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>منصة كرم</h1>
+            <p id="family-name">عائلة ...</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="family-dashboard.html" class="nav-item">
+                <span class="icon">📊</span>
+                <span>لوحة التحكم</span>
+            </a>
+            <a href="family-wallet.html" class="nav-item active">
+                <span class="icon">💰</span>
+                <span>المحفظة</span>
+            </a>
+            <a href="family-bookings.html" class="nav-item">
+                <span class="icon">📅</span>
+                <span>الحجوزات</span>
+            </a>
+            <a href="family-majlis.html" class="nav-item">
+                <span class="icon">🏠</span>
+                <span>المجالس</span>
+            </a>
+            <a href="family-availability.html" class="nav-item">
+                <span class="icon">📆</span>
+                <span>التوفر</span>
+            </a>
+            <a href="family-profile.html" class="nav-item">
+                <span class="icon">⚙️</span>
+                <span>الملف الشخصي</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button onclick="karamAuth.logout()" class="btn-logout">
+                <span class="icon">🚪</span>
+                <span>تسجيل خروج</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <h2>💰 المحفظة</h2>
+            </div>
+            <div class="top-bar-right">
+                <button data-lang-toggle class="btn-lang">English</button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="dashboard-container">
+            <!-- Balance Card -->
+            <div class="wallet-balance-card">
+                <div class="balance-content">
+                    <p class="balance-label">الرصيد المتاح</p>
+                    <h1 class="balance-amount" id="wallet-balance">0 ر.س</h1>
+                    <p class="balance-info">آخر تحديث: <span id="last-updated">...</span></p>
+                </div>
+                <button class="btn-withdraw" onclick="walletManager.showWithdrawModal()">
+                    💸 طلب سحب
+                </button>
+            </div>
+
+            <!-- Stats -->
+            <div class="wallet-stats">
+                <div class="wallet-stat">
+                    <span class="stat-label">إجمالي الإيرادات</span>
+                    <span class="stat-value" id="total-earned">0 ر.س</span>
+                </div>
+                <div class="wallet-stat">
+                    <span class="stat-label">المسحوب</span>
+                    <span class="stat-value" id="total-withdrawn">0 ر.س</span>
+                </div>
+                <div class="wallet-stat">
+                    <span class="stat-label">معلق</span>
+                    <span class="stat-value" id="pending-amount">0 ر.س</span>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="walletManager.switchTab('transactions')">
+                    📜 سجل المعاملات
+                </button>
+                <button class="tab" onclick="walletManager.switchTab('withdrawals')">
+                    💸 طلبات السحب
+                </button>
+            </div>
+
+            <!-- Tab: Transactions -->
+            <div id="tab-transactions" class="tab-content active">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="transactions-table">
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>النوع</th>
+                                    <th>الوصف</th>
+                                    <th>المبلغ</th>
+                                    <th>الرصيد</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-tbody">
+                                <tr>
+                                    <td colspan="5" class="text-center">جاري التحميل...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Withdrawals -->
+            <div id="tab-withdrawals" class="tab-content">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="transactions-table">
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>المبلغ</th>
+                                    <th>البنك</th>
+                                    <th>الحالة</th>
+                                    <th>ملاحظات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="withdrawals-tbody">
+                                <tr>
+                                    <td colspan="5" class="text-center">جاري التحميل...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Withdraw Modal -->
+    <div id="withdraw-modal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; padding:20px; overflow-y:auto;">
+        <div style="max-width:500px; margin:50px auto; background:white; border-radius:12px; padding:40px;">
+            <h2 style="margin-bottom:20px;">💸 طلب سحب من المحفظة</h2>
+
+            <div style="background:#f8f9fa; padding:20px; border-radius:8px; margin-bottom:20px;">
+                <p style="margin:0;"><strong>الرصيد المتاح:</strong> <span id="modal-balance">0 ر.س</span></p>
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label style="display:block; margin-bottom:8px; font-weight:bold;">المبلغ المطلوب (ريال)</label>
+                <input type="number" id="withdraw-amount" placeholder="100" min="50"
+                    style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px;">
+                <small style="color:#999;">الحد الأدنى: 50 ريال</small>
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label style="display:block; margin-bottom:8px; font-weight:bold;">البنك</label>
+                <input type="text" id="bank-name" placeholder="مثال: الراجحي"
+                    style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px;">
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label style="display:block; margin-bottom:8px; font-weight:bold;">IBAN</label>
+                <input type="text" id="iban" placeholder="SA0000000000000000000000"
+                    style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; direction:ltr; text-align:left;">
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label style="display:block; margin-bottom:8px; font-weight:bold;">ملاحظات (اختياري)</label>
+                <textarea id="withdraw-notes" rows="3"
+                    style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px;"></textarea>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <button onclick="walletManager.submitWithdrawal()"
+                    style="flex:1; padding:14px; background:#667eea; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">
+                    تأكيد الطلب
+                </button>
+                <button onclick="walletManager.closeWithdrawModal()"
+                    style="padding:14px 24px; background:white; border:1px solid #ddd; border-radius:8px; cursor:pointer;">
+                    إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-client.js"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/family-wallet.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+  <defs>
+    <linearGradient id="booking" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#B8956A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5A6F4C;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <circle cx="40" cy="40" r="38" fill="url(#booking)" opacity="0.1"/>
+  <rect x="20" y="18" width="40" height="48" rx="3" fill="url(#booking)"/>
+  <rect x="25" y="25" width="30" height="3" fill="white" opacity="0.5"/>
+  <circle cx="30" cy="36" r="2" fill="white" opacity="0.7"/>
+  <circle cx="40" cy="36" r="2" fill="white" opacity="0.7"/>
+  <circle cx="50" cy="36" r="2" fill="white" opacity="0.7"/>
+  <circle cx="30" cy="45" r="2" fill="white" opacity="0.7"/>
+  <circle cx="40" cy="45" r="2" fill="white" opacity="0.7"/>
+  <circle cx="50" cy="45" r="2" fill="white" opacity="0.7"/>
+</svg>

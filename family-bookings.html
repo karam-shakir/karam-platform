@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الحجوزات - منصة كرم</title>
+    <link rel="stylesheet" href="styles/unified-dashboards.css">
+</head>
+
+<body class="rtl family-dash">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>منصة كرم</h1>
+            <p id="family-name">عائلة ...</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="family-dashboard.html" class="nav-item">
+                <span class="icon">📊</span>
+                <span>لوحة التحكم</span>
+            </a>
+            <a href="family-wallet.html" class="nav-item">
+                <span class="icon">💰</span>
+                <span>المحفظة</span>
+            </a>
+            <a href="family-bookings.html" class="nav-item active">
+                <span class="icon">📅</span>
+                <span>الحجوزات</span>
+            </a>
+            <a href="family-majlis.html" class="nav-item">
+                <span class="icon">🏠</span>
+                <span>المجالس</span>
+            </a>
+            <a href="family-availability.html" class="nav-item">
+                <span class="icon">📆</span>
+                <span>التوفر</span>
+            </a>
+            <a href="family-profile.html" class="nav-item">
+                <span class="icon">⚙️</span>
+                <span>الملف الشخصي</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button onclick="karamAuth.logout()" class="btn-logout">
+                <span class="icon">🚪</span>
+                <span>تسجيل خروج</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <h2>📅 الحجوزات</h2>
+            </div>
+            <div class="top-bar-right">
+                <button data-lang-toggle class="btn-lang">English</button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="dashboard-container">
+            <!-- Stats -->
+            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-info">
+                        <h3 id="total-bookings">0</h3>
+                        <p>إجمالي الحجوزات</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-info">
+                        <h3 id="upcoming-bookings">0</h3>
+                        <p>قادمة</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <h3 id="completed-bookings">0</h3>
+                        <p>مكتملة</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3 id="total-revenue">0 ر.س</h3>
+                        <p>الإيرادات</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="bookingsManager.switchTab('upcoming')">
+                    ⏳ القادمة (<span id="upcoming-count">0</span>)
+                </button>
+                <button class="tab" onclick="bookingsManager.switchTab('completed')">
+                    ✅ المكتملة
+                </button>
+                <button class="tab" onclick="bookingsManager.switchTab('cancelled')">
+                    ❌ الملغاة
+                </button>
+                <button class="tab" onclick="bookingsManager.switchTab('all')">
+                    📋 الكل
+                </button>
+            </div>
+
+            <!-- Tab Content: Upcoming -->
+            <div id="tab-upcoming" class="tab-content active">
+                <div class="bookings-grid" id="upcoming-list">
+                    <p class="text-center">جاري التحميل...</p>
+                </div>
+            </div>
+
+            <!-- Tab Content: Completed -->
+            <div id="tab-completed" class="tab-content">
+                <div class="bookings-grid" id="completed-list">
+                    <p class="text-center">جاري التحميل...</p>
+                </div>
+            </div>
+
+            <!-- Tab Content: Cancelled -->
+            <div id="tab-cancelled" class="tab-content">
+                <div class="bookings-grid" id="cancelled-list">
+                    <p class="text-center">جاري التحميل...</p>
+                </div>
+            </div>
+
+            <!-- Tab Content: All -->
+            <div id="tab-all" class="tab-content">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="transactions-table">
+                            <thead>
+                                <tr>
+                                    <th>الرقم</th>
+                                    <th>الزائر</th>
+                                    <th>المجلس</th>
+                                    <th>التاريخ</th>
+                                    <th>الوقت</th>
+                                    <th>الضيوف</th>
+                                    <th>المبلغ</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-tbody">
+                                <tr>
+                                    <td colspan="8" class="text-center">جاري التحميل...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Booking Details Modal -->
+    <div id="booking-modal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; padding:20px; overflow-y:auto;">
+        <div style="max-width:600px; margin:50px auto; background:white; border-radius:12px; padding:40px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:30px;">
+                <h2>📋 تفاصيل الحجز</h2>
+                <button onclick="bookingsManager.closeModal()"
+                    style="background:none; border:none; font-size:24px; cursor:pointer;">✕</button>
+            </div>
+
+            <div id="booking-details"></div>
+
+            <div style="margin-top:30px; display:flex; gap:10px; justify-content:flex-end;">
+                <button onclick="bookingsManager.closeModal()"
+                    style="padding:10px 20px; border:1px solid #ddd; background:white; border-radius:8px; cursor:pointer;">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-client.js"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/family-bookings.js"></script>
+</body>
+
+</html>

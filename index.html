@@ -4,96 +4,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="كرم - نصل ضيوف الرحمن بأهل الكرم">
-    <title>كرم - منصة الضيافة الأصيلة</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="styles/design-system.css">
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/landing.css">
+    <title>منصة كرم - ضيافة سعودية أصيلة</title>
+    <meta name="description" content="منصة كرم تربط العوائل المضيفة في مكة والمدينة بالزوار لتجربة ضيافة سعودية أصيلة">
+    <link rel="stylesheet" href="styles/landing-page.css">
 </head>
 
-<body>
-    <!-- Navbar -->
+<body class="rtl">
+    <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
-            <div class="nav-content">
-                <div class="nav-brand">
-                    <a href="index.html" class="brand-link">
-                        <img src="assets/logo.png" alt="كرم" class="logo">
-                        <span class="brand-name">كرم</span>
-                    </a>
-                </div>
-                <ul class="nav-links">
-                    <li><a href="#home" class="nav-link active">الرئيسية</a></li>
-                    <li><a href="#features" class="nav-link">المميزات</a></li>
-                    <li><a href="#packages" class="nav-link">الباقات</a></li>
-                    <li><a href="souvenirs.html" class="nav-link">متجر الهدايا</a></li>
-                    <li><a href="browse-families-calendar.html" class="nav-link">تصفح الأسر</a></li>
-                </ul>
-                <div class="nav-actions">
-                    <a href="login.html" class="btn btn-text-light">تسجيل الدخول</a>
-                    <a href="visitor-register.html" class="btn btn-secondary">التسجيل</a>
-                </div>
-                <button class="mobile-menu-toggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
+            <div class="nav-brand">
+                <img src="images/logo.png" alt="منصة كرم" class="logo">
+                <h1>كرم</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">الرئيسية</a></li>
+                <li><a href="#features">المميزات</a></li>
+                <li><a href="#how-it-works">كيف تعمل</a></li>
+                <li><a href="#browse">تصفح المجالس</a></li>
+                <li><a href="about.html">من نحن</a></li>
+                <li><a href="contact.html">اتصل بنا</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="login.html" class="btn-login">تسجيل الدخول</a>
+                <a href="browse-families-calendar.html" class="btn-primary">ابحث الآن</a>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <section id="home" class="hero">
-        <div class="hero-pattern"></div>
+        <div class="hero-background"></div>
         <div class="container">
             <div class="hero-content">
-                <div class="hero-text">
-                    <span class="hero-badge">نصل ضيوف الرحمن بأهل الكرم</span>
-                    <h1 class="hero-title">
-                        اختبر الضيافة<br>
-                        <span class="text-gradient">الأصيلة</span>
-                    </h1>
-                    <p class="hero-description">
-                        منصة تجمع بين روح الضيافة الأصيلة التي يمثلها الدلة الذهبية والعطاء والكرم
-                        والاحتفاء بالكيف. نربط شركات العمرة بالأسر المكية والمدنية لتقديم خدمات الضيافة لضيوف الرحمن
-                    </p>
-                    <div class="hero-actions">
-                        <a href="visitor-register.html" class="btn btn-primary btn-lg">
-                            <span>ابدأ الآن</span>
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </a>
-                        <a href="#packages" class="btn btn-secondary btn-lg">
-                            استكشف الباقات
-                        </a>
-                    </div>
-                    <div class="hero-stats">
-                        <div class="stat">
-                            <span class="stat-value">500+</span>
-                            <span class="stat-label">أسرة مستضيفة</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-value">10,000+</span>
-                            <span class="stat-label">معتمر سعيد</span>
-                        </div>
-                    </div>
+                <h1 class="hero-title">
+                    اكتشف الضيافة السعودية الأصيلة
+                </h1>
+                <p class="hero-subtitle">
+                    منصة كرم تربطك بعوائل مضيافة في مكة والمدينة لتجربة ضيافة لا تُنسى
+                </p>
+                <div class="hero-actions">
+                    <a href="browse-families-calendar.html" class="btn-hero-primary">
+                        🔍 ابحث عن مجلس
+                    </a>
+                    <a href="#how-it-works" class="btn-hero-secondary">
+                        📺 كيف تعمل المنصة
+                    </a>
                 </div>
-                <div class="hero-image">
-                    <div class="hero-card">
-                        <img src="assets/hero-main.jpg" alt="ضيافة كرم" class="card-image">
-                        <div class="card-overlay">
-                            <div class="icon-grid">
-                                <div class="traditional-icon">🏠</div>
-                                <div class="traditional-icon">☕</div>
-                                <div class="traditional-icon">🎁</div>
-                            </div>
-                        </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <h3>100+</h3>
+                        <p>عائلة مضيفة</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>500+</h3>
+                        <p>حجز ناجح</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>4.8⭐</h3>
+                        <p>تقييم العملاء</p>
                     </div>
                 </div>
             </div>
@@ -104,109 +73,39 @@
     <section id="features" class="features">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">لماذا كرم؟</h2>
-                <p class="section-subtitle">تجربة فريدة تجمع بين الأصالة والحداثة</p>
+                <h2>لماذا منصة كرم؟</h2>
+                <p>نقدم لك تجربة ضيافة استثنائية بأمان وراحة تامة</p>
             </div>
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">🏠</div>
-                    <h3 class="feature-title">ضيافة أصيلة</h3>
-                    <p class="feature-description">تجربة حقيقية في مجالس الأسر المكية والمدنية مع أجواء تراثية دافئة</p>
+                    <img src="images/icons/home.svg" alt="عوائل موثوقة" class="feature-icon-img">
+                    <h3>عوائل موثوقة</h3>
+                    <p>جميع العوائل خضعت للمراجعة والفحص الدقيق من قبل فريقنا</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">📸</div>
-                    <h3 class="feature-title">تصوير احترافي</h3>
-                    <p class="feature-description">ركن تصوير خاص بالزي الشعبي مع صور تذكارية يتم مشاركتها على منصات
-                        التواصل</p>
+                    <img src="images/icons/payment.svg" alt="دفع آمن" class="feature-icon-img">
+                    <h3>دفع آمن</h3>
+                    <p>نظام دفع إلكتروني آمن ومعتمد مع إمكانية الاسترداد</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🍽️</div>
-                    <h3 class="feature-title">وجبات تقليدية</h3>
-                    <p class="feature-description">وجبات عشاء أو غداء أصيلة مع ضيافة استقبال كاملة</p>
+                    <img src="images/icons/booking.svg" alt="حجز سريع" class="feature-icon-img">
+                    <h3>حجز سريع</h3>
+                    <p>احجز مجلسك بضغطة زر واحصل على تأكيد فوري</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🎁</div>
-                    <h3 class="feature-title">هدايا تذكارية</h3>
-                    <p class="feature-description">ركن خاص يحتوي على تحف وهدايا مكية ومدنية أصيلة</p>
+                    <img src="images/icons/authenticity.svg" alt="تقييمات حقيقية" class="feature-icon-img">
+                    <h3>تقييمات حقيقية</h3>
+                    <p>اطلع على تقييمات الزوار السابقين قبل الحجز</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🤝</div>
-                    <h3 class="feature-title">حجوزات جماعية</h3>
-                    <p class="feature-description">عروض خاصة للشركات مع إمكانية الحجز الجماعي</p>
+                    <img src="images/icons/mosque.svg" alt="قرب الحرمين" class="feature-icon-img">
+                    <h3>قرب الحرمين</h3>
+                    <p>مجالس قريبة من المسجد الحرام والمسجد النبوي</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">⭐</div>
-                    <h3 class="feature-title">ضمان الجودة</h3>
-                    <p class="feature-description">جميع الأسر معتمدة ومراجعة للحفاظ على أعلى معايير الجودة</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Packages Section -->
-    <section id="packages" class="packages">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">باقاتنا</h2>
-                <p class="section-subtitle">اختر الباقة التي تناسبك</p>
-            </div>
-            <div class="packages-grid">
-                <div class="package-card">
-                    <div class="package-icon">☕</div>
-                    <h3 class="package-title">باقة الضيافة البسيطة</h3>
-                    <p class="package-description">استقبال حار مع ضيافة تقليدية في مجلس أصيل</p>
-                    <ul class="package-features">
-                        <li>استقبال ترحيبي</li>
-                        <li>قهوة وتمر وحلويات تقليدية</li>
-                        <li>جلسة تراثية (1-2 ساعة)</li>
-                        <li>ركن تصوير بالزي الشعبي</li>
-                        <li>صور تذكارية احترافية</li>
-                        <li>إمكانية شراء الهدايا</li>
-                    </ul>
-                    <div class="package-price">
-                        <span class="price">يبدأ من 150 <span class="price-currency">ريال</span></span>
-                        <span class="per">للفرد</span>
-                    </div>
-                    <a href="browse-families-calendar.html" class="btn btn-primary btn-block">احجز الآن</a>
-                </div>
-
-                <div class="package-card featured">
-                    <div class="package-badge">الأكثر شعبية</div>
-                    <div class="package-icon">🍽️</div>
-                    <h3 class="package-title">باقة الوجبة الكاملة</h3>
-                    <p class="package-description">تجربة متكاملة مع وجبة تقليدية فاخرة</p>
-                    <ul class="package-features">
-                        <li>كل ما في الباقة البسيطة</li>
-                        <li>وجبة غداء أو عشاء تقليدي</li>
-                        <li>أطباق شعبية أصيلة</li>
-                        <li>جلسة ممتدة (2-3 ساعات)</li>
-                        <li>هدية تذكارية خاصة</li>
-                        <li>خصم 10% على المنتجات</li>
-                    </ul>
-                    <div class="package-price">
-                        <span class="price">يبدأ من 300 <span class="price-currency">ريال</span></span>
-                        <span class="per">للفرد</span>
-                    </div>
-                    <a href="browse-families-calendar.html" class="btn btn-primary btn-block">احجز الآن</a>
-                </div>
-
-                <div class="package-card">
-                    <div class="package-icon">🏢</div>
-                    <h3 class="package-title">باقة الشركات</h3>
-                    <p class="package-description">عروض خاصة للحجوزات الجماعية</p>
-                    <ul class="package-features">
-                        <li>جميع مميزات الباقة الكاملة</li>
-                        <li>أسعار تنافسية للمجموعات</li>
-                        <li>مدير حساب مخصص</li>
-                        <li>فواتير موحدة</li>
-                        <li>جدولة مرنة</li>
-                        <li>تقارير مفصلة</li>
-                    </ul>
-                    <div class="package-price">
-                        <span class="price">أسعار خاصة</span>
-                        <span class="per">حسب الطلب</span>
-                    </div>
-                    <button class="btn btn-secondary btn-block" onclick="showB2BForm()">تواصل معنا</button>
+                    <img src="images/icons/hospitality.svg" alt="ضيافة أصيلة" class="feature-icon-img">
+                    <h3>ضيافة أصيلة</h3>
+                    <p>تجربة ضيافة سعودية تقليدية في بيئة عائلية دافئة</p>
                 </div>
             </div>
         </div>
@@ -216,148 +115,178 @@
     <section id="how-it-works" class="how-it-works">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">كيف يعمل</h2>
-                <p class="section-subtitle">خطوات بسيطة لتجربة لا تُنسى</p>
+                <h2>كيف تعمل منصة كرم؟</h2>
+                <p>أربع خطوات بسيطة لتجربة ضيافة مميزة</p>
             </div>
-            <div class="steps">
+            <div class="steps-container">
                 <div class="step">
                     <div class="step-number">1</div>
                     <div class="step-content">
-                        <h3 class="step-title">اختر الأسرة المضيفة</h3>
-                        <p class="step-description">تصفح الأسر المستضيفة في مكة أو المدينة واختر ما يناسبك</p>
+                        <h3>ابحث واختر</h3>
+                        <p>تصفح المجالس المتاحة وابحث حسب المدينة والتاريخ والسعر</p>
                     </div>
                 </div>
-                <div class="step-arrow">←</div>
                 <div class="step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3 class="step-title">احجز باقتك</h3>
-                        <p class="step-description">اختر الباقة والموعد المناسب وأكمل الحجز بأمان</p>
+                        <h3>احجز وادفع</h3>
+                        <p>اختر التاريخ المناسب واحجز بأمان عبر بوابة الدفع الموثوقة</p>
                     </div>
                 </div>
-                <div class="step-arrow">←</div>
                 <div class="step">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3 class="step-title">استمتع بالتجربة</h3>
-                        <p class="step-description">عش تجربة الضيافة الأصيلة مع الطعام والصور والذكريات</p>
+                        <h3>استمتع بالضيافة</h3>
+                        <p>تمتع بتجربة ضيافة أصيلة مع عوائل سعودية كريمة</p>
                     </div>
                 </div>
-                <div class="step-arrow">←</div>
                 <div class="step">
                     <div class="step-number">4</div>
                     <div class="step-content">
-                        <h3 class="step-title">شارك تجربتك</h3>
-                        <p class="step-description">استلم صورك واترك تقييمك وشارك ذكرياتك</p>
+                        <h3>قيّم التجربة</h3>
+                        <p>شارك تجربتك وساعد الآخرين في اتخاذ القرار الصحيح</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Investment Section -->
-    <section class="investment">
+    <!-- Popular Majalis -->
+    <section id="browse" class="popular-majalis">
         <div class="container">
-            <div class="investment-content">
-                <div class="investment-text">
-                    <h2 class="investment-title">استثمر في مستقبل الضيافة</h2>
-                    <p class="investment-description">
-                        نحن نبحث عن شركاء استثماريين يشاركوننا رؤيتنا في تطوير قطاع الضيافة
-                        وتقديم تجارب فريدة لضيوف الرحمن
-                    </p>
-                    <ul class="investment-features">
-                        <li>سوق متنامي بفرص واعدة</li>
-                        <li>نموذج عمل مثبت وقابل للتوسع</li>
-                        <li>فريق ذو خبرة وشغف</li>
-                        <li>رؤية واضحة للمستقبل</li>
-                    </ul>
-                    <button class="btn btn-secondary btn-lg" onclick="showInvestmentForm()">
-                        تواصل للاستثمار
-                    </button>
+            <div class="section-header">
+                <h2>المجالس الأكثر طلباً</h2>
+                <p>اكتشف أفضل المجالس في مكة والمدينة</p>
+            </div>
+            <div class="majalis-grid" id="popular-majalis">
+                <!-- Populated by JavaScript -->
+                <p class="text-center">جاري التحميل...</p>
+            </div>
+            <div class="text-center" style="margin-top: 40px;">
+                <a href="browse-families-calendar.html" class="btn-view-all">
+                    عرض جميع المجالس ←
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- For Families CTA -->
+    <section class="cta-families">
+        <div class="container">
+            <div class="cta-content">
+                <h2>هل أنت عائلة مضيفة؟</h2>
+                <p>انضم لمنصة كرم واستقبل الضيوف مع دخل إضافي مضمون</p>
+                <div class="cta-benefits">
+                    <div class="benefit">✅ دخل إضافي شهري</div>
+                    <div class="benefit">✅ مرونة في الأوقات</div>
+                    <div class="benefit">✅ دعم فني كامل</div>
                 </div>
-                <div class="investment-stats">
-                    <div class="stat-card">
-                        <h3>+200%</h3>
-                        <p>نمو سنوي متوقع</p>
+                <a href="family-register.html" class="btn-cta">
+                    سجّل كعائلة مضيفة
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2>ماذا يقول عملاؤنا</h2>
+                <p>تجارب حقيقية من زوار سعداء</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">
+                        "تجربة رائعة! العائلة كانت في منتهى الكرم والضيافة. المجلس نظيف ومريح والموقع قريب من الحرم."
+                    </p>
+                    <div class="testimonial-author">
+                        <strong>أحمد المالكي</strong>
+                        <span>زائر من الرياض</span>
                     </div>
-                    <div class="stat-card">
-                        <h3>50K+</h3>
-                        <p>معتمر سنوياً</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">
+                        "منصة ممتازة وسهلة الاستخدام. الحجز سريع والدفع آمن. أنصح الجميع بتجربة منصة كرم."
+                    </p>
+                    <div class="testimonial-author">
+                        <strong>فاطمة السعيد</strong>
+                        <span>زائرة من جدة</span>
                     </div>
-                    <div class="stat-card">
-                        <h3>3 مدن</h3>
-                        <p>خطة التوسع</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">
+                        "الضيافة كانت أكثر من رائعة. شعرت بالأمان والراحة طوال الزيارة. شكراً لمنصة كرم!"
+                    </p>
+                    <div class="testimonial-author">
+                        <strong>محمد العتيبي</strong>
+                        <span>زائر من الدمام</span>
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta">
+        <div class="container">
+            <h2>هل أنت مستعد لتجربة الضيافة الأصيلة؟</h2>
+            <p>ابدأ رحلتك الآن مع منصة كرم</p>
+            <a href="browse-families-calendar.html" class="btn-final-cta">
+                ابحث عن مجلس الآن
+            </a>
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <img src="assets/logo.png" alt="كرم" class="footer-logo">
-                    <p class="footer-description">نصل ضيوف الرحمن بأهل الكرم</p>
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <img src="images/logo.png" alt="منصة كرم" style="height:60px; margin-bottom:12px;">
+                    <h3>كرم</h3>
+                    <p>منصة ضيافة سعودية أصيلة تربط العوائل بالزوار</p>
+                </div>
+                <div class="footer-col">
+                    <h4>روابط سريعة</h4>
+                    <ul>
+                        <li><a href="about.html">عن المنصة</a></li>
+                        <li><a href="contact.html">اتصل بنا</a></li>
+                        <li><a href="faq.html">الأسئلة الشائعة</a></li>
+                        <li><a href="browse-families-calendar.html">تصفح المجالس</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>للعوائل</h4>
+                    <ul>
+                        <li><a href="family-register.html">سجّل كعائلة</a></li>
+                        <li><a href="family-dashboard.html">لوحة التحكم</a></li>
+                        <li><a href="faq.html#families">أسئلة العوائل</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>تواصل معنا</h4>
+                    <p>📧 info@karm.sa</p>
+                    <p>📱 +966556777063</p>
                     <div class="social-links">
-                        <a href="#" class="social-link">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                            </svg>
-                        </a>
-                        <a href="#" class="social-link">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                            </svg>
-                        </a>
-                        <a href="#" class="social-link">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-                            </svg>
-                        </a>
+                        <a href="#">📘</a>
+                        <a href="#">📸</a>
+                        <a href="#">🐦</a>
                     </div>
-                </div>
-                <div class="footer-section">
-                    <h4 class="footer-title">روابط سريعة</h4>
-                    <ul class="footer-links">
-                        <li><a href="#home">الرئيسية</a></li>
-                        <li><a href="#packages">الباقات</a></li>
-                        <li><a href="#how-it-works">كيف يعمل</a></li>
-                        <li><a href="browse-families.html">تصفح الأسر</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4 class="footer-title">للأسر المستضيفة</h4>
-                    <ul class="footer-links">
-                        <li><a href="family-register.html">انضم كأسرة مستضيفة</a></li>
-                        <li><a href="login.html">تسجيل دخول الأسر</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4 class="footer-title">للشركات</h4>
-                    <ul class="footer-links">
-                        <li><a href="company-register.html">تسجيل الشركات</a></li>
-                        <li><a href="login.html">تسجيل دخول الشركات</a></li>
-                    </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 كرم. جميع الحقوق محفوظة.</p>
-                <div class="footer-bottom-links">
-                    <a href="#">الشروط والأحكام</a>
-                    <a href="#">سياسة الخصوصية</a>
-                </div>
+                <p>&copy; 2025 منصة كرم. جميع الحقوق محفوظة.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Modals will be added here -->
-    <div id="modal-container"></div>
-
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
     <script src="js/main.js"></script>
     <script src="js/landing.js"></script>
 </body>

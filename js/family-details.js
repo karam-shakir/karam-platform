@@ -9,7 +9,7 @@ let currentImageIndex = 0;
 let selectedPackage = null;
 
 // Get family ID from URL
-const urlParams = new URL Window.location.search);
+const urlParams = new URLSearchParams(window.location.search);
 const familyId = urlParams.get('id');
 
 // Load family details on page load
@@ -24,13 +24,13 @@ document.addEventListener('DOMContentLoaded', () => {
 // Load family details from Supabase
 async function loadFamilyDetails() {
     try {
-        if (!supabase) {
+        if (!supabaseClient) {
             showError('لم يتم تهيئة قاعدة البيانات');
             return;
         }
 
         // Fetch family details
-        const { data: family, error: familyError } = await supabase
+        const { data: family, error: familyError } = await supabaseClient
             .from('host_families')
             .select(`
                 *,
@@ -52,7 +52,7 @@ async function loadFamilyDetails() {
         currentImages = family.images || [];
 
         // Fetch packages
-        const { data: packages, error: packagesError } = await supabase
+        const { data: packages, error: packagesError } = await supabaseClient
             .from('packages')
             .select('*')
             .eq('family_id', familyId)
@@ -62,7 +62,7 @@ async function loadFamilyDetails() {
         currentPackages = packages || [];
 
         // Fetch reviews
-        const { data: reviews, error: reviewsError } = await supabase
+        const { data: reviews, error: reviewsError } = await supabaseClient
             .from('reviews')
             .select(`
                 *,

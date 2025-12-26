@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المجالس - منصة كرم</title>
+    <link rel="stylesheet" href="styles/unified-dashboards.css">
+</head>
+
+<body class="rtl family-dash">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>منصة كرم</h1>
+            <p id="family-name">عائلة ...</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="family-dashboard.html" class="nav-item">
+                <span class="icon">📊</span>
+                <span>لوحة التحكم</span>
+            </a>
+            <a href="family-wallet.html" class="nav-item">
+                <span class="icon">💰</span>
+                <span>المحفظة</span>
+            </a>
+            <a href="family-bookings.html" class="nav-item">
+                <span class="icon">📅</span>
+                <span>الحجوزات</span>
+            </a>
+            <a href="family-majlis.html" class="nav-item active">
+                <span class="icon">🏠</span>
+                <span>المجالس</span>
+            </a>
+            <a href="family-availability.html" class="nav-item">
+                <span class="icon">📆</span>
+                <span>التوفر</span>
+            </a>
+            <a href="family-profile.html" class="nav-item">
+                <span class="icon">⚙️</span>
+                <span>الملف الشخصي</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button onclick="karamAuth.logout()" class="btn-logout">
+                <span class="icon">🚪</span>
+                <span>تسجيل خروج</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <h2>🏠 المجالس</h2>
+            </div>
+            <div class="top-bar-right">
+                <button onclick="majlisManager.showAddModal()" class="btn-add">
+                    ➕ إضافة مجلس
+                </button>
+                <button data-lang-toggle class="btn-lang">English</button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="dashboard-container">
+            <!-- Stats -->
+            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                <div class="stat-card">
+                    <div class="stat-icon">🏠</div>
+                    <div class="stat-info">
+                        <h3 id="total-majlis">0</h3>
+                        <p>إجمالي المجالس</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <h3 id="active-majlis">0</h3>
+                        <p>نشطة</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <h3 id="total-capacity">0</h3>
+                        <p>السعة الإجمالية</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Majlis Grid -->
+            <div class="majlis-grid" id="majlis-list">
+                <p class="text-center">جاري التحميل...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" style="display:none; text-align:center; padding:60px;">
+                <div style="font-size:80px; margin-bottom:20px;">🏠</div>
+                <h3>لا توجد مجالس بعد</h3>
+                <p style="color:#666; margin:20px 0;">ابدأ بإضافة مجلسك الأول</p>
+                <button onclick="majlisManager.showAddModal()" class="btn-primary">➕ إضافة مجلس</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Modal -->
+    <div id="majlis-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">➕ إضافة مجلس جديد</h2>
+                <button onclick="majlisManager.closeModal()" class="btn-close">✕</button>
+            </div>
+
+            <form id="majlisForm" onsubmit="return majlisManager.saveMajlis(event)">
+                <input type="hidden" id="majlis-id">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>اسم المجلس *</label>
+                        <input type="text" id="majlis-name" required placeholder="مثال: مجلس الرجال الرئيسي">
+                    </div>
+                    <div class="form-group">
+                        <label>نوع المجلس *</label>
+                        <select id="majlis-type" required>
+                            <option value="">اختر النوع</option>
+                            <option value="men">مجلس رجالي</option>
+                            <option value="women">مجلس نسائي</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>السعة (عدد الأشخاص) *</label>
+                        <input type="number" id="capacity" required min="5" max="100" placeholder="مثال: 20">
+                    </div>
+                    <div class="form-group">
+                        <label>السعر لكل شخص (ريال) *</label>
+                        <input type="number" id="base-price" required min="50" step="10" placeholder="مثال: 150">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>الوصف بالعربية *</label>
+                    <textarea id="description-ar" rows="4" required
+                        placeholder="اكتب وصفاً مفصلاً للمجلس..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>الوصف بالإنجليزية</label>
+                    <textarea id="description-en" rows="4" placeholder="English description (optional)"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>الموقع/العنوان *</label>
+                    <input type="text" id="location" required placeholder="مثال: حي العزيزية، مكة المكرمة">
+                </div>
+
+                <div class="form-group">
+                    <label>رابط الموقع (Google Maps)</label>
+                    <input type="url" id="maps-url" placeholder="https://maps.google.com/...">
+                </div>
+
+                <div class="form-group">
+                    <label>المرافق المتاحة (اختر ما ينطبق)</label>
+                    <div class="amenities-grid">
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="amenity" value="wifi"> Wi-Fi
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="amenity" value="parking"> موقف سيارات
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="amenity" value="ac"> تكييف
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="amenity" value="tv"> شاشة تلفاز
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="amenity" value="kitchen"> مطبخ
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="amenity" value="bathroom"> دورة مياه
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>صور المجلس</label>
+                    <input type="file" id="majlis-photos" accept="image/*" multiple>
+                    <small>يمكنك رفع حتى 5 صور (حجم كل صورة: حتى 5 MB)</small>
+                    <div id="photos-preview" class="photos-preview"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="is-active" checked>
+                        <span>المجلس نشط ومتاح للحجز</span>
+                    </label>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn-primary">
+                        <span id="save-btn-text">حفظ المجلس</span>
+                        <div class="spinner" style="display:none;"></div>
+                    </button>
+                    <button type="button" onclick="majlisManager.closeModal()" class="btn-secondary">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/config-enhanced.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/family-majlis.js"></script>
+</body>
+
+</html>

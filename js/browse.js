@@ -97,13 +97,30 @@ async function loadFamilies() {
     `;
 
     try {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 800));
+        if (!supabaseClient) {
+            throw new Error('Supabase client not initialized');
+        }
 
-        // In real app: fetch from Supabase
-        // const { data, error } = await supabase.from('host_families').select('*');
+        const { data, error } = await supabaseClient
+            .from('host_families')
+            .select(`
+                *,
+                packages:packages(*)
+            `);
 
-        families = MOCK_FAMILIES;
+        if (error) throw error;
+
+        families = data || [];
+
+        // Mapping fix for UI:
+        families = families.map(f => ({
+            ...f,
+            name: f.family_name || f.name,
+            // Ensure array fields exist
+            features: f.features || [],
+            packages: f.packages || [] // Join result
+        }));
+
         renderFamilies(families);
 
     } catch (error) {

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حجوزاتي - منصة كرم</title>
+    <link rel="stylesheet" href="styles/unified-dashboards.css">
+</head>
+
+<body class="rtl visitor-dash">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>منصة كرم</h1>
+            <p id="visitor-name">زائر ...</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="/visitor-dashboard.html" class="nav-item">
+                <span class="icon">📊</span>
+                <span>لوحة التحكم</span>
+            </a>
+            <a href="/visitor-bookings.html" class="nav-item active">
+                <span class="icon">📅</span>
+                <span>حجوزاتي</span>
+            </a>
+            <a href="/browse-families.html" class="nav-item">
+                <span class="icon">🔍</span>
+                <span>تصفح المجالس</span>
+            </a>
+            <a href="/cart.html" class="nav-item">
+                <span class="icon">🛒</span>
+                <span>العربة</span>
+            </a>
+            <a href="/visitor-profile.html" class="nav-item">
+                <span class="icon">👤</span>
+                <span>الملف الشخصي</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button onclick="karamAuth.logout()" class="btn-logout">
+                <span class="icon">🚪</span>
+                <span>تسجيل خروج</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <h2>📅 حجوزاتي</h2>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="dashboard-container">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="visitorBookings.switchTab('all')">
+                    الكل (<span id="all-count">0</span>)
+                </button>
+                <button class="tab" onclick="visitorBookings.switchTab('upcoming')">
+                    القادمة (<span id="upcoming-count">0</span>)
+                </button>
+                <button class="tab" onclick="visitorBookings.switchTab('completed')">
+                    المكتملة (<span id="completed-count">0</span>)
+                </button>
+                <button class="tab" onclick="visitorBookings.switchTab('cancelled')">
+                    الملغاة (<span id="cancelled-count">0</span>)
+                </button>
+            </div>
+
+            <!-- Bookings List -->
+            <div id="bookings-list" class="section-card">
+                <p class="text-center">جاري التحميل...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-client.js"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/visitor-bookings.js"></script>
+</body>
+
+</html>
