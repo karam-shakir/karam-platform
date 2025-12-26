@@ -39,6 +39,14 @@ async function loadBookings(userId) {
         today.setHours(0, 0, 0, 0);
 
         const all = data || [];
+        window.allBookings = all; // Store globally for filtering
+
+        const upcoming = all.filter(b => new Date(b.booking_date) >= today && b.booking_status !== 'cancelled');
+        const past = all.filter(b => new Date(b.booking_date) < today);
+
+        document.getElementById('all-count').textContent = all.length;
+        document.getElementById('upcoming-count').textContent = upcoming.length;
+        document.getElementById('past-count').textContent = past.length;
 
         renderBookings(all);
 
@@ -136,5 +144,29 @@ function getStatusStyle(status) {
     return styles[status] || 'background:#e2e3e5;color:#383d41;';
 }
 
-const visitorBookings = { init: () => { } };
+// Filter function
+function filterBookings(filter) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
+    let filtered = window.allBookings || [];
+
+    if (filter === 'upcoming') {
+        filtered = filtered.filter(b => new Date(b.booking_date) >= today && b.booking_status !== 'cancelled');
+    } else if (filter === 'past') {
+        filtered = filtered.filter(b => new Date(b.booking_date) < today);
+    }
+
+    // Update active tab
+    document.querySelectorAll('.tab').forEach(t => {
+        t.style.background = 'white';
+        t.style.color = 'var(--color-primary)';
+    });
+    event.target.style.background = 'var(--color-primary)';
+    event.target.style.color = 'white';
+
+    renderBookings(filtered);
+}
+
+const visitorBookings = { init: () => { } };
+```

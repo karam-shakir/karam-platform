@@ -58,6 +58,22 @@
 
         <!-- Content -->
         <div class="dashboard-container">
+            <!-- Tabs -->
+            <div class="tabs" style="display:flex;gap:10px;margin-bottom:20px;">
+                <button class="tab active" onclick="filterBookings('all')"
+                    style="padding:10px 20px;border:2px solid var(--color-primary);background:var(--color-primary);color:white;border-radius:8px;cursor:pointer;">
+                    الكل (<span id="all-count">0</span>)
+                </button>
+                <button class="tab" onclick="filterBookings('upcoming')"
+                    style="padding:10px 20px;border:2px solid var(--color-primary);background:white;color:var(--color-primary);border-radius:8px;cursor:pointer;">
+                    القادمة (<span id="upcoming-count">0</span>)
+                </button>
+                <button class="tab" onclick="filterBookings('past')"
+                    style="padding:10px 20px;border:2px solid var(--color-primary);background:white;color:var(--color-primary);border-radius:8px;cursor:pointer;">
+                    السابقة (<span id="past-count">0</span>)
+                </button>
+            </div>
+
             <!-- Bookings List -->
             <div id="bookings-list" class="section-card">
                 <p class="text-center">جاري التحميل...</p>
