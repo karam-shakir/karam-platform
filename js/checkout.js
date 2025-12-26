@@ -115,23 +115,20 @@ function initializeMoyasar() {
     const MOYASAR_TEST_KEY = 'pk_test_1au5CTZmjPNnL4e84CcWxzkzujJeLVdjS3yuTFrC';
 
     Moyasar.init({
-        element: '#moyasar-form',
-        amount: amount * 100, // Convert to halalas
+        element: '.mysr-form', // Try class selector instead
+        amount: amount * 100,
         currency: 'SAR',
-        description: `حجز مجلس - ${currentBooking?.majlis?.majlis_name || 'كرم'}`,
+        description: `Booking ${bookingId}`,
         publishable_api_key: MOYASAR_TEST_KEY,
         callback_url: `${window.location.origin}/payment-success.html?booking_id=${bookingId}`,
-        methods: ['creditcard', 'stcpay'],
+        methods: ['creditcard'],
+
+        // Additional required fields
+        language: 'ar',
 
         // Metadata
         metadata: {
-            booking_id: bookingId,
-            customer_email: currentBooking?.customer_email || '',
-            customer_name: currentBooking?.customer_name || ''
-        },
-
-        on_initiating: function () {
-            console.log('💳 Payment initiating...');
+            booking_id: bookingId
         },
 
         on_completed: async function (payment) {
@@ -141,7 +138,7 @@ function initializeMoyasar() {
 
         on_failed: function (error) {
             console.error('❌ Payment failed:', error);
-            handlePaymentFailure(error);
+            alert('فشل الدفع: ' + error.message);
         }
     });
 
