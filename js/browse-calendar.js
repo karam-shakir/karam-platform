@@ -1,6 +1,6 @@
 // ============================================
-// Browse & Book Majalis - v2.0
-// Fixed: No city filter (ENUM issues)
+// Browse & Book Majalis - v2.1
+// Fixed: Better query and error logging
 // ============================================
 
 let selectedMajlis = null;
@@ -16,6 +16,8 @@ let searchFilters = {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🚀 Browse calendar initialized');
+
     // Setup date picker
     flatpickr('#date-picker', {
         locale: 'ar',
@@ -62,12 +64,15 @@ async function searchFamilies() {
     try {
         const majlisType = document.getElementById('majlis-filter')?.value || '';
 
-        // Build query - NO city filter (ENUM issues)
+        console.log('🔍 Starting search for majalis...');
+        console.log('Filters:', { majlisType });
+
+        // Build query - use LEFT join instead of INNER
         let query = window.supabaseClient
             .from('majlis')
             .select(`
                 *,
-                families!inner(
+                families (
                     id,
                     family_name,
                     city
@@ -76,27 +81,41 @@ async function searchFamilies() {
             .eq('is_active', true);
 
         if (majlisType) {
+            console.log('Applying majlis_type filter:', majlisType);
             query = query.eq('majlis_type', majlisType);
         }
 
+        console.log('Executing query...');
         const { data, error } = await query;
 
         if (error) {
-            console.error('Search error:', error);
+            console.error('❌ Query error:', error);
+            console.error('Error details:', {
+                message: error.message,
+                hint: error.hint,
+                details: error.details,
+                code: error.code
+            });
             throw error;
         }
+
+        console.log('✅ Query successful!');
+        console.log('📊 Results:', data);
+        console.log('📈 Count:', data?.length || 0);
 
         document.getElementById('results-count').textContent = `${data?.length || 0} مجلس متاح`;
         renderMajalisList(data || []);
 
     } catch (error) {
-        console.error('Error searching:', error);
-        alert('حدث خطأ: ' + (error.message || 'غير معروف'));
+        console.error('❌ Search failed:', error);
+        alert('حدث خطأ: ' + (error.message || 'غير محدد'));
     }
 }
 
 function renderMajalisList(majalisList) {
     const container = document.getElementById('families-grid');
+
+    console.log('🎨 Rendering', majalisList.length, 'majalis');
 
     if (!majalisList || majalisList.length === 0) {
         container.innerHTML = `
@@ -108,7 +127,9 @@ function renderMajalisList(majalisList) {
         return;
     }
 
-    container.innerHTML = majalisList.map(m => `
+    container.innerHTML = majalisList.map(m => {
+        console.log('Rendering majlis:', m.majlis_name, m);
+        return `
         <div class="family-card">
             <div class="family-image"></div>
             <div class="family-content">
@@ -132,7 +153,10 @@ function renderMajalisList(majalisList) {
                 </div>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
+
+    console.log('✅ Rendering complete');
 }
 
 function escapeHtml(text) {
