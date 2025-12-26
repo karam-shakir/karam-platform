@@ -19,7 +19,7 @@ class BrowseMajalis {
     async loadAllMajalis() {
         try {
             // Get all active majalis with family info
-            const { data, error } = await karamDB.supabase
+            const { data, error } = await window.supabaseClient
                 .from('majlis')
                 .select(`
                     *,
@@ -166,7 +166,7 @@ class BrowseMajalis {
 
     async viewDetails(majlisId) {
         try {
-            const { data, error } = await karamDB.supabase
+            const { data, error } = await window.supabaseClient
                 .from('majlis')
                 .select(`
                     *,
@@ -298,7 +298,7 @@ class BrowseMajalis {
 
     async addToCart() {
         // Check if user is logged in
-        const { user } = await karamDB.getCurrentUser();
+        const { data: { user } } = await window.supabaseClient.auth.getUser();
 
         if (!user) {
             // Redirect to login with return URL
