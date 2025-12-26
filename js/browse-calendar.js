@@ -1,13 +1,12 @@
 // ============================================
-// Browse & Book Majalis - Complete Implementation  
-// Fixed to use supabaseClient directly
+// Browse & Book Majalis - v2.0
+// Fixed: No city filter (ENUM issues)
 // ============================================
 
 let selectedMajlis = null;
 let searchFilters = {
     date: null,
     timeSlot: null,
-    city: null,
     majlisType: null,
     guestCount: 1
 };
@@ -41,12 +40,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ============================================
 
 function selectTimeSlot(slot) {
-    // Remove selection from all
     document.querySelectorAll('.time-slot-card').forEach(card => {
         card.classList.remove('selected');
     });
-
-    // Add selection to clicked
     document.querySelector(`[data-slot="${slot}"]`).classList.add('selected');
     searchFilters.timeSlot = slot;
     document.getElementById('time-slot').value = slot;
@@ -64,11 +60,9 @@ function changeGuestCount(delta) {
 
 async function searchFamilies() {
     try {
-        // Get filters
-        const city = document.getElementById('city-filter')?.value || '';
         const majlisType = document.getElementById('majlis-filter')?.value || '';
 
-        // Build query - use supabaseClient directly
+        // Build query - NO city filter (ENUM issues)
         let query = window.supabaseClient
             .from('majlis')
             .select(`
@@ -81,11 +75,6 @@ async function searchFamilies() {
             `)
             .eq('is_active', true);
 
-        // Apply filters
-        if (city) {
-            query = query.eq('families.city', city);
-        }
-
         if (majlisType) {
             query = query.eq('majlis_type', majlisType);
         }
@@ -93,19 +82,16 @@ async function searchFamilies() {
         const { data, error } = await query;
 
         if (error) {
-            console.error('Search error details:', error);
+            console.error('Search error:', error);
             throw error;
         }
 
-        // Update results count
         document.getElementById('results-count').textContent = `${data?.length || 0} مجلس متاح`;
-
-        // Render results
         renderMajalisList(data || []);
 
     } catch (error) {
         console.error('Error searching:', error);
-        alert('حدث خطأ أثناء البحث: ' + (error.message || 'غير معروف'));
+        alert('حدث خطأ: ' + (error.message || 'غير معروف'));
     }
 }
 
@@ -116,7 +102,7 @@ function renderMajalisList(majalisList) {
         container.innerHTML = `
             <div class="empty-state" style="grid-column: 1/-1;">
                 <div class="empty-state-icon">🔍</div>
-                <p>لا توجد مجالس متاحة بهذه المواصفات</p>
+                <p>لا توجد مجالس متاحة</p>
             </div>
         `;
         return;
@@ -129,9 +115,7 @@ function renderMajalisList(majalisList) {
                 <div class="family-header">
                     <div>
                         <h3 class="family-name">${escapeHtml(m.majlis_name)}</h3>
-                        <div class="family-rating">
-                            <span>⭐ 4.8</span>
-                        </div>
+                        <div class="family-rating"><span>⭐ 4.8</span></div>
                     </div>
                 </div>
                 <p class="family-location">📍 ${m.families?.city || 'مكة المكرمة'}</p>
@@ -163,20 +147,12 @@ function escapeHtml(text) {
 
 function openBookingModal(majlis) {
     selectedMajlis = majlis;
-
-    // Fill modal info
     document.getElementById('selected-majlis-id').value = majlis.id;
     document.getElementById('selected-majlis-price').value = majlis.base_price;
     document.getElementById('modal-majlis-name').textContent = majlis.majlis_name;
     document.getElementById('modal-majlis-location').textContent = `📍 ${majlis.families?.city || 'المدينة'}`;
-
-    // Set price
     document.getElementById('price-per-person').textContent = `${majlis.base_price} ر.س`;
-
-    // Update price summary
     updatePriceSummary();
-
-    // Show modal
     document.getElementById('bookingModal').classList.add('active');
 }
 
@@ -189,7 +165,6 @@ function updatePriceSummary() {
     const guests = parseInt(document.getElementById('booking-guests')?.value || 1);
     const pricePerPerson = parseFloat(document.getElementById('selected-majlis-price')?.value || 0);
     const total = guests * pricePerPerson;
-
     document.getElementById('summary-guests').textContent = guests;
     document.getElementById('total-price').textContent = `${total} ر.س`;
 }
@@ -201,7 +176,6 @@ function updatePriceSummary() {
 async function submitBooking(e) {
     e.preventDefault();
 
-    // Get form data
     const majlisId = document.getElementById('selected-majlis-id').value;
     const date = document.getElementById('booking-date').value;
     const timeSlot = document.getElementById('booking-time-slot').value;
@@ -211,23 +185,20 @@ async function submitBooking(e) {
     const totalPrice = guests * pricePerPerson;
 
     try {
-        // Check if user is logged in
         const { data: { user }, error: userError } = await window.supabaseClient.auth.getUser();
         if (userError || !user) {
-            if (confirm('يجب تسجيل الدخول أولاً. هل تريد الذهاب لصفحة تسجيل الدخول؟')) {
+            if (confirm('يجب تسجيل الدخول أولاً. انتقال لصفحة الدخول؟')) {
                 window.location.href = 'login.html';
             }
             return false;
         }
 
-        // Check availability
         const available = await checkAvailability(majlisId, date, timeSlot);
         if (!available) {
-            alert('⚠️ عذراً، هذا الموعد محجوز مسبقاً. اختر موعداً آخر.');
+            alert('⚠️ الموعد محجوز مسبقاً');
             return false;
         }
 
-        // Create booking
         const { data, error } = await window.supabaseClient
             .from('bookings')
             .insert([{
@@ -247,19 +218,14 @@ async function submitBooking(e) {
 
         if (error) throw error;
 
-        // Success! Redirect to payment
-        alert('✅ تم إنشاء الحجز بنجاح! سيتم تحويلك للدفع...');
-
-        // Store booking ID for payment
+        alert('✅ تم الحجز! انتقال للدفع...');
         localStorage.setItem('pending_booking_id', data[0].id);
         localStorage.setItem('pending_booking_amount', totalPrice);
-
-        // Redirect to payment page
         window.location.href = `checkout.html?booking_id=${data[0].id}&amount=${totalPrice}`;
 
     } catch (error) {
-        console.error('Error creating booking:', error);
-        alert('❌ حدث خطأ: ' + error.message);
+        console.error('Error:', error);
+        alert('❌ خطأ: ' + error.message);
     }
 
     return false;
@@ -276,7 +242,6 @@ async function checkAvailability(majlisId, date, timeSlot) {
 
         if (error) throw error;
 
-        // Check if there's a confirmed or pending booking
         const hasBooking = data && data.length > 0 &&
             data.some(b => b.booking_status === 'confirmed' || b.booking_status === 'pending');
 
@@ -287,7 +252,7 @@ async function checkAvailability(majlisId, date, timeSlot) {
     }
 }
 
-// Make functions global
+// Global functions
 window.selectTimeSlot = selectTimeSlot;
 window.changeGuestCount = changeGuestCount;
 window.searchFamilies = searchFamilies;
