@@ -494,7 +494,81 @@
         </div>
     </section>
 
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>🗓️ حجز مجلس</h2>
+                <button onclick="closeBookingModal()" class="btn-close">✕</button>
+            </div>
+
+            <form id="bookingForm" onsubmit="return submitBooking(event)">
+                <input type="hidden" id="selected-majlis-id">
+                <input type="hidden" id="selected-majlis-price">
+
+                <!-- Majlis Info -->
+                <div
+                    style="background: var(--color-bg-light); padding: var(--space-lg); border-radius: var(--radius-md); margin-bottom: var(--space-lg);">
+                    <h3 id="modal-majlis-name" style="margin: 0 0 var(--space-sm);">مجلس...</h3>
+                    <p id="modal-majlis-location" style="margin: 0; color: var(--color-text-light);">📍 الموقع</p>
+                </div>
+
+                <!-- Booking Details -->
+                <div class="form-group">
+                    <label>📅 تاريخ الحجز *</label>
+                    <input type="date" id="booking-date" required min="">
+                </div>
+
+                <div class="form-group">
+                    <label>🕐 الفترة *</label>
+                    <select id="booking-time-slot" required>
+                        <option value="">اختر الفترة</option>
+                        <option value="morning">صباحي (8ص - 12م)</option>
+                        <option value="afternoon">مسائي (12م - 5م)</option>
+                        <option value="evening">ليلي (5م - 12ص)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>👥 عدد الضيوف *</label>
+                    <input type="number" id="booking-guests" required min="1" max="100" value="1">
+                </div>
+
+                <div class="form-group">
+                    <label>📝 ملاحظات (اختياري)</label>
+                    <textarea id="booking-notes" rows="3" placeholder="أي طلبات خاصة أو ملاحظات..."></textarea>
+                </div>
+
+                <!-- Price Summary -->
+                <div
+                    style="background: var(--color-primary-light); padding: var(--space-lg); border-radius: var(--radius-md); margin-bottom: var(--space-lg);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-sm);">
+                        <span>السعر لكل شخص:</span>
+                        <span id="price-per-person">0 ر.س</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-sm);">
+                        <span>عدد الضيوف:</span>
+                        <span id="summary-guests">0</span>
+                    </div>
+                    <hr style="border: none; border-top: 1px solid rgba(0,0,0,0.1); margin: var(--space-md) 0;">
+                    <div
+                        style="display: flex; justify-content: space-between; font-size: var(--font-size-xl); font-weight: var(--font-weight-bold);">
+                        <span>الإجمالي:</span>
+                        <span id="total-price" style="color: var(--color-primary);">0 ر.س</span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="modal-footer">
+                    <button type="button" onclick="closeBookingModal()" class="btn btn-secondary">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">تأكيد الحجز والدفع</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Footer -->
+
     <footer class="footer">
         <div class="container">
             <div class="footer-content">

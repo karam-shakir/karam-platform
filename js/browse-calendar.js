@@ -1,516 +1,291 @@
-/**
- * Browse Families Calendar - Karam Platform
- * البحث عن الأسر بناءً على التاريخ والوقت
- */
+// ============================================
+// Browse & Book Majalis - Complete Implementation
+// ============================================
 
-// Global state
-let selectedDate = null;
-let selectedTimeSlot = []; // Changed to array for multiple selection
-let selectedCity = null;
-let guestCount = 1;
-let availableFamilies = [];
-let cart = JSON.parse(localStorage.getItem('karam_booking_cart') || '[]');
-
-// Time slot mapping
-const TIME_SLOTS = {
-    morning: { start: '08:00', end: '12:00', label: 'صباحاً' },
-    afternoon: { start: '12:00', end: '16:00', label: 'ظهراً' },
-    evening: { start: '16:00', end: '20:00', label: 'مساءً' },
-    night: { start: '20:00', end: '00:00', label: 'ليلاً' }
+let selectedMajlis = null;
+let searchFilters = {
+    date: null,
+    timeSlot: null,
+    city: null,
+    majlisType: null,
+    guestCount: 1
 };
 
-// UI Helper Functions
-function showLoading() {
-    if (window.Karam && window.Karam.Utils) {
-        window.Karam.Utils.showLoading();
-    } else {
-        console.log('Loading...');
-    }
-}
+// ============================================
+// 1. INITIALIZATION
+// ============================================
 
-function hideLoading() {
-    if (window.Karam && window.Karam.Utils) {
-        window.Karam.Utils.hideLoading();
-    } else {
-        console.log('Loading finished');
-    }
-}
+document.addEventListener('DOMContentLoaded', async () => {
+    // Setup date picker
+    flatpickr('#date-picker', {
+        locale: 'ar',
+        minDate: 'today',
+        dateFormat: 'Y-m-d',
+        onChange: function (selectedDates, dateStr) {
+            searchFilters.date = dateStr;
+            document.getElementById('booking-date').value = dateStr;
+            document.getElementById('booking-date').min = new Date().toISOString().split('T')[0];
+        }
+    });
 
-function showToast(title, message, type) {
-    if (window.Karam && window.Karam.Utils) {
-        window.Karam.Utils.showToast(title, message, type);
-    } else {
-        alert(`${title}: ${message}`);
-    }
-}
+    // Load available majalis on page load
+    await searchFamilies();
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Browse Calendar Page Loaded');
-
-    try {
-        initializeDatePicker();
-    } catch (e) {
-        console.error('Failed to init date picker:', e);
-    }
-
-    try {
-        updateCartDisplay();
-    } catch (e) {
-        console.error('Failed to update cart:', e);
-    }
-
-    // Load families on first load (show all)
-    // Small delay to ensure Supabase is ready
-    setTimeout(() => {
-        searchFamilies();
-    }, 100);
+    // Setup guests count listener
+    document.getElementById('booking-guests')?.addEventListener('change', updatePriceSummary);
 });
 
-// Initialize Date Picker
-function initializeDatePicker() {
-    if (typeof flatpickr === 'undefined') {
-        console.error('❌ Flatpickr library not loaded!');
-        return;
-    }
+// ============================================
+// 2. SEARCH & FILTERS
+// ============================================
 
-    try {
-        flatpickr('#date-picker', {
-            locale: 'ar',
-            dateFormat: 'Y-m-d',
-            minDate: 'today',
-            maxDate: new Date().fp_incr(90),
-            onChange: (selectedDates, dateStr) => {
-                selectedDate = dateStr;
-            }
-        });
-    } catch (err) {
-        console.error('❌ Error initializing Flatpickr:', err);
-    }
-}
-
-// Change Guest Count
-window.changeGuestCount = function (delta) {
-    const newCount = guestCount + delta;
-    if (newCount >= 1 && newCount <= 50) {
-        guestCount = newCount;
-        document.getElementById('guest-count').textContent = guestCount;
-    }
-}
-
-// Select Time Slot
-window.selectTimeSlot = function (slot) {
-    const card = document.querySelector(`[data-slot="${slot}"]`);
-
-    // Toggle selection (multiple selection)
-    if (card.classList.contains('selected')) {
+function selectTimeSlot(slot) {
+    // Remove selection from all
+    document.querySelectorAll('.time-slot-card').forEach(card => {
         card.classList.remove('selected');
-        selectedTimeSlot = selectedTimeSlot.filter(s => s !== slot);
-    } else {
-        card.classList.add('selected');
-        if (!selectedTimeSlot.includes(slot)) {
-            selectedTimeSlot.push(slot);
-        }
-    }
+    });
 
-    // Update hidden input with all selected slots
-    document.getElementById('time-slot').value = selectedTimeSlot.join(',');
-
-    console.log('Selected time slots:', selectedTimeSlot);
+    // Add selection to clicked
+    document.querySelector(`[data-slot="${slot}"]`).classList.add('selected');
+    searchFilters.timeSlot = slot;
+    document.getElementById('time-slot').value = slot;
 }
 
-// Search Families
-// Search Families
-window.searchFamilies = async function () {
-    selectedCity = document.getElementById('city-filter').value;
-    const selectedMajlisType = document.getElementById('majlis-filter').value;
+function changeGuestCount(delta) {
+    const countEl = document.getElementById('guest-count');
+    let current = parseInt(countEl.textContent);
+    current += delta;
+    if (current < 1) current = 1;
+    if (current > 100) current = 100;
+    countEl.textContent = current;
+    searchFilters.guestCount = current;
+}
 
-    console.log('🔍 Search initiated:');
-    console.log('- Date:', selectedDate);
-    console.log('- Time slots:', selectedTimeSlot);
-    console.log('- City:', selectedCity);
-    console.log('- Majlis Type:', selectedMajlisType);
-    console.log('- Guests:', guestCount);
-
-    showLoading();
-
+async function searchFamilies() {
     try {
-        // Fetch available families from Supabase
-        const { data: families, error } = await window.supabaseClient
-            .from('host_families')
+        // Get filters
+        const city = document.getElementById('city-filter')?.value || '';
+        const majlisType = document.getElementById('majlis-filter')?.value || '';
+
+        // Build query
+        let query = karamDB.supabase
+            .from('majlis')
             .select(`
-                id,
-                family_name,
-                city,
-                address,
-                capacity,
-                description,
-                majlis_type,
-                amenities,
-                rating,
-                total_reviews,
-                created_at
+                *,
+                families!inner(
+                    id,
+                    family_name,
+                    location,
+                    city
+                )
             `)
-            .eq('status', 'approved')
-            .order('created_at', { ascending: false });
+            .eq('is_active', true);
 
-        if (error) {
-            console.error('Supabase error:', error);
-            hideLoading();
-            showToast('خطأ', 'حدث خطأ أثناء البحث. حاول مرة أخرى.', 'error');
-            return;
+        // Apply filters
+        if (city) {
+            query = query.eq('families.city', city);
         }
 
-        // If date and time are selected, filter by availability
-        if (selectedDate && selectedTimeSlot.length > 0) {
-            console.log('🔍 Filtering by availability...');
-            availableFamilies = await filterByAvailability(families, selectedDate, selectedTimeSlot, guestCount);
-        } else {
-            console.log('📋 Showing all families (no date/time filter)');
-            availableFamilies = families || [];
+        if (majlisType) {
+            query = query.eq('majlis_type', majlisType);
         }
 
-        // Client-side filtering for capacity
-        availableFamilies = availableFamilies.filter(family => (family.capacity || 0) >= guestCount);
+        const { data, error } = await query;
 
-        displayFamilies(availableFamilies);
+        if (error) throw error;
+
+        // Update results count
+        document.getElementById('results-count').textContent = `${data?.length || 0} مجلس متاح`;
+
+        // Render results
+        renderMajalisList(data || []);
 
     } catch (error) {
-        console.error('❌ Search error:', error);
-        if (typeof showToast === 'function') {
-            showToast('خطأ', 'فشل تحميل قائمة الأسر: ' + (error.message || 'خطأ غير معروف'), 'error');
-        } else {
-            console.error(error.message);
-        }
-        // Ensure UI shows empty state handled by displayFamilies
-        displayFamilies([]);
-    } finally {
-        hideLoading();
+        console.error('Error searching:', error);
+        alert('حدث خطأ أثناء البحث');
     }
 }
 
-// Filter families by availability
-async function filterByAvailability(families, date, timeSlot, guests) {
-    // This function now expects timeSlot to be an array, but the RPC expects a single slot.
-    // For now, we'll use the first selected slot if multiple are selected.
-    const primarySlot = timeSlot.length > 0 ? TIME_SLOTS[timeSlot[0]] : null;
-    if (!primarySlot) return families; // If no slot selected, return all families
+function renderMajalisList(maj alisList) {
+    const container = document.getElementById('families-grid');
 
-    const availableIds = [];
-
-    for (const family of families) {
-        try {
-            // Check availability using the SQL function
-            const { data, error } = await supabaseClient
-                .rpc('get_available_families', {
-                    p_date: date,
-                    p_start_time: primarySlot.start,
-                    p_end_time: primarySlot.end,
-                    p_guest_count: guests
-                });
-
-            if (error) {
-                console.error('RPC error for family', family.id, error);
-                continue;
-            }
-
-            // Check if this family is in the results
-            if (data && data.some(f => f.family_id === family.id)) {
-                availableIds.push(family.id);
-            }
-        } catch (err) {
-            console.error('Error checking availability:', err);
-        }
-    }
-
-    return families.filter(f => availableIds.includes(f.id));
-}
-
-// Helper function to format city names
-function formatCity(city) {
-    if (city === 'makkah') return 'مكة المكرمة';
-    if (city === 'madinah') return 'المدينة المنورة';
-    return city; // Default to original if not recognized
-}
-
-// Helper function to calculate price (assuming first package price for simplicity)
-function calculatePrice(family) {
-    return family.packages?.[0]?.price || 200; // Default price if no package
-}
-
-// Display Families
-function displayFamilies(families) {
-    const grid = document.getElementById('families-grid');
-    const countLabel = document.getElementById('results-count');
-
-    countLabel.textContent = `${families.length} أسرة متاحة`;
-
-    if (families.length === 0) {
-        grid.innerHTML = `
-            <div class="empty-results" style="grid-column: 1/-1; text-align: center; padding: 40px;">
-                <div style="font-size: 60px; margin-bottom: 20px;">🏠</div>
-                <h3>لا توجد أسر متاحة حالياً</h3>
-                <p class="text-muted">جرب تغيير معايير البحث أو اختيار وقت آخر</p>
+    if (!majalisList || majalisList.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1;">
+                <div class="empty-state-icon">🔍</div>
+                <p>لا توجد مجالس متاحة بهذه المواصفات</p>
             </div>
         `;
         return;
     }
 
-    grid.innerHTML = families.map(family => {
-        // Real data usage: availableFamilies are already filtered by availability.
-        // We use capacity as proxy for remaining spots since RPC handled the logic.
-        const remainingSpots = family.capacity || 10;
-        const isInCart = cart.some(item => item.familyId === family.id);
-        const basePackage = family.packages?.[0] || { price: 200 }; // Ensure basePackage is defined
-
-        let availabilityIcon = '✅';
-        // Logic simplification: if it's in the list, it's available.
-        if (remainingSpots <= 3) availabilityIcon = '⚠️';
-
-        return `
-            <div class="family-card ${isInCart ? 'in-cart' : ''}" data-family-id="${family.id}">
-                <div class="availability-badge">
-                    ${availabilityIcon} ${remainingSpots} أماكن متبقية
-                </div>
-                <div class="family-image" style="background: linear-gradient(135deg, #${Math.floor(Math.random() * 16777215).toString(16)} 30%, #${Math.floor(Math.random() * 16777215).toString(16)} 100%);">
-                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 60px;">
-                        🏠
-                    </div>
-                </div>
-                <div class="family-content">
-                    <div class="family-header">
-                        <div>
-                            <h3 class="family-name">${family.family_name}</h3>
-                            <div class="family-rating">
-                                <span>⭐</span>
-                                <span>${family.rating || 4.5}</span>
-                                <span style="color: var(--color-text-light);">(${family.total_bookings || 0})</span>
-                            </div>
+    container.innerHTML = majalisList.map(m => `
+        <div class="family-card">
+            <div class="family-image"></div>
+            <div class="family-content">
+                <div class="family-header">
+                    <div>
+                        <h3 class="family-name">${escapeHtml(m.majlis_name)}</h3>
+                        <div class="family-rating">
+                            <span>⭐ 4.8</span>
                         </div>
                     </div>
-                    
-                    <div class="family-location">
-                        📍 ${family.city === 'makkah' ? 'مكة المكرمة' : 'المدينة المنورة'}
-                    </div>
-                    
-                    <div class="family-features">
-                        <span class="feature-badge">👥 حتى ${family.capacity || 10} ضيف</span>
-                        ${family.has_parking ? '<span class="feature-badge">🚗 موقف</span>' : ''}
-                        ${family.has_elevator ? '<span class="feature-badge">🛗 مصعد</span>' : ''}
-                    </div>
-                    
-                    <p class="text-sm text-muted" style="margin-bottom: var(--space-md);">
-                        ${(family.description || 'أسرة كريمة تستقبل ضيوف الرحمن').substring(0, 80)}...
-                    </p>
-                    
-                    <div class="family-price">
-                        <div>
-                            <div class="price-amount">${basePackage.price} ر.س</div>
-                            <div class="price-label">للشخص</div>
-                        </div>
-                        <button 
-                            onclick="addToCart('${family.id}', '${family.family_name}', ${basePackage.price})" 
-                            class="btn ${isInCart ? 'btn-success' : 'btn-primary'}"
-                            ${remainingSpots <= 0 ? 'disabled' : ''}>
-                            ${isInCart ? '✓ في السلة' : remainingSpots <= 0 ? 'غير متاح' : '+ إضافة'}
-                        </button>
-                    </div>
                 </div>
-            </div>
-        `;
-    }).join('');
-}
-
-// Add to Cart
-function addToCart(familyId, familyName, price) {
-    if (!selectedDate || selectedTimeSlot.length === 0) {
-        showToast('تنبيه', 'الرجاء اختيار التاريخ والوقت أولاً', 'warning');
-        return;
-    }
-
-    // --- Auth Check ---
-    const user = JSON.parse(localStorage.getItem('karam_user'));
-
-    if (!user) {
-        showToast('تنبيه', 'يجب تسجيل الدخول أو إنشاء حساب لإتمام الحجز', 'warning');
-        setTimeout(() => {
-            window.location.href = 'login.html?redirect=browse-families-calendar.html';
-        }, 1500);
-        return;
-    }
-
-    // Find the family object to check majlis type
-    const family = availableFamilies.find(f => f.id === familyId);
-
-    if (user && user.user_metadata && family) {
-        const userGender = user.user_metadata.gender; // 'male' or 'female'
-        const majlisType = family.majlis_type; // 'men', 'women', 'both'
-
-        let warningMessage = '';
-        let isMismatch = false;
-
-        // Check Mismatch
-        if (userGender === 'male' && majlisType === 'women') {
-            isMismatch = true;
-            warningMessage = `⚠️ تنبيه شديد:\n\nلقد قمت باختيار "مجلس نساء" وأنت مسجل كـ "ذكر".\n\nحسب سياسات المنصة، لا يُسمح للرجال بدخول مجالس النساء.\n\nفي حال إتمام الحجز وثبوت المخالفة عند الوصول:\n1- سيتم إلغاء استضافتكم فوراً.\n2- لن يتم استرداد المبلغ المدفوع نهائياً.\n\nهل تقر وتوافق على المتابعة تحت مسؤوليتك الشخصية؟`;
-        } else if (userGender === 'female' && majlisType === 'men') {
-            isMismatch = true;
-            warningMessage = `⚠️ تنبيه شديد:\n\nلقد قمت باختيار "مجلس رجال" وأنت مسجلة كـ "أنثى".\n\nحسب سياسات المنصة، لا يُسمح للنساء بدخول مجالس الرجال.\n\nفي حال إتمام الحجز وثبوت المخالفة عند الوصول:\n1- سيتم إلغاء استضافتكم فوراً.\n2- لن يتم استرداد المبلغ المدفوع نهائياً.\n\nهل تقرين وتوافقين على المتابعة تحت مسؤوليتك الشخصية؟`;
-        }
-
-        if (isMismatch) {
-            // Show custom confirmation dialog
-            if (!confirm(warningMessage)) {
-                return; // User cancelled
-            }
-        }
-    }
-    // ----------------------------------
-
-    // Check if already in cart
-    const existingIndex = cart.findIndex(item =>
-        item.familyId === familyId &&
-        item.date === selectedDate &&
-        // Check if ANY of the selected slots match (simplified for now, ideally exact set match)
-        item.timeSlot[0] === selectedTimeSlot[0]
-    );
-
-    if (existingIndex >= 0) {
-        // Remove from cart
-        cart.splice(existingIndex, 1);
-        showToast('تم', 'تم إزالة الحجز من السلة', 'info');
-    } else {
-        // Add to cart
-        const slot = TIME_SLOTS[selectedTimeSlot];
-        cart.push({
-            familyId,
-            familyName,
-            date: selectedDate,
-            timeSlot: selectedTimeSlot,
-            timeLabel: slot.label,
-            startTime: slot.start,
-            endTime: slot.end,
-            guestCount,
-            price: price * guestCount,
-            pricePerGuest: price
-        });
-        showToast('نجح', 'تمت إضافة الحجز للسلة', 'success');
-    }
-
-    // Save to localStorage
-    localStorage.setItem('karam_booking_cart', JSON.stringify(cart));
-
-    // Update display
-    updateCartDisplay();
-    displayFamilies(availableFamilies); // Re-render to update "in cart" state
-}
-
-// Update Cart Display
-function updateCartDisplay() {
-    const cartItems = document.getElementById('cart-items');
-    const cartTotal = document.getElementById('cart-total');
-    const cartCount = document.getElementById('cart-count');
-    const checkoutBtn = document.getElementById('checkout-btn');
-    const totalAmount = document.getElementById('total-amount');
-
-    cartCount.textContent = cart.length;
-
-    if (cart.length === 0) {
-        cartItems.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">🛒</div>
-                <p>لم تضف أي حجوزات بعد</p>
-            </div>
-        `;
-        cartTotal.style.display = 'none';
-        checkoutBtn.style.pointerEvents = 'none';
-        checkoutBtn.style.opacity = '0.5';
-        return;
-    }
-
-    const total = cart.reduce((sum, item) => sum + item.price, 0);
-
-    cartItems.innerHTML = cart.map((item, index) => `
-        <div class="cart-item">
-            <div class="cart-item-header">
-                <strong>${item.familyName}</strong>
-                <button onclick="removeFromCart(${index})" class="btn btn-text" style="color: var(--color-error); padding: 0;">
-                    ✕
-                </button>
-            </div>
-            <div class="text-sm text-muted">
-                📅 ${item.date}<br>
-                🕐 ${item.timeLabel} (${item.startTime}-${item.endTime})<br>
-                👥 ${item.guestCount} ضيف × ${item.pricePerGuest} ر.س
-            </div>
-            <div class="text-right font-bold" style="margin-top: var(--space-xs); color: var(--color-primary);">
-                ${item.price} ر.س
+                <p class="family-location">📍 ${m.families?.location || m.families?.city || 'مكة المكرمة'}</p>
+                <div class="family-features">
+                    <span class="feature-badge">${m.majlis_type === 'men' ? '👨 رجالي' : '👩 نسائي'}</span>
+                    <span class="feature-badge">👥 ${m.capacity} شخص</span>
+                </div>
+                <div class="family-price">
+                    <div>
+                        <div class="price-amount">${m.base_price} ر.س</div>
+                        <div class="price-label">لكل شخص</div>
+                    </div>
+                    <button onclick='openBookingModal(${JSON.stringify(m).replace(/'/g, "&apos;")})' class="btn btn-primary">احجز الآن</button>
+                </div>
             </div>
         </div>
     `).join('');
-
-    totalAmount.textContent = `${total} ريال`;
-    cartTotal.style.display = 'block';
-
-    // Enable button (remove disabled style/behavior)
-    checkoutBtn.style.pointerEvents = 'auto';
-    checkoutBtn.style.opacity = '1';
-    // Validation removed for debugging
-    // checkoutBtn.onclick = window.validateCheckout;
 }
 
-// Remove from Cart
-window.removeFromCart = function (index) {
-    cart.splice(index, 1);
-    localStorage.setItem('karam_booking_cart', JSON.stringify(cart));
-    updateCartDisplay();
-    displayFamilies(availableFamilies);
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
-// View Cart
-function viewCart() {
-    if (cart.length === 0) {
-        showToast('تنبيه', 'السلة فارغة', 'info');
-        return;
+// ============================================
+// 3. BOOKING MODAL
+// ============================================
+
+function openBookingModal(majlis) {
+    selectedMajlis = majlis;
+
+    // Fill modal info
+    document.getElementById('selected-majlis-id').value = majlis.id;
+    document.getElementById('selected-majlis-price').value = majlis.base_price;
+    document.getElementById('modal-majlis-name').textContent = majlis.majlis_name;
+    document.getElementById('modal-majlis-location').textContent = `📍 ${majlis.families?.location || majlis.families?.city || ''}`;
+
+    // Set price
+    document.getElementById('price-per-person').textContent = `${majlis.base_price} ر.س`;
+
+    // Update price summary
+    updatePriceSummary();
+
+    // Show modal
+    document.getElementById('bookingModal').classList.add('active');
+}
+
+function closeBookingModal() {
+    document.getElementById('bookingModal').classList.remove('active');
+    selectedMajlis = null;
+}
+
+function updatePriceSummary() {
+    const guests = parseInt(document.getElementById('booking-guests')?.value || 1);
+    const pricePerPerson = parseFloat(document.getElementById('selected-majlis-price')?.value || 0);
+    const total = guests * pricePerPerson;
+
+    document.getElementById('summary-guests').textContent = guests;
+    document.getElementById('total-price').textContent = `${total} ر.س`;
+}
+
+// ============================================
+// 4. SUBMIT BOOKING
+// ============================================
+
+async function submitBooking(e) {
+    e.preventDefault();
+
+    // Get form data
+    const majlisId = document.getElementById('selected-majlis-id').value;
+    const date = document.getElementById('booking-date').value;
+    const timeSlot = document.getElementById('booking-time-slot').value;
+    const guests = parseInt(document.getElementById('booking-guests').value);
+    const notes = document.getElementById('booking-notes').value;
+    const pricePerPerson = parseFloat(document.getElementById('selected-majlis-price').value);
+    const totalPrice = guests * pricePerPerson;
+
+    try {
+        // Check if user is logged in
+        const { user } = await karamAuth.getCurrentUser();
+        if (!user) {
+            if (confirm('يجب تسجيل الدخول أولاً. هل تريد الذهاب لصفحة تسجيل الدخول؟')) {
+                window.location.href = 'login.html';
+            }
+            return false;
+        }
+
+        // Check availability
+        const available = await checkAvailability(majlisId, date, timeSlot);
+        if (!available) {
+            alert('⚠️ عذراً، هذا الموعد محجوز مسبقاً. اختر موعداً آخر.');
+            return false;
+        }
+
+        // Create booking
+        const { data, error } = await karamDB.insert('bookings', {
+            user_id: user.id,
+            majlis_id: majlisId,
+            booking_date: date,
+            time_slot: timeSlot,
+            guests_count: guests,
+            total_price: totalPrice,
+            notes: notes,
+            customer_name: user.user_metadata?.full_name || user.email,
+            customer_email: user.email,
+            booking_status: 'pending',
+            payment_status: 'pending'
+        });
+
+        if (error) throw error;
+
+        // Success! Redirect to payment
+        alert('✅ تم إنشاء الحجز بنجاح! سيتم تحويلك للدفع...');
+
+        // Store booking ID for payment
+        localStorage.setItem('pending_booking_id', data[0].id);
+        localStorage.setItem('pending_booking_amount', totalPrice);
+
+        // Redirect to payment page (we'll create this next)
+        window.location.href = `checkout.html?booking_id=${data[0].id}&amount=${totalPrice}`;
+
+    } catch (error) {
+        console.error('Error creating booking:', error);
+        alert('❌ حدث خطأ: ' + error.message);
     }
-    // Scroll to cart
-    document.querySelector('.cart-summary').scrollIntoView({ behavior: 'smooth' });
+
+    return false;
 }
 
-// Validate Checkout (for Anchor Tag)
-function validateCheckout(event) {
-    console.log('Validating checkout...');
+async function checkAvailability(majlisId, date, timeSlot) {
+    try {
+        const { data, error } = await karamDB.select('bookings', {
+            eq: {
+                majlis_id: majlisId,
+                booking_date: date,
+                time_slot: timeSlot
+            }
+        });
 
-    // Safety check for empty cart
-    if (!cart || cart.length === 0) {
-        event.preventDefault(); // Stop navigation
-        if (typeof showToast === 'function') showToast('تنبيه', 'السلة فارغة', 'warning');
-        else alert('السلة فارغة');
+        if (error) throw error;
+
+        // Check if there's a confirmed or pending booking
+        const hasBooking = data && data.length > 0 &&
+            data.some(b => b.booking_status === 'confirmed' || b.booking_status === 'pending');
+
+        return !hasBooking;
+    } catch (error) {
+        console.error('Error checking availability:', error);
         return false;
     }
-
-    // Check if user is logged in
-    const userString = localStorage.getItem('karam_user');
-    const user = userString ? JSON.parse(userString) : null;
-
-    if (!user) {
-        event.preventDefault(); // Stop navigation
-        if (typeof showToast === 'function') showToast('تنبيه', 'يجب تسجيل الدخول أولاً', 'warning');
-        else alert('يجب تسجيل الدخول أولاً');
-
-        setTimeout(() => {
-            window.location.href = 'login.html?redirect=browse-families-calendar.html';
-        }, 1000);
-        return false;
-    }
-
-    // If all good, allow navigation
-    return true;
 }
 
-// Expose globally
-window.validateCheckout = validateCheckout;
-window.searchFamilies = searchFamilies;
-window.addToCart = addToCart;
+// Make functions global
 window.selectTimeSlot = selectTimeSlot;
 window.changeGuestCount = changeGuestCount;
+window.searchFamilies = searchFamilies;
+window.openBookingModal = openBookingModal;
+window.closeBookingModal = closeBookingModal;
+window.submitBooking = submitBooking;
