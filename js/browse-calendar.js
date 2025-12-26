@@ -197,9 +197,12 @@ function closeBookingModal() {
 function updatePriceSummary() {
     const guests = parseInt(document.getElementById('booking-guests')?.value || 1);
     const pricePerPerson = parseFloat(document.getElementById('selected-majlis-price')?.value || 0);
-    const total = guests * pricePerPerson;
+    const subtotal = guests * pricePerPerson;
+    const vat = subtotal * 0.15; // 15% VAT
+    const total = subtotal + vat;
+
     document.getElementById('summary-guests').textContent = guests;
-    document.getElementById('total-price').textContent = `${total} ر.س`;
+    document.getElementById('total-price').textContent = `${total.toFixed(2)} ر.س`;
 }
 
 // ============================================

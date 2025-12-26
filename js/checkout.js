@@ -67,6 +67,11 @@ async function loadBookingDetails() {
 function renderBookingSummary(booking) {
     const container = document.getElementById('booking-details');
 
+    // Calculate VAT
+    const subtotal = parseFloat(booking.total_price);
+    const vatAmount = subtotal * 0.15;
+    const totalWithVat = subtotal + vatAmount;
+
     container.innerHTML = `
         <div class="summary-item">
             <span>المجلس:</span>
@@ -85,8 +90,16 @@ function renderBookingSummary(booking) {
             <span>${booking.guests_count} ضيف</span>
         </div>
         <div class="summary-item">
+            <span>المبلغ الأساسي:</span>
+            <span>${subtotal.toFixed(2)} ر.س</span>
+        </div>
+        <div class="summary-item">
+            <span>ضريبة القيمة المضافة (15%):</span>
+            <span>${vatAmount.toFixed(2)} ر.س</span>
+        </div>
+        <div class="summary-item">
             <span>إجمالي المبلغ:</span>
-            <span>${booking.total_price} ر.س</span>
+            <span>${totalWithVat.toFixed(2)} ر.س</span>
         </div>
     `;
 }
