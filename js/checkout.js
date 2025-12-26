@@ -108,7 +108,7 @@ function initializeMoyasar() {
         description: `حجز مجلس - ${currentBooking?.majlis?.majlis_name || 'كرم'}`,
         publishable_api_key: MOYASAR_TEST_KEY,
         callback_url: `${window.location.origin}/payment-success.html?booking_id=${bookingId}`,
-        methods: ['creditcard', 'stcpay', 'applepay'],
+        methods: ['creditcard', 'stcpay'],
 
         // Metadata
         metadata: {
