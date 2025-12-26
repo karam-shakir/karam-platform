@@ -106,7 +106,7 @@ async function searchFamilies() {
     }
 }
 
-function renderMajalisList(maj alisList) {
+function renderMajalisList(majalisList) {
     const container = document.getElementById('families-grid');
 
     if (!majalisList || majalisList.length === 0) {
