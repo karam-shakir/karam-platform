@@ -77,15 +77,15 @@
                 <div class="stat-card">
                     <div class="stat-icon">⏳</div>
                     <div class="stat-info">
-                        <h3 id="upcoming-bookings">0</h3>
+                        <h3 id="upcoming-count">0</h3>
                         <p>قادمة</p>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">✅</div>
+                    <div class="stat-icon">⏰</div>
                     <div class="stat-info">
-                        <h3 id="completed-bookings">0</h3>
-                        <p>مكتملة</p>
+                        <h3 id="pending-count">0</h3>
+                        <p>قيد الانتظار</p>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -97,97 +97,31 @@
                 </div>
             </div>
 
-            <!-- Tabs -->
-            <div class="tabs">
-                <button class="tab active" onclick="bookingsManager.switchTab('upcoming')">
-                    ⏳ القادمة (<span id="upcoming-count">0</span>)
-                </button>
-                <button class="tab" onclick="bookingsManager.switchTab('completed')">
-                    ✅ المكتملة
-                </button>
-                <button class="tab" onclick="bookingsManager.switchTab('cancelled')">
-                    ❌ الملغاة
-                </button>
-                <button class="tab" onclick="bookingsManager.switchTab('all')">
-                    📋 الكل
-                </button>
-            </div>
-
-            <!-- Tab Content: Upcoming -->
-            <div id="tab-upcoming" class="tab-content active">
-                <div class="bookings-grid" id="upcoming-list">
+            <!-- Bookings Lists -->
+            <div class="section">
+                <h3>⏳ الحجوزات القادمة</h3>
+                <div id="upcoming-bookings" class="bookings-list">
                     <p class="text-center">جاري التحميل...</p>
                 </div>
             </div>
 
-            <!-- Tab Content: Completed -->
-            <div id="tab-completed" class="tab-content">
-                <div class="bookings-grid" id="completed-list">
+            <div class="section" style="margin-top: 40px;">
+                <h3>📋 الحجوزات السابقة</h3>
+                <div id="past-bookings" class="bookings-list">
                     <p class="text-center">جاري التحميل...</p>
-                </div>
-            </div>
-
-            <!-- Tab Content: Cancelled -->
-            <div id="tab-cancelled" class="tab-content">
-                <div class="bookings-grid" id="cancelled-list">
-                    <p class="text-center">جاري التحميل...</p>
-                </div>
-            </div>
-
-            <!-- Tab Content: All -->
-            <div id="tab-all" class="tab-content">
-                <div class="card">
-                    <div class="card-body">
-                        <table class="transactions-table">
-                            <thead>
-                                <tr>
-                                    <th>الرقم</th>
-                                    <th>الزائر</th>
-                                    <th>المجلس</th>
-                                    <th>التاريخ</th>
-                                    <th>الوقت</th>
-                                    <th>الضيوف</th>
-                                    <th>المبلغ</th>
-                                    <th>الحالة</th>
-                                </tr>
-                            </thead>
-                            <tbody id="all-tbody">
-                                <tr>
-                                    <td colspan="8" class="text-center">جاري التحميل...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Booking Details Modal -->
-    <div id="booking-modal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; padding:20px; overflow-y:auto;">
-        <div style="max-width:600px; margin:50px auto; background:white; border-radius:12px; padding:40px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:30px;">
-                <h2>📋 تفاصيل الحجز</h2>
-                <button onclick="bookingsManager.closeModal()"
-                    style="background:none; border:none; font-size:24px; cursor:pointer;">✕</button>
-            </div>
-
-            <div id="booking-details"></div>
-
-            <div style="margin-top:30px; display:flex; gap:10px; justify-content:flex-end;">
-                <button onclick="bookingsManager.closeModal()"
-                    style="padding:10px 20px; border:1px solid #ddd; background:white; border-radius:8px; cursor:pointer;">إغلاق</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/js/supabase-client.js"></script>
-    <script src="/js/i18n.js"></script>
-    <script src="/js/auth.js"></script>
-    <script src="/js/family-bookings.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/config-enhanced.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/family-bookings.js"></script>
 </body>
 
 </html>

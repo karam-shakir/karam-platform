@@ -2,292 +2,265 @@
 // Family Bookings Management
 // ============================================
 
-class BookingsManager {
+class FamilyBookingsManager {
     constructor() {
         this.familyData = null;
-        this.currentBooking = null;
-        this.init();
+        this.bookings = [];
     }
 
     async init() {
-        if (!karamAuth.requireAuth(['family'])) {
-            return;
-        }
-
-        await this.loadFamilyData();
-        await this.loadStats();
-        await this.loadBookings('upcoming');
-    }
-
-    async loadFamilyData() {
         try {
-            const { user } = await karamDB.getCurrentUser();
-            const { data } = await karamDB.select('families', {
-                eq: { user_id: user.id },
-                single: true
-            });
+            await karamAuth.checkSession();
+            await karamAuth.requireAuth('family');
 
-            this.familyData = data;
-            document.getElementById('family-name').textContent = data.family_name;
+            this.familyData = karamAuth.currentUserProfile;
+            await this.loadBookings();
         } catch (error) {
-            console.error('Error loading family data:', error);
+            console.error('Init error:', error);
         }
     }
 
-    async loadStats() {
+    async loadBookings() {
         try {
-            // Get all bookings for this family
-            const { data: allBookings } = await karamDB.select('bookings', {
-                select: `
+            // Get all bookings for this family's majalis
+            const { data, error } = await window.supabaseClient
+                .from('bookings')
+                .select(`
                     *,
-                    majlis!inner(families!inner(id))
-                `
-            });
+                    majlis:majlis_id (
+                        majlis_name,
+                        majlis_type,
+                        capacity,
+                        base_price
+                    )
+                `)
+                .in('majlis_id', await this.getFamilyMajalisIds())
+                .order('booking_date', { ascending: true })
+                .order('created_at', { ascending: false });
 
-            const familyBookings = allBookings?.filter(b =>
-                b.majlis?.families?.id === this.familyData.id
-            ) || [];
+            if (error) throw error;
 
-            const today = new Date().toISOString().split('T')[0];
-            const upcoming = familyBookings.filter(b =>
-                b.booking_status === 'confirmed' && b.booking_date >= today
-            );
-            const completed = familyBookings.filter(b =>
-                b.booking_status === 'completed'
-            );
-
-            const totalRevenue = familyBookings.reduce((sum, b) =>
-                sum + parseFloat(b.family_amount || 0), 0
-            );
-
-            document.getElementById('total-bookings').textContent = familyBookings.length;
-            document.getElementById('upcoming-bookings').textContent = upcoming.length;
-            document.getElementById('completed-bookings').textContent = completed.length;
-            document.getElementById('total-revenue').textContent = i18n.formatCurrency(totalRevenue);
-            document.getElementById('upcoming-count').textContent = upcoming.length;
-
-        } catch (error) {
-            console.error('Error loading stats:', error);
-        }
-    }
-
-    switchTab(tab) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        event.target.classList.add('active');
-
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.getElementById(`tab-${tab}`).classList.add('active');
-
-        this.loadBookings(tab);
-    }
-
-    async loadBookings(filter) {
-        try {
-            const { data } = await karamDB.select('bookings', {
-                select: `
-                    *,
-                    visitors(full_name, phone, email),
-                    majlis!inner(majlis_name, families!inner(id, family_name))
-                `,
-                order: { column: 'booking_date', ascending: filter === 'upcoming' }
-            });
-
-            const familyBookings = data?.filter(b =>
-                b.majlis?.families?.id === this.familyData.id
-            ) || [];
-
-            let filtered = familyBookings;
-            const today = new Date().toISOString().split('T')[0];
-
-            if (filter === 'upcoming') {
-                filtered = familyBookings.filter(b =>
-                    b.booking_status === 'confirmed' && b.booking_date >= today
-                );
-            } else if (filter === 'completed') {
-                filtered = familyBookings.filter(b =>
-                    b.booking_status === 'completed'
-                );
-            } else if (filter === 'cancelled') {
-                filtered = familyBookings.filter(b =>
-                    b.booking_status === 'cancelled'
-                );
-            }
-
-            if (filter === 'all') {
-                this.renderAllBookings(familyBookings);
-            } else {
-                this.renderBookingsGrid(filtered, filter);
-            }
-
+            this.bookings = data || [];
+            this.renderBookings();
+            this.updateStats();
         } catch (error) {
             console.error('Error loading bookings:', error);
+            alert('حدث خطأ في تحميل الحجوزات');
         }
     }
 
-    renderBookingsGrid(bookings, containerId) {
-        const container = document.getElementById(`${containerId}-list`);
+    async getFamilyMajalisIds() {
+        const { data } = await window.supabaseClient
+            .from('majlis')
+            .select('id')
+            .eq('family_id', this.familyData.id);
 
-        if (bookings.length === 0) {
-            container.innerHTML = '<p class="text-center text-muted">لا توجد حجوزات</p>';
+        return data?.map(m => m.id) || [];
+    }
+
+    renderBookings() {
+        const today = new Date().toISOString().split('T')[0];
+
+        const upcoming = this.bookings.filter(b =>
+            b.booking_date >= today &&
+            (b.booking_status === 'pending' || b.booking_status === 'confirmed')
+        );
+
+        const past = this.bookings.filter(b =>
+            b.booking_date < today ||
+            b.booking_status === 'cancelled' ||
+            b.booking_status === 'completed'
+        );
+
+        this.renderBookingsList('upcoming-bookings', upcoming, true);
+        this.renderBookingsList('past-bookings', past, false);
+    }
+
+    renderBookingsList(containerId, bookings, isUpcoming) {
+        const container = document.getElementById(containerId);
+
+        if (!bookings || bookings.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <p>لا توجد حجوزات ${isUpcoming ? 'قادمة' : 'سابقة'}</p>
+                </div>
+            `;
             return;
         }
 
-        container.innerHTML = bookings.map(booking => `
-            <div class="booking-card" onclick="bookingsManager.viewBooking('${booking.id}')">
-                <div class="booking-card-header">
-                    <h4>${booking.visitors.full_name}</h4>
-                    <span class="badge badge-${this.getStatusClass(booking.booking_status)}">
-                        ${this.getStatusText(booking.booking_status)}
-                    </span>
+        container.innerHTML = bookings.map((b, index) => `
+            <div class="booking-card ${b.booking_status}">
+                <div class="booking-header">
+                    <div>
+                        <h3>${this.escapeHtml(b.majlis?.majlis_name || 'مجلس')}</h3>
+                        <p class="booking-meta">
+                            📅 ${this.formatDate(b.booking_date)} | 
+                            🕐 ${this.formatTimeSlot(b.time_slot)} | 
+                            👥 ${b.guests_count} ضيف
+                        </p>
+                    </div>
+                    <div class="booking-status-badge ${b.booking_status}">
+                        ${this.getStatusText(b.booking_status)}
+                    </div>
                 </div>
-                <div class="booking-card-body">
-                    <p><strong>📅</strong> ${i18n.formatDate(booking.booking_date)}</p>
-                    <p><strong>⏰</strong> ${this.getTimeSlotText(booking.time_slot)}</p>
-                    <p><strong>🏠</strong> ${booking.majlis.majlis_name}</p>
-                    <p><strong>👥</strong> ${booking.guest_count} ضيف</p>
+                
+                <div class="booking-details">
+                    <div class="detail-row">
+                        <span>رقم الحجز:</span>
+                        <span>${b.id.substring(0, 8)}...</span>
+                    </div>
+                    <div class="detail-row">
+                        <span>اسم العميل:</span>
+                        <span>${this.escapeHtml(b.customer_name || 'غير محدد')}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span>البريد:</span>
+                        <span>${this.escapeHtml(b.customer_email || '')}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span>الإجمالي:</span>
+                        <span class="price">${b.total_price} ر.س</span>
+                    </div>
+                    <div class="detail-row">
+                        <span>حالة الدفع:</span>
+                        <span class="payment-status ${b.payment_status}">
+                            ${this.getPaymentStatusText(b.payment_status)}
+                        </span>
+                    </div>
+                    ${b.notes ? `
+                        <div class="detail-row notes">
+                            <span>ملاحظات:</span>
+                            <span>${this.escapeHtml(b.notes)}</span>
+                        </div>
+                    ` : ''}
                 </div>
-                <div class="booking-card-footer">
-                    <span class="booking-price">${i18n.formatCurrency(booking.family_amount)}</span>
-                    <span class="booking-number">#${booking.booking_number}</span>
-                </div>
+
+                ${isUpcoming && b.booking_status === 'pending' ? `
+                    <div class="booking-actions">
+                        <button onclick="familyBookingsManager.confirmBooking('${b.id}')" class="btn btn-success">
+                            ✅ تأكيد الحجز
+                        </button>
+                        <button onclick="familyBookingsManager.cancelBooking('${b.id}')" class="btn btn-danger">
+                            ❌ إلغاء الحجز
+                        </button>
+                    </div>
+                ` : ''}
             </div>
         `).join('');
     }
 
-    renderAllBookings(bookings) {
-        const tbody = document.getElementById('all-tbody');
+    async confirmBooking(bookingId) {
+        if (!confirm('هل تريد تأكيد هذا الحجز؟')) return;
 
-        if (bookings.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" class="text-center">لا توجد حجوزات</td></tr>';
-            return;
+        try {
+            const { error } = await window.supabaseClient
+                .from('bookings')
+                .update({
+                    booking_status: 'confirmed',
+                    confirmed_at: new Date().toISOString()
+                })
+                .eq('id', bookingId);
+
+            if (error) throw error;
+
+            alert('✅ تم تأكيد الحجز بنجاح!');
+            await this.loadBookings();
+        } catch (error) {
+            console.error('Error:', error);
+            alert('❌ حدث خطأ: ' + error.message);
         }
-
-        tbody.innerHTML = bookings.map(b => `
-            <tr onclick="bookingsManager.viewBooking('${b.id}')" style="cursor:pointer;">
-                <td>#${b.booking_number}</td>
-                <td>${b.visitors.full_name}</td>
-                <td>${b.majlis.majlis_name}</td>
-                <td>${i18n.formatDate(b.booking_date)}</td>
-                <td>${this.getTimeSlotText(b.time_slot)}</td>
-                <td>${b.guest_count}</td>
-                <td>${i18n.formatCurrency(b.family_amount)}</td>
-                <td><span class="badge badge-${this.getStatusClass(b.booking_status)}">${this.getStatusText(b.booking_status)}</span></td>
-            </tr>
-        `).join('');
     }
 
-    getTimeSlotText(slot) {
+    async cancelBooking(bookingId) {
+        const reason = prompt('سبب الإلغاء (اختياري):');
+        if (reason === null) return; // User clicked cancel
+
+        try {
+            const { error } = await window.supabaseClient
+                .from('bookings')
+                .update({
+                    booking_status: 'cancelled',
+                    cancelled_at: new Date().toISOString(),
+                    cancellation_reason: reason || 'لم يذكر'
+                })
+                .eq('id', bookingId);
+
+            if (error) throw error;
+
+            alert('✅ تم إلغاء الحجز');
+            await this.loadBookings();
+        } catch (error) {
+            console.error('Error:', error);
+            alert('❌ حدث خطأ: ' + error.message);
+        }
+    }
+
+    updateStats() {
+        const today = new Date().toISOString().split('T')[0];
+
+        const totalBookings = this.bookings.length;
+        const upcomingCount = this.bookings.filter(b =>
+            b.booking_date >= today &&
+            (b.booking_status === 'confirmed' || b.booking_status === 'pending')
+        ).length;
+        const pendingCount = this.bookings.filter(b =>
+            b.booking_status === 'pending'
+        ).length;
+        const totalRevenue = this.bookings
+            .filter(b => b.payment_status === 'paid')
+            .reduce((sum, b) => sum + parseFloat(b.total_price || 0), 0);
+
+        document.getElementById('total-bookings').textContent = totalBookings;
+        document.getElementById('upcoming-count').textContent = upcomingCount;
+        document.getElementById('pending-count').textContent = pendingCount;
+        document.getElementById('total-revenue').textContent = `${totalRevenue.toFixed(2)} ر.س`;
+    }
+
+    formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('ar-SA', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+
+    formatTimeSlot(slot) {
         const slots = {
-            'morning': '🌅 صباحاً (9-12)',
-            'afternoon': '☀️ ظهراً (2-5)',
-            'evening': '🌙 مساءً (7-10)'
+            morning: 'صباحي (8ص-12م)',
+            afternoon: 'مسائي (12م-5م)',
+            evening: 'ليلي (5م-12ص)'
         };
         return slots[slot] || slot;
     }
 
-    getStatusClass(status) {
-        const classes = {
-            'pending': 'warning',
-            'confirmed': 'info',
-            'completed': 'success',
-            'cancelled': 'danger'
-        };
-        return classes[status] || 'secondary';
-    }
-
     getStatusText(status) {
-        const texts = {
-            'pending': 'قيد الانتظار',
-            'confirmed': 'مؤكد',
-            'completed': 'مكتمل',
-            'cancelled': 'ملغي'
+        const statuses = {
+            pending: 'قيد الانتظار',
+            confirmed: 'مؤكد',
+            cancelled: 'ملغي',
+            completed: 'مكتمل'
         };
-        return texts[status] || status;
+        return statuses[status] || status;
     }
 
-    async viewBooking(bookingId) {
-        try {
-            const { data } = await karamDB.select('bookings', {
-                eq: { id: bookingId },
-                select: `
-                    *,
-                    visitors(*),
-                    majlis(*),
-                    packages(*)
-                `,
-                single: true
-            });
-
-            this.currentBooking = data;
-            this.showBookingModal(data);
-
-        } catch (error) {
-            console.error('Error loading booking details:', error);
-        }
+    getPaymentStatusText(status) {
+        const statuses = {
+            pending: 'معلق',
+            paid: 'مدفوع',
+            failed: 'فشل',
+            refunded: 'مسترجع'
+        };
+        return statuses[status] || status;
     }
 
-    showBookingModal(booking) {
-        const modal = document.getElementById('booking-modal');
-        const details = document.getElementById('booking-details');
-
-        details.innerHTML = `
-            <div style="display:grid; gap:20px;">
-                <div style="background:#f8f9fa; padding:20px; border-radius:8px;">
-                    <h3 style="margin-bottom:15px;">📋 معلومات الحجز</h3>
-                    <table style="width:100%;">
-                        <tr><td><strong>رقم الحجز:</strong></td><td>#${booking.booking_number}</td></tr>
-                        <tr><td><strong>التاريخ:</strong></td><td>${i18n.formatDate(booking.booking_date)}</td></tr>
-                        <tr><td><strong>الوقت:</strong></td><td>${this.getTimeSlotText(booking.time_slot)}</td></tr>
-                        <tr><td><strong>عدد الضيوف:</strong></td><td>${booking.guest_count} شخص</td></tr>
-                        <tr><td><strong>المجلس:</strong></td><td>${booking.majlis.majlis_name}</td></tr>
-                        <tr><td><strong>الباقة:</strong></td><td>${booking.packages?.package_name_ar || '-'}</td></tr>
-                    </table>
-                </div>
-
-                <div style="background:#f8f9fa; padding:20px; border-radius:8px;">
-                    <h3 style="margin-bottom:15px;">👤 معلومات الزائر</h3>
-                    <table style="width:100%;">
-                        <tr><td><strong>الاسم:</strong></td><td>${booking.visitors.full_name}</td></tr>
-                        <tr><td><strong>الجوال:</strong></td><td>${booking.visitors.phone}</td></tr>
-                        <tr><td><strong>البريد:</strong></td><td>${booking.visitors.email || '-'}</td></tr>
-                    </table>
-                </div>
-
-                <div style="background:#f8f9fa; padding:20px; border-radius:8px;">
-                    <h3 style="margin-bottom:15px;">💰 المبالغ المالية</h3>
-                    <table style="width:100%;">
-                        <tr><td><strong>المبلغ الإجمالي:</strong></td><td>${i18n.formatCurrency(booking.total_amount)}</td></tr>
-                        <tr><td><strong>نصيب العائلة:</strong></td><td>${i18n.formatCurrency(booking.family_amount)}</td></tr>
-                        <tr><td><strong>عمولة المنصة:</strong></td><td>${i18n.formatCurrency(booking.platform_commission)}</td></tr>
-                        <tr><td><strong>حالة الدفع:</strong></td><td><span class="badge badge-${booking.payment_status === 'paid' ? 'success' : 'warning'}">${booking.payment_status === 'paid' ? 'مدفوع' : 'معلق'}</span></td></tr>
-                    </table>
-                </div>
-
-                <div>
-                    <h3 style="margin-bottom:10px;">📌 الحالة</h3>
-                    <p>
-                        <span class="badge badge-${this.getStatusClass(booking.booking_status)}">
-                            ${this.getStatusText(booking.booking_status)}
-                        </span>
-                    </p>
-                </div>
-
-                ${booking.special_requests ? `
-                    <div style="background:#fff3cd; padding:15px; border-radius:8px;">
-                        <strong>📝 ملاحظات خاصة:</strong>
-                        <p style="margin-top:10px;">${booking.special_requests}</p>
-                    </div>
-                ` : ''}
-            </div>
-        `;
-
-        modal.style.display = 'block';
-    }
-
-    closeModal() {
-        document.getElementById('booking-modal').style.display = 'none';
-        this.currentBooking = null;
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 }
 
-const bookingsManager = new BookingsManager();
+// Initialize
+const familyBookingsManager = new FamilyBookingsManager();
+document.addEventListener('DOMContentLoaded', () => familyBookingsManager.init());
