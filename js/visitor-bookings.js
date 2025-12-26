@@ -25,8 +25,7 @@ async function loadBookings(userId) {
             .select(`
                 *,
                 majlis:majlis_id (
-                    majlis_name,
-                    city
+                    majlis_name
                 )
             `)
             .eq('user_id', userId)
@@ -76,9 +75,6 @@ function renderBookings(bookings) {
             <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:15px;">
                 <div>
                     <h4 style="color:var(--color-primary);margin:0 0 5px 0;">${b.majlis?.majlis_name || 'مجلس'}</h4>
-                    <div style="color:#666;font-size:0.9em;">
-                        📍 ${b.majlis?.city || 'غير محدد'}
-                    </div>
                 </div>
                 <div class="status-badge" style="padding:5px 12px;border-radius:20px;font-size:0.85em;font-weight:bold;${getStatusStyle(b.booking_status)}">
                     ${getStatusText(b.booking_status)}
