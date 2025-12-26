@@ -169,4 +169,3 @@ function filterBookings(filter) {
 }
 
 const visitorBookings = { init: () => { } };
-```
