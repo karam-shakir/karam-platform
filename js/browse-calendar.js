@@ -1,5 +1,6 @@
 // ============================================
-// Browse & Book Majalis - Complete Implementation
+// Browse & Book Majalis - Complete Implementation  
+// Fixed to use supabaseClient directly
 // ============================================
 
 let selectedMajlis = null;
@@ -67,8 +68,8 @@ async function searchFamilies() {
         const city = document.getElementById('city-filter')?.value || '';
         const majlisType = document.getElementById('majlis-filter')?.value || '';
 
-        // Build query
-        let query = karamDB.supabase
+        // Build query - use supabaseClient directly
+        let query = window.supabaseClient
             .from('majlis')
             .select(`
                 *,
@@ -92,7 +93,10 @@ async function searchFamilies() {
 
         const { data, error } = await query;
 
-        if (error) throw error;
+        if (error) {
+            console.error('Search error details:', error);
+            throw error;
+        }
 
         // Update results count
         document.getElementById('results-count').textContent = `${data?.length || 0} مجلس متاح`;
@@ -102,7 +106,7 @@ async function searchFamilies() {
 
     } catch (error) {
         console.error('Error searching:', error);
-        alert('حدث خطأ أثناء البحث');
+        alert('حدث خطأ أثناء البحث: ' + (error.message || 'غير معروف'));
     }
 }
 
@@ -209,8 +213,8 @@ async function submitBooking(e) {
 
     try {
         // Check if user is logged in
-        const { user } = await karamAuth.getCurrentUser();
-        if (!user) {
+        const { data: { user }, error: userError } = await window.supabaseClient.auth.getUser();
+        if (userError || !user) {
             if (confirm('يجب تسجيل الدخول أولاً. هل تريد الذهاب لصفحة تسجيل الدخول؟')) {
                 window.location.href = 'login.html';
             }
@@ -225,19 +229,22 @@ async function submitBooking(e) {
         }
 
         // Create booking
-        const { data, error } = await karamDB.insert('bookings', {
-            user_id: user.id,
-            majlis_id: majlisId,
-            booking_date: date,
-            time_slot: timeSlot,
-            guests_count: guests,
-            total_price: totalPrice,
-            notes: notes,
-            customer_name: user.user_metadata?.full_name || user.email,
-            customer_email: user.email,
-            booking_status: 'pending',
-            payment_status: 'pending'
-        });
+        const { data, error } = await window.supabaseClient
+            .from('bookings')
+            .insert([{
+                user_id: user.id,
+                majlis_id: majlisId,
+                booking_date: date,
+                time_slot: timeSlot,
+                guests_count: guests,
+                total_price: totalPrice,
+                notes: notes,
+                customer_name: user.user_metadata?.full_name || user.email,
+                customer_email: user.email,
+                booking_status: 'pending',
+                payment_status: 'pending'
+            }])
+            .select();
 
         if (error) throw error;
 
@@ -248,7 +255,7 @@ async function submitBooking(e) {
         localStorage.setItem('pending_booking_id', data[0].id);
         localStorage.setItem('pending_booking_amount', totalPrice);
 
-        // Redirect to payment page (we'll create this next)
+        // Redirect to payment page
         window.location.href = `checkout.html?booking_id=${data[0].id}&amount=${totalPrice}`;
 
     } catch (error) {
@@ -261,13 +268,12 @@ async function submitBooking(e) {
 
 async function checkAvailability(majlisId, date, timeSlot) {
     try {
-        const { data, error } = await karamDB.select('bookings', {
-            eq: {
-                majlis_id: majlisId,
-                booking_date: date,
-                time_slot: timeSlot
-            }
-        });
+        const { data, error } = await window.supabaseClient
+            .from('bookings')
+            .select('*')
+            .eq('majlis_id', majlisId)
+            .eq('booking_date', date)
+            .eq('time_slot', timeSlot);
 
         if (error) throw error;
 
