@@ -1,210 +1,304 @@
-# دليل نشر منصة كرم على الإنترنت
+# دليل النشر - Deployment Guide
 
-## الخيار 1: Netlify (الأسهل - موصى به للمبتدئين) 🚀
+## 📋 قائمة التحقق قبل النشر
 
-### الخطوات:
-
-1. **اذهب إلى موقع Netlify**
-   - افتح [https://www.netlify.com](https://www.netlify.com)
-   - اضغط على "Sign up" وأنشئ حساب مجاني
-
-2. **نشر الموقع**
-   - بعد تسجيل الدخول، اضغط على "Add new site"
-   - اختر "Deploy manually"
-   - **اسحب مجلد `karam-platform` كاملاً وأفلته** في المنطقة المخصصة
-   - انتظر ثواني قليلة
-
-3. **تم! 🎉**
-   - سيعطيك Netlify رابط عشوائي مثل: `https://random-name-123.netlify.app`
-   - يمكنك تغيير الاسم من Settings > Site details > Change site name
-   - مثال: `https://karam-platform.netlify.app`
-
-### ربط دومين خاص (اختياري)
-- من Settings > Domain management
-- يمكنك ربط دومين خاص بك (مثل: karam.sa)
+- [ ] تنفيذ `database/package_system_clean.sql` في Supabase Production
+- [ ] تحديث متغيرات البيئة في Vercel
+- [ ] اختبار جميع الميزات محلياً
+- [ ] مراجعة RLS Policies
+- [ ] تفعيل HTTPS
 
 ---
 
-## الخيار 2: Vercel (احترافي) ⚡
+## 🗄️ قاعدة البيانات (Supabase)
 
-### الخطوات:
+### الخطوة 1: إعداد Production Database
 
-1. **اذهب إلى موقع Vercel**
-   - افتح [https://vercel.com](https://vercel.com)
-   - اضغط "Sign up" وسجل باستخدام GitHub أو Email
+1. **افتح Supabase Dashboard**
+   ```
+   https://app.supabase.com
+   ```
 
-2. **نشر الموقع**
-   - اضغط "Add New" > "Project"
-   - اسحب مجلد `karam-platform` وأفلته
-   - اضغط "Deploy"
+2. **اختر المشروع** (أو أنشئ مشروع جديد)
 
-3. **تم! 🎉**
-   - سيعطيك رابط مثل: `https://karam-platform.vercel.app`
-   - يمكنك تغيير الاسم من Project Settings
+3. **افتح SQL Editor**
 
----
+4. **نفّذ السكريبت الرئيسي**
+   ```sql
+   -- انسخ محتوى database/package_system_clean.sql
+   -- والصقه في SQL Editor
+   -- اضغط RUN
+   ```
 
-## الخيار 3: GitHub Pages (مجاني تماماً) 📄
-
-### الخطوات:
-
-1. **أنشئ حساب GitHub**
-   - اذهب إلى [https://github.com](https://github.com)
-   - سجل حساب جديد (مجاني)
-
-2. **أنشئ Repository جديد**
-   - اضغط "New repository"
-   - اسم الـ repository: `karam-platform`
-   - اجعله Public
-   - اضغط "Create repository"
-
-3. **ارفع الملفات**
+5. **تحقق من النجاح**
+   ```sql
+   -- تحقق من الجداول
+   SELECT table_name FROM information_schema.tables 
+   WHERE table_name IN ('package_settings', 'available_slots', 'email_notifications');
    
-   **الطريقة الأسهل (بدون Git):**
-   - اضغط "uploading an existing file"
-   - اسحب جميع ملفات المشروع وأفلتها
-   - اضغط "Commit changes"
+   -- تحقق من الباقات الافتراضية
+   SELECT * FROM package_settings;
+   
+   -- يجب أن ترى باقتين: basic و premium
+   ```
 
-   **أو باستخدام GitHub Desktop (إذا كان متوفر):**
-   - حمّل [GitHub Desktop](https://desktop.github.com/)
-   - افتح المجلد وارفعه
+### الخطوة 2: RLS Policies (اختياري - للأمان)
 
-4. **فعّل GitHub Pages**
-   - اذهب إلى Settings في الـ repository
-   - اختر "Pages" من القائمة الجانبية
-   - تحت "Source" اختر "main" branch
-   - اضغط "Save"
+إذا كنت تريد تشديد الأمان:
 
-5. **تم! 🎉**
-   - سيكون الموقع متاح على: `https://username.github.io/karam-platform`
-   - قد يستغرق دقائق قليلة
+```sql
+-- تفعيل RLS
+ALTER TABLE package_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE available_slots ENABLE ROW LEVEL SECURITY;
 
----
-
-## الخيار 4: InfinityFree (استضافة مجانية تقليدية) 🆓
-
-### الخطوات:
-
-1. **اذهب إلى InfinityFree**
-   - افتح [https://www.infinityfree.net](https://www.infinityfree.net)
-   - سجل حساب مجاني
-
-2. **أنشئ حساب استضافة**
-   - اضغط "Create Account"
-   - اختر subdomain مجاني (مثل: karam.infinityfreeapp.com)
-
-3. **ارفع الملفات**
-   - اذهب إلى Control Panel > File Manager
-   - افتح مجلد `htdocs`
-   - ارفع جميع ملفات مشروعك
-
-4. **تم! 🎉**
-   - افتح الرابط الذي اخترته
+-- سياسات محسّنة (بعد التأكد من بنية user_profiles)
+-- راجع المستند للتفاصيل
+```
 
 ---
 
-## التوصية للمبتدئين 🌟
+## 🌐 النشر على Vercel
 
-**أنصحك بـ Netlify** لأنه:
-- ✅ لا يحتاج لأي معرفة تقنية
-- ✅ سحب وإفلات فقط
-- ✅ سريع جداً
-- ✅ مجاني تماماً
-- ✅ يعطيك HTTPS تلقائياً
+### الخطوة 1: ربط GitHub
 
----
+1. **افتح** https://vercel.com
+2. **اضغط** "New Project"
+3. **اختر** Git Repository
+4. **حدد** `karam-platform`
 
-## بعد النشر - الخطوات التالية 📝
+### الخطوة 2: إعداد المتغيرات البيئية
 
-### 1. إعداد قاعدة البيانات (Supabase)
+في Vercel Dashboard → Settings → Environment Variables:
 
-للحصول على نظام متكامل مع قاعدة بيانات:
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
 
-1. **أنشئ حساب Supabase**
-   - اذهب إلى [https://supabase.com](https://supabase.com)
-   - سجل حساب مجاني
+> **ملاحظة**: إذا كنت تستخدم vanilla JS (بدون Next.js)، لا تحتاج environment variables - يمكنك استخدام `js/config.js` مباشرة
 
-2. **أنشئ مشروع جديد**
-   - اضغط "New Project"
-   - اختر اسم (مثل: karam-db)
-   - اختر كلمة مرور قوية
-   - اختر المنطقة (اختر الأقرب لك)
+### الخطوة 3: إعدادات Build
 
-3. **أنشئ الجداول**
-   - اذهب إلى SQL Editor
-   - انسخ SQL Schema من ملف `implementation_plan.md` (قسم قاعدة البيانات)
-   - نفّذ الأوامر
+```json
+{
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "installCommand": ""
+}
+```
 
-4. **احصل على API Keys**
-   - اذهب إلى Settings > API
-   - انسخ:
-     - Project URL
-     - anon/public key
+> للمشاريع Static (HTML/CSS/JS فقط)
 
-5. **حدّث الكود**
-   - افتح ملف `js/main.js`
-   - استبدل:
-     ```javascript
-     const API_BASE_URL = 'YOUR_SUPABASE_URL';
-     const API_KEY = 'YOUR_SUPABASE_ANON_KEY';
-     ```
-   - ارفع الملفات المحدثة للموقع
+### الخطوة 4: Deploy
 
-### 2. تكامل الدفع (سلة)
+```bash
+# من terminal محلي (اختياري)
+vercel --prod
 
-1. **أنشئ حساب تاجر**
-   - اذهب إلى [https://salla.sa](https://salla.sa)
-   - سجل كتاجر
-
-2. **احصل على API Credentials**
-   - من لوحة التحكم > المطورين
-   - أنشئ تطبيق جديد
-   - احصل على Client ID و Secret
-
-3. **راجع وثائق Salla**
-   - [https://docs.salla.dev/](https://docs.salla.dev/)
+# أو
+# اضغط "Deploy" في Vercel Dashboard
+```
 
 ---
 
-## نصائح مهمة ⚠️
+## 🔐 الأمان
 
-1. **النسخ الاحتياطي**
-   - احتفظ بنسخة من المشروع على جهازك دائماً
-   - استخدم Google Drive أو OneDrive للنسخ الاحتياطي
+### 1. Supabase Keys
 
-2. **التحديثات**
-   - عند تعديل أي ملف، ارفعه مجدداً للموقع
-   - في Netlify: اسحب المجلد كاملاً مرة أخرى
+**⚠️ مهم جداً:**
+- استخدم `anon key` للـ Frontend
+- **لا تشارك** `service_role key` أبداً
+- احتفظ بـ keys في متغيرات بيئة
 
-3. **الأمان**
-   - لا تشارك API Keys في ملفات عامة
-   - استخدم Environment Variables
+### 2. RLS Policies
 
-4. **الأداء**
-   - ضغط الصور قبل رفعها
-   - استخدم WebP بدل JPG/PNG للصور الكبيرة
+تأكد من تفعيل RLS على:
+- `package_settings`
+- `available_slots`
+- `email_notifications`
+- `majlis`
+- `families`
+- `bookings`
 
----
+### 3. CORS
 
-## الدومين الخاص 🌐
-
-إذا كنت ترغب في دومين مثل `karam.sa`:
-
-1. **احجز الدومين**
-   - من [SaudiNIC](https://nic.sa) للدومينات السعودية
-   - أو [Namecheap](https://namecheap.com) / [GoDaddy](https://godaddy.com)
-
-2. **اربطه مع الموقع**
-   - في Netlify/Vercel: Domain Settings > Add custom domain
-   - اتبع التعليمات لتحديث DNS
+في Supabase Dashboard → Settings → API:
+```
+Allowed Origins: https://your-domain.vercel.app
+```
 
 ---
 
-## المساعدة والدعم 💬
+## 📧 إعداد Resend (للإشعارات)
 
-إذا واجهت أي مشكلة:
-- راجع ملف `README.md`
-- شاهد فيديوهات YouTube عن "Netlify deployment"
-- ادخل على Netlify Docs: [https://docs.netlify.com](https://docs.netlify.com)
+### الخطوة 1: إنشاء حساب
 
-**بالتوفيق! 🚀**
+1. اذهب إلى https://resend.com
+2. أنشئ حساب
+3. احصل على API Key
+
+### الخطوة 2: إعداد Domain
+
+```
+Domain: karam-haji.com
+DNS Records: (سيوفرها Resend)
+```
+
+### الخطوة 3: دالة Supabase Edge Function
+
+```javascript
+// supabase/functions/send-email/index.ts
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+
+serve(async (req) => {
+  const { email, subject, html } = await req.json()
+  
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: 'نظام كرم <noreply@karam-haji.com>',
+      to: email,
+      subject: subject,
+      html: html
+    })
+  })
+  
+  return new Response(JSON.stringify(await res.json()))
+})
+```
+
+---
+
+## 🧪 الاختبار بعد النشر
+
+### 1. اختبار المشغلين
+```
+URL: https://your-domain.vercel.app/operator-packages.html
+- تسجيل دخول كمشغل
+- تعديل أسعار الباقات
+- حفظ
+- التحقق من قاعدة البيانات
+```
+
+### 2. اختبار الأسر
+```
+URL: https://your-domain.vercel.app/family-majlis.html
+- إضافة مجلس جديد
+- اختيار باقة
+- إضافة أوقات متاحة
+- حفظ
+```
+
+### 3. اختبار الزوار
+```
+URL: https://your-domain.vercel.app/browse-families-calendar.html
+- البحث عن مجالس
+- تفعيل "الأوقات البديلة"
+- عرض التفاصيل
+- محاولة الحجز
+```
+
+---
+
+## 🐛 استكشاف الأخطاء
+
+### الخطأ: "CORS Error"
+**الحل:**
+```
+Supabase → Settings → API → Add your Vercel domain
+```
+
+### الخطأ: "Invalid API Key"
+**الحل:**
+```
+تحقق من js/config.js
+تأكد من استخدام Production keys
+```
+
+### الخطأ: "RLS Policy Error"
+**الحل:**
+```sql
+-- مؤقتاً للاختبار
+ALTER TABLE table_name DISABLE ROW LEVEL SECURITY;
+
+-- ثم راجع السياسات
+```
+
+### الخطأ: "Column does not exist"
+**الحل:**
+```
+تأكد من تنفيذ package_system_clean.sql كاملاً
+تحقق من أسماء الأعمدة في قاعدة البيانات
+```
+
+---
+
+## 📊 المراقبة
+
+### Vercel Analytics
+```
+Vercel Dashboard → Analytics
+- Page views
+- Performance
+- Errors
+```
+
+### Supabase Logs
+```
+Supabase Dashboard → Logs
+- Database queries
+- API requests
+- Errors
+```
+
+---
+
+## 🔄 التحديثات المستقبلية
+
+### Git Workflow
+```bash
+# تطوير محلي
+git checkout -b feature/new-feature
+# ... تعديلات ...
+git commit -m "feat: add new feature"
+git push origin feature/new-feature
+
+# Pull Request على GitHub
+# بعد الموافقة والدمج في main
+# Vercel ستنشر تلقائياً!
+```
+
+### Database Migrations
+```sql
+-- لأي تعديلات مستقبلية على قاعدة البيانات
+-- أنشئ ملفات migration منفصلة
+-- مثال: database/migrations/2026-01-15-add-reviews.sql
+```
+
+---
+
+## ✅ قائمة التحقق النهائية
+
+- [ ] ✅ قاعدة البيانات Production جاهزة
+- [ ] ✅ جميع الجداول موجودة
+- [ ] ✅ الباقات الافتراضية موجودة
+- [ ] ✅ RLS Policies مفعّلة
+- [ ] ✅ Vercel متصل بـ GitHub
+- [ ] ✅ Domain مربوط (إذا كان موجود)
+- [ ] ✅ HTTPS مفعّل
+- [ ] ✅ تم اختبار جميع الميزات
+- [ ] ✅ Resend معدّ (للإشعارات)
+- [ ] ✅ Analytics مفعّل
+
+---
+
+**النشر جاهز!** 🚀
+
+في حال وجود أي مشاكل، راجع:
+- [README.md](README.md)
+- [CHANGELOG.md](CHANGELOG.md)
+- أو افتح Issue على GitHub

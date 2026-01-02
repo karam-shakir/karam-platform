@@ -454,6 +454,21 @@
                 <button onclick="searchFamilies()" class="btn btn-secondary btn-lg" style="width: 100%;">
                     🔍 بحث
                 </button>
+
+                <!-- Alternative Times Option -->
+                <div style="margin-top: var(--space-md); text-align: center;">
+                    <label
+                        style="display: inline-flex; align-items: center; gap: var(--space-sm); cursor: pointer; background: rgba(255,255,255,0.15); padding: var(--space-md); border-radius: var(--radius-md); transition: all 0.3s;">
+                        <input type="checkbox" id="show-alternative-times"
+                            style="width: 20px; height: 20px; cursor: pointer;">
+                        <span style="font-weight: var(--font-weight-medium);">
+                            🔄 إظهار أيضاً المجالس المتاحة في تواريخ وأوقات أخرى
+                        </span>
+                    </label>
+                    <p style="margin: var(--space-sm) 0 0; font-size: var(--font-size-sm); opacity: 0.8;">
+                        (سيتم عرض المجالس المتاحة في أي تاريخ مستقبلي)
+                    </p>
+                </div>
             </div>
         </div>
     </section>
@@ -466,6 +481,27 @@
                 <div class="results-header">
                     <h2>الأسر المتاحة</h2>
                     <span class="results-count" id="results-count">0 أسرة متاحة</span>
+                </div>
+
+                <!-- Alternative Results Section (will be shown if checkbox is checked) -->
+                <div id="alternative-results-section" style="display: none; margin-top: var(--space-xl);">
+                    <div
+                        style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: var(--space-lg); border-radius: var(--radius-lg); border-right: 4px solid #0284c7; margin-bottom: var(--space-xl);">
+                        <h3
+                            style="margin: 0 0 var(--space-sm); color: #0369a1; display: flex; align-items: center; gap: var(--space-sm);">
+                            🔄 مجالس متاحة في تواريخ وأوقات أخرى
+                        </h3>
+                        <p style="margin: 0; color: #0c4a6e; font-size: var(--font-size-sm);">
+                            هذه المجالس متاحة في تواريخ قادمة أخرى
+                        </p>
+                    </div>
+                    <div class="results-header">
+                        <h3 style="color: #0369a1;">أوقات بديلة</h3>
+                        <span class="results-count" id="alternative-results-count">0 مجلس</span>
+                    </div>
+                    <div id="alternative-families-grid" class="families-grid">
+                        <!-- سيتم ملؤها بـ JavaScript -->
+                    </div>
                 </div>
 
                 <div id="families-grid" class="families-grid">
@@ -652,7 +688,10 @@
         (async () => {
             const { data: { user } } = await window.supabaseClient.auth.getUser();
             if (user) {
-                document.getElementById('visitor-nav').style.display = 'block';
+                const visitorNav = document.getElementById('visitor-nav');
+                if (visitorNav) {
+                    visitorNav.style.display = 'block';
+                }
             }
         })();
     </script>

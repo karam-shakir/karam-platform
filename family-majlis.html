@@ -140,8 +140,23 @@
                         <input type="number" id="capacity" required min="5" max="100" placeholder="مثال: 20">
                     </div>
                     <div class="form-group">
-                        <label>السعر لكل شخص (ريال) *</label>
-                        <input type="number" id="base-price" required min="50" step="10" placeholder="مثال: 150">
+                        <label>نوع الباقة *</label>
+                        <select id="package-type" required onchange="majlisManager.showPackageDetails()">
+                            <option value="">-- اختر نوع الباقة --</option>
+                            <option value="basic">🎁 الباقة الأساسية</option>
+                            <option value="premium">⭐ الباقة المتميزة</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Package Details Display -->
+                <div id="package-details" class="package-details" style="display: none;">
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: #667eea;">📋 مواصفات الباقة:</h4>
+                        <div id="package-price"
+                            style="font-size: 24px; font-weight: bold; color: #1e3a8a; margin-bottom: 10px;"></div>
+                        <ul id="package-features" style="margin: 0; padding-right: 20px;">
+                        </ul>
                     </div>
                 </div>
 
@@ -202,6 +217,52 @@
                         <input type="checkbox" id="is-active" checked>
                         <span>المجلس نشط ومتاح للحجز</span>
                     </label>
+                </div>
+
+                <!-- Availability Management Section (for Edit Mode Only) ✅ CORRECTED -->
+                <div id="availability-section" style="display: none;">
+                    <hr style="margin: 30px 0; border: 1px solid #e0e0e0;">
+                    <h3 style="color: #1e3a8a; margin-bottom: 20px;">🗓️ إدارة الأوقات المتاحة</h3>
+                    <p style="color: #666; margin-bottom: 15px;">حدد متى تستطيع استقبال الضيوف. لن يظهر المجلس للزوار
+                        إلا في الأوقات التي تحددها هنا.</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>التاريخ</label>
+                            <input type="date" id="slot-date" min="<?php echo date('Y-m-d'); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label>الفترة الزمنية</label>
+                            <select id="slot-time">
+                                <option value="">-- اختر الفترة --</option>
+                                <option value="morning">🌅 صباحاً (8:00 - 12:00)</option>
+                                <option value="afternoon">☀️ ظهراً (12:00 - 16:00)</option>
+                                <option value="evening">🌆 مساءً (16:00 - 20:00)</option>
+                                <option value="night">🌙 ليلاً (20:00 - 00:00)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="majlisManager.addAvailableSlot()" class="btn-secondary"
+                        style="width: 100%; margin-bottom: 15px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
+                        ✅ إضافة وقت متاح
+                    </button>
+
+                    <div id="available-slots-list" style="margin-top: 20px;">
+                        <h4 style="color: #333; margin-bottom: 10px;">الأوقات المتاحة حالياً:</h4>
+                        <div id="available-slots-container">
+                            <p style="color: #999; font-style: italic;">لم تفم بإضافة أوقات متاحة بعد. أضف أوقاتاً
+                                لتمكين الزوار من حجز مجلسك.</p>
+                        </div>
+                    </div>
+
+                    <div
+                        style="background: #eff6ff; padding: 15px; border-radius: 8px; margin-top: 20px; border-right: 4px solid #3b82f6;">
+                        <p style="margin: 0; color: #1e40af; font-size: 14px;">
+                            💡 <strong>ملاحظة:</strong> يمكنك إضافة عدة أوقات لنفس اليوم أو لأيام مختلفة. لن يظهر المجلس
+                            للزوار إلا في الأوقات التي تحددها.
+                        </p>
+                    </div>
                 </div>
 
                 <div class="modal-footer">
