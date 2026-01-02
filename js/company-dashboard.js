@@ -16,12 +16,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Check authentication
 async function checkAuth() {
     try {
-        if (!supabaseClient) {
+        if (!window.supabaseClient) {
             window.location.href = 'login.html';
             return;
         }
 
-        const { data: { user }, error } = await supabaseClient.auth.getUser();
+        const { data: { user }, error } = await window.supabaseClient.auth.getUser();
 
         if (error || !user) {
             window.location.href = 'login.html';
@@ -29,7 +29,7 @@ async function checkAuth() {
         }
 
         // Get company profile
-        const { data: company } = await supabaseClient
+        const { data: company } = await window.supabaseClient
             .from('companies')
             .select(`
                 *,
@@ -62,7 +62,7 @@ async function loadDashboardData() {
 // Load bookings
 async function loadBookings() {
     try {
-        const { data, error } = await supabaseClient
+        const { data, error } = await window.supabaseClient
             .from('bookings')
             .select(`
                 *,
@@ -208,7 +208,7 @@ async function updateCompanyInfo(event) {
             website: document.getElementById('company-website').value
         };
 
-        const { error } = await supabase
+        const { error } = await window.supabaseClient
             .from('companies')
             .update(formData)
             .eq('id', currentCompany.id);
@@ -256,7 +256,7 @@ function switchTab(tabName, event) {
 // Logout
 async function logout() {
     try {
-        await supabaseClient.auth.signOut();
+        await window.supabaseClient.auth.signOut();
         window.location.href = 'index.html';
     } catch (error) {
         console.error('Logout error:', error);
