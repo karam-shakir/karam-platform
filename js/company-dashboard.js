@@ -29,16 +29,21 @@ async function checkAuth() {
         }
 
         // Get company profile
-        const { data: company } = await window.supabaseClient
+        const { data: company, error: companyError } = await window.supabaseClient
             .from('companies')
-            .select(`
-                *,
-                user:user_profiles(*)
-            `)
+            .select('*')
             .eq('user_id', user.id)
             .single();
 
+        if (companyError) {
+            console.error('Error fetching company:', companyError);
+            alert('خطأ في تحميل بيانات الشركة: ' + companyError.message);
+            window.location.href = 'login.html';
+            return;
+        }
+
         if (!company) {
+            alert('لم يتم العثور على ملف الشركة. يرجى التواصل مع الدعم.');
             window.location.href = 'login.html';
             return;
         }
