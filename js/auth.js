@@ -224,9 +224,11 @@ class KaramAuth {
 
             if (error.message.includes('Invalid login credentials')) {
                 message = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
-            } else if (error.message.includes('Email not confirmed')) {
-                message = 'يرجى تفعيل حسابك عبر البريد الإلكتروني أولاً';
             }
+            // Commented out - email verification not required for now
+            // else if (error.message.includes('Email not confirmed')) {
+            //     message = 'يرجى تفعيل حسابك عبر البريد الإلكتروني أولاً';
+            // }
 
             return {
                 success: false,
