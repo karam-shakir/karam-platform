@@ -54,13 +54,20 @@ class FamilyDashboard {
                 return;
             }
 
-            // Try to get wallet
+            // Try to get wallet (wallets table may not exist yet)
             let { data, error } = await karamDB.select('wallets', {
                 eq: { family_id: this.familyData.id }
             });
 
+            // If wallets table doesn't exist, just show default
+            if (error && error.code === '42P01') {
+                console.warn('Wallets table does not exist yet');
+                this.showDefaultBalance();
+                return;
+            }
+
             // If wallet doesn't exist, create one
-            if (error || !data || data.length === 0) {
+            if (!error && (!data || data.length === 0)) {
                 console.log('Creating wallet for family...');
                 const { data: newWallet, error: createError } = await karamDB.insert('wallets', {
                     family_id: this.familyData.id,
@@ -118,17 +125,20 @@ class FamilyDashboard {
                 }
             }
 
-            // Get available slots count
-            const { data: slots, error: slotsError } = await karamDB.select('available_slots', {
-                eq: { family_id: this.familyData.id },
-                select: 'id'
-            });
+            // Get available slots count via majlis
+            let slotCount = 0;
+            if (majalis && majalis.length > 0) {
+                const majlisIds = majalis.map(m => m.id);
+                const { data: slots, error: slotsError } = await karamDB.select('available_slots', {
+                    in: { majlis_id: majlisIds },
+                    select: 'id'
+                });
+                slotCount = slots?.length || 0;
+            }
 
-            if (!slotsError && slots) {
-                const upcomingEl = document.getElementById('upcoming-bookings');
-                if (upcomingEl) {
-                    upcomingEl.textContent = slots.length || 0;
-                }
+            const upcomingEl = document.getElementById('upcoming-bookings');
+            if (upcomingEl) {
+                upcomingEl.textContent = slotCount;
             }
 
             // Default rating (no reviews table yet)
@@ -167,14 +177,26 @@ class FamilyDashboard {
                 return;
             }
 
-            // Get upcoming available slots instead
+            // Get family's majalis first
+            const { data: majalis, error: majlisError } = await karamDB.select('majlis', {
+                eq: { family_id: this.familyData.id },
+                select: 'id, majlis_name'
+            });
+
+            if (majlisError || !majalis || majalis.length === 0) {
+                container.innerHTML = '<p class="text-center text-muted">لا توجد مجالس بعد</p>';
+                return;
+            }
+
+            // Get upcoming available slots for these majalis
             const today = new Date().toISOString().split('T')[0];
+            const majlisIds = majalis.map(m => m.id);
 
             const { data, error } = await karamDB.select('available_slots', {
-                eq: { family_id: this.familyData.id },
-                gte: { slot_date: today },
+                in: { majlis_id: majlisIds },
+                gte: { available_date: today },
                 select: '*, majlis(majlis_name)',
-                order: { column: 'slot_date', ascending: true },
+                order: { column: 'available_date', ascending: true },
                 limit: 5
             });
 
@@ -190,7 +212,7 @@ class FamilyDashboard {
                     <div class="booking-icon">📅</div>
                     <div class="booking-details">
                         <strong>${slot.majlis?.majlis_name || 'مجلس'}</strong>
-                        <small>${i18n.formatDate(slot.slot_date)} - ${this.getTimeSlotText(slot.time_slot)}</small>
+                        <small>${i18n.formatDate(slot.available_date)} - ${this.getTimeSlotText(slot.time_slot)}</small>
                     </div>
                     <div class="booking-amount">
                         <span class="badge badge-success">متاح</span>
