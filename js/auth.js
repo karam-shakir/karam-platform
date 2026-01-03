@@ -162,9 +162,7 @@ class KaramAuth {
             family_name: data.family_name,
             contact_phone: data.contact_phone,
             city: data.city,
-            address: data.address,
-            description_ar: data.description_ar || '',
-            description_en: data.description_en || ''
+            address: data.address
         }, { select: '*' });
     }
 
