@@ -267,24 +267,46 @@ async function updateCompanyInfo(event) {
 
 // Prompt for date when booking from view-all mode
 function promptDateForBooking(majlisId, guestsCount) {
-    const date = prompt('يرجى إدخال تاريخ الحجز (YYYY-MM-DD):\nمثال: 2026-01-15');
+    // Use simple alert-based prompts for better compatibility
+    showToast('ملاحظة', 'سيتم فتح نافذتين: الأولى للتاريخ والثانية للوقت', 'info');
 
-    // If user cancels, just return without showing error
-    if (!date) {
-        return;
-    }
+    setTimeout(() => {
+        const date = window.prompt('أدخل تاريخ الحجز (مثال: 2026-01-15):\n\nملاحظة: استخدم صيغة YYYY-MM-DD');
 
-    // Validate date format
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-        showToast('خطأ', 'صيغة التاريخ غير صحيحة. استخدم: YYYY-MM-DD', 'error');
-        return;
-    }
+        // If user cancels, just return without showing error
+        if (!date) {
+            return;
+        }
 
-    const timeSlot = prompt('يرجى اختيار الفترة:\n1 = صباحي\n2 = مسائي\n3 = ليلي');
-    const slots = { '1': 'morning', '2': 'afternoon', '3': 'evening' };
-    const selectedSlot = slots[timeSlot] || 'morning';
+        // Validate date format
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+            showToast('خطأ', 'صيغة التاريخ غير صحيحة\nالرجاء استخدام: YYYY-MM-DD\nمثال: 2026-01-15', 'error');
+            return;
+        }
 
-    createGroupBooking(majlisId, guestsCount, date, selectedSlot);
+        // Check if date is in the future
+        const selectedDate = new Date(date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (selectedDate < today) {
+            showToast('خطأ', 'لا يمكن الحجز في تاريخ ماضي', 'error');
+            return;
+        }
+
+        setTimeout(() => {
+            const timeSlot = window.prompt('اختر الفترة:\n\n1 = صباحي (8ص-12ظ)\n2 = مسائي (12ظ-5ع)\n3 = ليلي (5ع-12ص)\n\nأدخل الرقم فقط (1 أو 2 أو 3):');
+
+            if (!timeSlot) {
+                return;
+            }
+
+            const slots = { '1': 'morning', '2': 'afternoon', '3': 'evening' };
+            const selectedSlot = slots[timeSlot] || 'morning';
+
+            createGroupBooking(majlisId, guestsCount, date, selectedSlot);
+        }, 300);
+    }, 300);
 }
 
 
