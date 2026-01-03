@@ -112,6 +112,7 @@ async function handleRegister(event) {
     } else if (selectedUserType === 'company') {
         registrationData.company_name = document.getElementById('company-name').value;
         registrationData.registration_number = document.getElementById('company-reg').value;
+        registrationData.tax_number = document.getElementById('company-tax-number').value;
         registrationData.city = document.getElementById('company-city').value;
         registrationData.responsible_person_name = document.getElementById('company-responsible-name').value;
         registrationData.responsible_person_phone = document.getElementById('company-phone').value;

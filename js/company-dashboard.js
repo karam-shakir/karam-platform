@@ -238,6 +238,7 @@ async function updateCompanyInfo(event) {
     try {
         const formData = {
             company_name: document.getElementById('company-name-input').value,
+            tax_number: document.getElementById('tax-number').value,
             city: document.getElementById('company-city').value,
             address: document.getElementById('company-address').value,
             phone: document.getElementById('company-phone').value
@@ -247,6 +248,7 @@ async function updateCompanyInfo(event) {
             .from('companies')
             .update({
                 company_name: formData.company_name,
+                tax_number: formData.tax_number,
                 city: formData.city,
                 office_address: formData.address,
                 responsible_person_phone: formData.phone
@@ -822,8 +824,9 @@ function buildInvoiceHTML(invoice) {
                 </div>
                 <div style="text-align: left;">
                     <p style="margin: 0 0 8px 0;"><strong>الشركة:</strong> ${invoice.company?.company_name || 'غير محدد'}</p>
-                    <p style="margin: 0 0 8px 0;"><strong>الهاتف:</strong> ${invoice.company?.contact_phone || 'غير محدد'}</p>
-                    <p style="margin: 0 0 8px 0;"><strong>المدينة:</strong> ${invoice.company?.city === 'mecca' ? 'مكة المكرمة' : 'المدينة المنورة'}</p>
+                    <p style="margin: 0 0 8px 0;"><strong>الرقم الضريبي:</strong> ${invoice.company?.tax_number || 'غير محدد'}</p>
+                    <p style="margin: 0 0 8px 0;"><strong>الهاتف:</strong> ${invoice.company?.contact_phone || invoice.company?.responsible_person_phone || 'غير محدد'}</p>
+                    <p style="margin: 0 0 8px 0;"><strong>المدينة:</strong> ${invoice.company?.city === 'mecca' ? 'مكة المكرمة' : invoice.company?.city === 'medina' ? 'المدينة المنورة' : invoice.company?.city || 'غير محدد'}</p>
                 </div>
             </div>
 
