@@ -318,3 +318,189 @@ function showToast(title, message, type = 'info') {
         alert(`${title}: ${message}`);
     }
 }
+
+// =======================
+// NEW BOOKING FUNCTIONS
+// =======================
+
+// Search for available majalis
+async function searchAvailableMajalis() {
+    try {
+        const searchDate = document.getElementById('search-date').value;
+        const searchTime = document.getElementById('search-time').value;
+        const searchCity = document.getElementById('search-city').value;
+        const searchGuests = parseInt(document.getElementById('search-guests').value) || 1;
+
+        if (!searchDate) {
+            showToast('تنبيه', 'يرجى اختيار التاريخ', 'warning');
+            return;
+        }
+
+        // Show loading
+        document.getElementById('search-results').innerHTML = '<p class="text-center text-muted">جاري البحث...</p>';
+
+        // Build query - simplified version
+        let query = window.supabaseClient
+            .from('majlis')
+            .select(`
+                *,
+                family:family_id (
+                    family_name,
+                    city
+                )
+            `)
+            .eq('is_active', true);
+
+        // Apply city filter
+        if (searchCity) {
+            // Will need to filter after fetch due to nested relation
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+            console.error('Search error:', error);
+            showToast('خطأ', 'حدث خطأ في البحث', 'error');
+            return;
+        }
+
+        // Filter by city if specified
+        let filteredData = data || [];
+        if (searchCity) {
+            filteredData = filteredData.filter(m => m.family?.city === searchCity);
+        }
+
+        // Display results
+        renderMajalisResults(filteredData, searchGuests, searchDate, searchTime);
+
+    } catch (error) {
+        console.error('Search error:', error);
+        showToast('خطأ', 'حدث خطأ في البحث', 'error');
+    }
+}
+
+// Render search results
+function renderMajalisResults(majalis, guestsCount, bookingDate, timeSlot) {
+    const container = document.getElementById('search-results');
+
+    if (majalis.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px;">
+                <p style="font-size: 18px; color: #666;">😔 لا توجد مجالس متاحة</p>
+                <p style="color: #999;">جرّب تغيير معايير البحث</p>
+            </div>
+        `;
+        return;
+    }
+
+    const discount = currentCompany.discount_rate || 0;
+
+    container.innerHTML = `
+        <h4 style="margin-bottom: 20px;">✅ تم العثور على ${majalis.length} مجلس متاح</h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+            ${majalis.map(majlis => {
+        const cityName = majlis.family?.city === 'mecca' ? 'مكة المكرمة' :
+            majlis.family?.city === 'medina' ? 'المدينة المنورة' :
+                majlis.family?.city || '';
+
+        const packageBadge = majlis.package_type === 'premium' ?
+            '<span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; display: inline-block; margin-bottom: 8px;">⭐ باقة متميزة</span>' :
+            '<span style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; display: inline-block; margin-bottom: 8px;">🎁 باقة أساسية</span>';
+
+        const price = majlis.package_price || majlis.base_price || 0;
+        const discountedPrice = price * (1 - discount / 100);
+        const totalPrice = discountedPrice * guestsCount;
+
+        return `
+                    <div style="border: 1px solid #e0e0e0; border-radius: 12px; padding: 20px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                        ${packageBadge}
+                        <h3 style="margin: 0 0 8px 0; color: #1a4d8f;">${majlis.majlis_name}</h3>
+                        <p style="margin: 0 0 4px 0; color: #666; font-size: 14px;">🏠 ${majlis.family?.family_name || ''}</p>
+                        <p style="margin: 0 0 12px 0; color: #999; font-size: 14px;">📍 ${cityName}</p>
+                        
+                        <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="color: #666;">السعر للشخص:</span>
+                                <span style="font-weight: 600;">${price.toFixed(2)} ر.س</span>
+                            </div>
+                            ${discount > 0 ? `
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="color: #666;">بعد الخصم (${discount}%):</span>
+                                <span style="font-weight: 600; color: #e74c3c;">${discountedPrice.toFixed(2)} ر.س</span>
+                            </div>
+                            ` : ''}
+                            <div style="display: flex; justify-content: space-between; margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd;">
+                                <span style="color: #333; font-weight: 600;">المبلغ الإجمالي:</span>
+                                <span style="font-weight: 700; color: #1a4d8f; font-size: 16px;">${totalPrice.toFixed(2)} ر.س</span>
+                            </div>
+                        </div>
+
+                        <button onclick="createGroupBooking('${majlis.id}', ${guestsCount}, '${bookingDate}', '${timeSlot}')" style="width: 100%; padding: 10px; background: #1a4d8f; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                            ✅ حجز الآن
+                        </button>
+                    </div>
+                `;
+    }).join('')}
+        </div>
+    `;
+}
+
+// Create group booking
+async function createGroupBooking(majlisId, guestsCount, bookingDate, timeSlot) {
+    try {
+        // Confirm booking
+        const confirmMsg = `هل أنت متأكد من إتمام الحجز؟\n\nعدد الضيوف: ${guestsCount}\nالتاريخ: ${bookingDate}\nالفترة: ${formatTimeSlot(timeSlot || 'morning')}`;
+
+        if (!confirm(confirmMsg)) {
+            return;
+        }
+
+        // Get majlis info for pricing
+        const { data: majlis, error: majlisError } = await window.supabaseClient
+            .from('majlis')
+            .select('package_price, base_price')
+            .eq('id', majlisId)
+            .single();
+
+        if (majlisError) {
+            showToast('خطأ', 'حدث خطأ في جلب بيانات المجلس', 'error');
+            return;
+        }
+
+        const price = majlis?.package_price || majlis?.base_price || 0;
+        const discount = currentCompany.discount_rate || 0;
+        const finalPrice = price * (1 - discount / 100) * guestsCount;
+
+        // Create booking
+        const { data: booking, error: bookingError } = await window.supabaseClient
+            .from('bookings')
+            .insert({
+                user_id: currentCompany.user_id,
+                majlis_id: majlisId,
+                booking_date: bookingDate,
+                time_slot: timeSlot || 'morning',
+                guests_count: guestsCount,
+                total_price: finalPrice,
+                booking_status: 'pending',
+                payment_status: 'pending'
+            })
+            .select()
+            .single();
+
+        if (bookingError) {
+            console.error('Booking error:', bookingError);
+            showToast('خطأ', 'حدث خطأ في إنشاء الحجز: ' + bookingError.message, 'error');
+            return;
+        }
+
+        showToast('نجح!', 'تم إنشاء الحجز بنجاح', 'success');
+
+        // Reload bookings and switch to bookings tab
+        await loadBookings();
+        switchTab('bookings');
+
+    } catch (error) {
+        console.error('Booking error:', error);
+        showToast('خطأ', 'حدث خطأ في إنشاء الحجز', 'error');
+    }
+}

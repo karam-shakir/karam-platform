@@ -22,7 +22,7 @@
                 <span class="icon">📊</span>
                 <span>لوحة التحكم</span>
             </a>
-            <a href="browse-families-calendar.html" class="nav-item">
+            <a href="#" class="nav-item" onclick="switchTab('new-booking', event)">
                 <span class="icon">🔍</span>
                 <span>حجز جماعي جديد</span>
             </a>
@@ -115,6 +115,66 @@
                     <div class="card-body">
                         <div id="bookings-list">
                             <p class="text-center text-muted">جاري التحميل...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Booking Section (Hidden by default) -->
+            <div id="new-booking-section" class="section-hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🔍 حجز جماعي جديد</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Search Form -->
+                        <div class="booking-search-form"
+                            style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                            <div
+                                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">📅
+                                        التاريخ</label>
+                                    <input type="date" id="search-date" class="form-control"
+                                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">⏰
+                                        الفترة</label>
+                                    <select id="search-time" class="form-control"
+                                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option value="">الكل</option>
+                                        <option value="morning">صباحي (8ص-12ظ)</option>
+                                        <option value="afternoon">مسائي (12ظ-5ع)</option>
+                                        <option value="evening">ليلي (5ع-12ص)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">📍
+                                        المدينة</label>
+                                    <select id="search-city" class="form-control"
+                                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option value="">الكل</option>
+                                        <option value="mecca">مكة المكرمة</option>
+                                        <option value="medina">المدينة المنورة</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">👥 عدد
+                                        الضيوف</label>
+                                    <input type="number" id="search-guests" min="1" value="1" class="form-control"
+                                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                </div>
+                            </div>
+                            <button onclick="searchAvailableMajalis()" class="btn-primary"
+                                style="margin-top: 15px; width: 100%; padding: 12px; border: none; border-radius: 6px; background: #1a4d8f; color: white; font-weight: 600; cursor: pointer;">
+                                🔍 بحث عن المجالس المتاحة
+                            </button>
+                        </div>
+
+                        <!-- Results -->
+                        <div id="search-results">
+                            <p class="text-center text-muted">ابدأ البحث لعرض المجالس المتاحة</p>
                         </div>
                     </div>
                 </div>
