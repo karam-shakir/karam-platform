@@ -292,6 +292,56 @@
     color: var(--color-text);
 }
 
+
+
+/* ===================================
+   Button Styles - Updated to Match New Theme
+   =================================== */
+
+.auth-page .btn-primary {
+    background: linear-gradient(135deg, #2d5430 0%, #4a7c59 100%);
+    color: white;
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(45, 84, 48, 0.2);
+}
+
+.auth-page .btn-primary:hover {
+    background: linear-gradient(135deg, #234229 0%, #3d6448 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(45, 84, 48, 0.3);
+}
+
+.auth-page .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(45, 84, 48, 0.2);
+}
+
+.auth-page .btn-secondary {
+    background: transparent;
+    color: #2d5430;
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    border: 2px solid #2d5430;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.auth-page .btn-secondary:hover {
+    background: #2d5430;
+    color: white;
+    transform: translateY(-2px);
+}
+
 /* Responsive Adjustments */
 @media (max-width: 968px) {
     .auth-page .auth-container {
