@@ -265,22 +265,95 @@ async function updateCompanyInfo(event) {
     }
 }
 
-// Prompt for date when booking from view-all mode
-function promptDateForBooking(majlisId, guestsCount) {
-    // Use simple alert-based prompts for better compatibility
-    showToast('ملاحظة', 'سيتم فتح نافذتين: الأولى للتاريخ والثانية للوقت', 'info');
 
-    setTimeout(() => {
-        const date = window.prompt('أدخل تاريخ الحجز (مثال: 2026-01-15):\n\nملاحظة: استخدم صيغة YYYY-MM-DD');
+// Custom prompt helper function
+function customPrompt(title, message, type = 'text', options = []) {
+    return new Promise((resolve) => {
+        const overlay = document.getElementById('custom-prompt-overlay');
+        const titleEl = document.getElementById('prompt-title');
+        const messageEl = document.getElementById('prompt-message');
+        const inputEl = document.getElementById('prompt-input');
+        const selectEl = document.getElementById('prompt-select');
+        const confirmBtn = document.getElementById('prompt-confirm');
+        const cancelBtn = document.getElementById('prompt-cancel');
 
-        // If user cancels, just return without showing error
-        if (!date) {
-            return;
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+
+        // Reset
+        inputEl.style.display = 'none';
+        selectEl.style.display = 'none';
+        inputEl.value = '';
+        selectEl.innerHTML = '<option value="">اختر...</option>';
+
+        if (type === 'select') {
+            selectEl.style.display = 'block';
+            options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt.value;
+                option.textContent = opt.label;
+                selectEl.appendChild(option);
+            });
+        } else {
+            inputEl.style.display = 'block';
+            inputEl.type = type;
         }
+
+        overlay.classList.add('active');
+
+        // Focus input
+        setTimeout(() => {
+            if (type === 'select') {
+                selectEl.focus();
+            } else {
+                inputEl.focus();
+            }
+        }, 100);
+
+        const confirm = () => {
+            const value = type === 'select' ? selectEl.value : inputEl.value;
+            overlay.classList.remove('active');
+            resolve(value || null);
+            cleanup();
+        };
+
+        const cancel = () => {
+            overlay.classList.remove('active');
+            resolve(null);
+            cleanup();
+        };
+
+        const cleanup = () => {
+            confirmBtn.removeEventListener('click', confirm);
+            cancelBtn.removeEventListener('click', cancel);
+            inputEl.removeEventListener('keypress', handleEnter);
+        };
+
+        const handleEnter = (e) => {
+            if (e.key === 'Enter') confirm();
+        };
+
+        confirmBtn.addEventListener('click', confirm);
+        cancelBtn.addEventListener('click', cancel);
+        inputEl.addEventListener('keypress', handleEnter);
+    });
+}
+
+// Prompt for date when booking from view-all mode
+async function promptDateForBooking(majlisId, guestsCount) {
+    try {
+        // Step 1: Get date
+        const date = await customPrompt(
+            '📅 تحديد تاريخ الحجز',
+            'أدخل تاريخ الحجز (مثال: 2026-01-15)\nاستخدم صيغة: YYYY-MM-DD',
+            'date'
+        );
+
+        if (!date) return; // User cancelled
 
         // Validate date format
         if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-            showToast('خطأ', 'صيغة التاريخ غير صحيحة\nالرجاء استخدام: YYYY-MM-DD\nمثال: 2026-01-15', 'error');
+            showToast('خطأ', 'صيغة التاريخ غير صحيحة\nالرجاء استخدام: YYYY-MM-DD', 'error');
             return;
         }
 
@@ -294,20 +367,29 @@ function promptDateForBooking(majlisId, guestsCount) {
             return;
         }
 
-        setTimeout(() => {
-            const timeSlot = window.prompt('اختر الفترة:\n\n1 = صباحي (8ص-12ظ)\n2 = مسائي (12ظ-5ع)\n3 = ليلي (5ع-12ص)\n\nأدخل الرقم فقط (1 أو 2 أو 3):');
+        // Step 2: Get time slot
+        const timeSlot = await customPrompt(
+            '⏰ اختيار الفترة',
+            'اختر الفترة المناسبة للحجز:',
+            'select',
+            [
+                { value: 'morning', label: 'صباحي (8ص-12ظ)' },
+                { value: 'afternoon', label: 'مسائي (12ظ-5ع)' },
+                { value: 'evening', label: 'ليلي (5ع-12ص)' }
+            ]
+        );
 
-            if (!timeSlot) {
-                return;
-            }
+        if (!timeSlot) return; // User cancelled
 
-            const slots = { '1': 'morning', '2': 'afternoon', '3': 'evening' };
-            const selectedSlot = slots[timeSlot] || 'morning';
+        // Proceed with booking
+        createGroupBooking(majlisId, guestsCount, date, timeSlot);
 
-            createGroupBooking(majlisId, guestsCount, date, selectedSlot);
-        }, 300);
-    }, 300);
+    } catch (error) {
+        console.error('Prompt error:', error);
+        showToast('خطأ', 'حدث خطأ في عملية الحجز', 'error');
+    }
 }
+
 
 
 // New group booking

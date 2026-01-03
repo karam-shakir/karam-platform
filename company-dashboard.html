@@ -1,45 +1,46 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="لوحة تحكم الشركات">
-    <title>لوحة تحكم الشركات - منصة كرم</title>
+    <meta name="description" content="Ù„ÙˆØ­Ø© ØªØ­ÙƒÙ… Ø§Ù„Ø´Ø±ÙƒØ§Øª">
+    <title>Ù„ÙˆØ­Ø© ØªØ­ÙƒÙ… Ø§Ù„Ø´Ø±ÙƒØ§Øª - Ù…Ù†ØµØ© ÙƒØ±Ù…</title>
     <link rel="stylesheet" href="styles/unified-dashboards.css">
+    <link rel="stylesheet" href="styles/custom-prompt.css">
 </head>
 
 <body class="rtl family-dash">
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <h1>منصة كرم</h1>
-            <p id="company-name">شركة ...</p>
+            <h1>Ù…Ù†ØµØ© ÙƒØ±Ù…</h1>
+            <p id="company-name">Ø´Ø±ÙƒØ© ...</p>
         </div>
 
         <nav class="sidebar-nav">
             <a href="company-dashboard.html" class="nav-item active">
-                <span class="icon">📊</span>
-                <span>لوحة التحكم</span>
+                <span class="icon">ðŸ“Š</span>
+                <span>Ù„ÙˆØ­Ø© Ø§Ù„ØªØ­ÙƒÙ…</span>
             </a>
             <a href="#" class="nav-item" onclick="switchTab('new-booking', event)">
-                <span class="icon">🔍</span>
-                <span>حجز جماعي جديد</span>
+                <span class="icon">ðŸ”</span>
+                <span>Ø­Ø¬Ø² Ø¬Ù…Ø§Ø¹ÙŠ Ø¬Ø¯ÙŠØ¯</span>
             </a>
             <a href="#" class="nav-item" onclick="switchTab('invoices', event)">
-                <span class="icon">🧾</span>
-                <span>الفواتير</span>
+                <span class="icon">ðŸ§¾</span>
+                <span>Ø§Ù„ÙÙˆØ§ØªÙŠØ±</span>
             </a>
             <a href="#" class="nav-item" onclick="switchTab('settings', event)">
-                <span class="icon">⚙️</span>
-                <span>الإعدادات</span>
+                <span class="icon">âš™ï¸</span>
+                <span>Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª</span>
             </a>
         </nav>
 
         <div class="sidebar-footer">
             <button onclick="logout()" class="btn-logout">
-                <span class="icon">🚪</span>
-                <span>تسجيل خروج</span>
+                <span class="icon">ðŸšª</span>
+                <span>ØªØ³Ø¬ÙŠÙ„ Ø®Ø±ÙˆØ¬</span>
             </button>
         </div>
     </aside>
@@ -49,11 +50,11 @@
         <!-- Top Bar -->
         <header class="top-bar">
             <div class="top-bar-left">
-                <h2>مرحباً بك 👋</h2>
+                <h2>Ù…Ø±Ø­Ø¨Ø§Ù‹ Ø¨Ùƒ ðŸ‘‹</h2>
             </div>
             <div class="top-bar-right">
                 <button data-lang-toggle class="btn-lang">English</button>
-                <div class="notification-icon">🔔</div>
+                <div class="notification-icon">ðŸ””</div>
             </div>
         </header>
 
@@ -62,35 +63,35 @@
             <!-- Welcome Card -->
             <div class="welcome-card">
                 <div class="welcome-content">
-                    <h2>لوحة تحكم الشركات</h2>
-                    <p>إدارة الحجوزات الجماعية بكل سهولة</p>
+                    <h2>Ù„ÙˆØ­Ø© ØªØ­ÙƒÙ… Ø§Ù„Ø´Ø±ÙƒØ§Øª</h2>
+                    <p>Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ø­Ø¬ÙˆØ²Ø§Øª Ø§Ù„Ø¬Ù…Ø§Ø¹ÙŠØ© Ø¨ÙƒÙ„ Ø³Ù‡ÙˆÙ„Ø©</p>
                 </div>
-                <div class="welcome-image">🏢</div>
+                <div class="welcome-image">ðŸ¢</div>
             </div>
 
             <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card primary">
-                    <div class="stat-icon">📊</div>
+                    <div class="stat-icon">ðŸ“Š</div>
                     <div class="stat-info">
                         <h3 id="total-bookings">0</h3>
-                        <p>إجمالي الحجوزات</p>
+                        <p>Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ø­Ø¬ÙˆØ²Ø§Øª</p>
                     </div>
                 </div>
 
                 <div class="stat-card success">
-                    <div class="stat-icon">👥</div>
+                    <div class="stat-icon">ðŸ‘¥</div>
                     <div class="stat-info">
                         <h3 id="total-visitors">0</h3>
-                        <p>إجمالي الضيوف</p>
+                        <p>Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ø¶ÙŠÙˆÙ</p>
                     </div>
                 </div>
 
                 <div class="stat-card warning">
-                    <div class="stat-icon">💰</div>
+                    <div class="stat-icon">ðŸ’°</div>
                     <div class="stat-info">
-                        <h3 id="total-amount">0 ر.س</h3>
-                        <p>إجمالي المبالغ</p>
+                        <h3 id="total-amount">0 Ø±.Ø³</h3>
+                        <p>Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ù…Ø¨Ø§Ù„Øº</p>
                     </div>
                 </div>
 
@@ -98,7 +99,7 @@
                     <div class="stat-icon">%</div>
                     <div class="stat-info">
                         <h3 id="discount-rate">15%</h3>
-                        <p>نسبة الخصم</p>
+                        <p>Ù†Ø³Ø¨Ø© Ø§Ù„Ø®ØµÙ…</p>
                     </div>
                 </div>
             </div>
@@ -107,14 +108,14 @@
             <div id="bookings-section" class="section-active">
                 <div class="card">
                     <div class="card-header">
-                        <h3>📅 حجوزاتك الجماعية</h3>
+                        <h3>ðŸ“… Ø­Ø¬ÙˆØ²Ø§ØªÙƒ Ø§Ù„Ø¬Ù…Ø§Ø¹ÙŠØ©</h3>
                         <button class="btn-primary" onclick="newGroupBooking()">
-                            حجز جماعي جديد
+                            Ø­Ø¬Ø² Ø¬Ù…Ø§Ø¹ÙŠ Ø¬Ø¯ÙŠØ¯
                         </button>
                     </div>
                     <div class="card-body">
                         <div id="bookings-list">
-                            <p class="text-center text-muted">جاري التحميل...</p>
+                            <p class="text-center text-muted">Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</p>
                         </div>
                     </div>
                 </div>
@@ -124,7 +125,7 @@
             <div id="new-booking-section" class="section-hidden">
                 <div class="card">
                     <div class="card-header">
-                        <h3>🔍 حجز جماعي جديد</h3>
+                        <h3>ðŸ” Ø­Ø¬Ø² Ø¬Ù…Ø§Ø¹ÙŠ Ø¬Ø¯ÙŠØ¯</h3>
                     </div>
                     <div class="card-body">
                         <!-- Search Form -->
@@ -133,35 +134,35 @@
                             <div
                                 style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                                 <div>
-                                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">📅
-                                        التاريخ</label>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">ðŸ“…
+                                        Ø§Ù„ØªØ§Ø±ÙŠØ®</label>
                                     <input type="date" id="search-date" class="form-control"
                                         style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
                                 </div>
                                 <div>
-                                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">⏰
-                                        الفترة</label>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">â°
+                                        Ø§Ù„ÙØªØ±Ø©</label>
                                     <select id="search-time" class="form-control"
                                         style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
-                                        <option value="">الكل</option>
-                                        <option value="morning">صباحي (8ص-12ظ)</option>
-                                        <option value="afternoon">مسائي (12ظ-5ع)</option>
-                                        <option value="evening">ليلي (5ع-12ص)</option>
+                                        <option value="">Ø§Ù„ÙƒÙ„</option>
+                                        <option value="morning">ØµØ¨Ø§Ø­ÙŠ (8Øµ-12Ø¸)</option>
+                                        <option value="afternoon">Ù…Ø³Ø§Ø¦ÙŠ (12Ø¸-5Ø¹)</option>
+                                        <option value="evening">Ù„ÙŠÙ„ÙŠ (5Ø¹-12Øµ)</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">📍
-                                        المدينة</label>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">ðŸ“
+                                        Ø§Ù„Ù…Ø¯ÙŠÙ†Ø©</label>
                                     <select id="search-city" class="form-control"
                                         style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
-                                        <option value="">الكل</option>
-                                        <option value="mecca">مكة المكرمة</option>
-                                        <option value="medina">المدينة المنورة</option>
+                                        <option value="">Ø§Ù„ÙƒÙ„</option>
+                                        <option value="mecca">Ù…ÙƒØ© Ø§Ù„Ù…ÙƒØ±Ù…Ø©</option>
+                                        <option value="medina">Ø§Ù„Ù…Ø¯ÙŠÙ†Ø© Ø§Ù„Ù…Ù†ÙˆØ±Ø©</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">👥 عدد
-                                        الضيوف</label>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">ðŸ‘¥ Ø¹Ø¯Ø¯
+                                        Ø§Ù„Ø¶ÙŠÙˆÙ</label>
                                     <input type="number" id="search-guests" min="1" value="1" class="form-control"
                                         style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
                                 </div>
@@ -173,20 +174,20 @@
                                 <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
                                     <input type="checkbox" id="view-all-majalis"
                                         style="width: 18px; height: 18px; cursor: pointer;">
-                                    <span style="font-weight: 600; color: #333;">📋 عرض جميع المجالس المتاحة (بدون تحديد
-                                        تاريخ أو وقت)</span>
+                                    <span style="font-weight: 600; color: #333;">ðŸ“‹ Ø¹Ø±Ø¶ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ù…Ø¬Ø§Ù„Ø³ Ø§Ù„Ù…ØªØ§Ø­Ø© (Ø¨Ø¯ÙˆÙ† ØªØ­Ø¯ÙŠØ¯
+                                        ØªØ§Ø±ÙŠØ® Ø£Ùˆ ÙˆÙ‚Øª)</span>
                                 </label>
                             </div>
 
                             <button onclick="searchAvailableMajalis()" class="btn-primary"
                                 style="margin-top: 15px; width: 100%; padding: 12px; border: none; border-radius: 6px; background: #1a4d8f; color: white; font-weight: 600; cursor: pointer;">
-                                🔍 بحث عن المجالس المتاحة
+                                ðŸ” Ø¨Ø­Ø« Ø¹Ù† Ø§Ù„Ù…Ø¬Ø§Ù„Ø³ Ø§Ù„Ù…ØªØ§Ø­Ø©
                             </button>
                         </div>
 
                         <!-- Results -->
                         <div id="search-results">
-                            <p class="text-center text-muted">ابدأ البحث لعرض المجالس المتاحة</p>
+                            <p class="text-center text-muted">Ø§Ø¨Ø¯Ø£ Ø§Ù„Ø¨Ø­Ø« Ù„Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø¬Ø§Ù„Ø³ Ø§Ù„Ù…ØªØ§Ø­Ø©</p>
                         </div>
                     </div>
                 </div>
@@ -196,11 +197,11 @@
             <div id="invoices-section" class="section-hidden">
                 <div class="card">
                     <div class="card-header">
-                        <h3>🧾 الفواتير</h3>
+                        <h3>ðŸ§¾ Ø§Ù„ÙÙˆØ§ØªÙŠØ±</h3>
                     </div>
                     <div class="card-body">
                         <div id="invoices-list">
-                            <p class="text-center text-muted">لا توجد فواتير حالياً</p>
+                            <p class="text-center text-muted">Ù„Ø§ ØªÙˆØ¬Ø¯ ÙÙˆØ§ØªÙŠØ± Ø­Ø§Ù„ÙŠØ§Ù‹</p>
                         </div>
                     </div>
                 </div>
@@ -210,43 +211,60 @@
             <div id="settings-section" class="section-hidden">
                 <div class="card">
                     <div class="card-header">
-                        <h3>⚙️ إعدادات الشركة</h3>
+                        <h3>âš™ï¸ Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø§Ù„Ø´Ø±ÙƒØ©</h3>
                     </div>
                     <div class="card-body">
                         <form id="company-form" class="form-standard" onsubmit="updateCompanyInfo(event)">
                             <div class="form-group">
-                                <label for="company-name-input">اسم الشركة</label>
+                                <label for="company-name-input">Ø§Ø³Ù… Ø§Ù„Ø´Ø±ÙƒØ©</label>
                                 <input type="text" id="company-name-input" required>
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="commercial-registration">رقم السجل التجاري</label>
+                                    <label for="commercial-registration">Ø±Ù‚Ù… Ø§Ù„Ø³Ø¬Ù„ Ø§Ù„ØªØ¬Ø§Ø±ÙŠ</label>
                                     <input type="text" id="commercial-registration" required disabled>
                                 </div>
                                 <div class="form-group">
-                                    <label for="company-city">المدينة</label>
+                                    <label for="company-city">Ø§Ù„Ù…Ø¯ÙŠÙ†Ø©</label>
                                     <input type="text" id="company-city">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label for="company-address">عنوان المكتب</label>
+                                <label for="company-address">Ø¹Ù†ÙˆØ§Ù† Ø§Ù„Ù…ÙƒØªØ¨</label>
                                 <input type="text" id="company-address">
                             </div>
 
                             <div class="form-group">
-                                <label for="company-phone">جوال المسؤول</label>
+                                <label for="company-phone">Ø¬ÙˆØ§Ù„ Ø§Ù„Ù…Ø³Ø¤ÙˆÙ„</label>
                                 <input type="tel" id="company-phone">
                             </div>
 
-                            <button type="submit" class="btn-primary">حفظ التغييرات</button>
+                            <button type="submit" class="btn-primary">Ø­ÙØ¸ Ø§Ù„ØªØºÙŠÙŠØ±Ø§Øª</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </main>
+
+    <!-- Custom Prompt Modal -->
+    <div id="custom-prompt-overlay" class="custom-prompt-overlay">
+        <div class="custom-prompt-modal">
+            <h3 id="prompt-title"></h3>
+            <p id="prompt-message"></p>
+            <input type="text" id="prompt-input" style="display: none;">
+            <select id="prompt-select" style="display: none;">
+                <option value="">اختر...</option>
+            </select>
+            <div class="custom-prompt-buttons">
+                <button class="btn-cancel" id="prompt-cancel">إلغاء</button>
+                <button class="btn-confirm" id="prompt-confirm">تأكيد</button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
