@@ -637,5 +637,289 @@ async function createGroupBooking(majlisId, guestsCount, bookingDate, timeSlot) 
     } catch (error) {
         console.error('Booking error:', error);
         showToast('خطأ', 'حدث خطأ في إنشاء الحجز', 'error');
+
+// ===================================
+// Invoices Management
+// ===================================
+
+let currentInvoiceId = null;
+let allInvoices = [];
+
+// Load invoices for current company
+async function loadInvoices() {
+    try {
+        if (!currentCompany || !currentCompany.id) {
+            showToast('خطأ', 'لم يتم العثور على معلومات الشركة', 'error');
+            return;
+        }
+
+        // Fetch invoices from database
+        const { data: invoices, error } = await window.supabaseClient
+            .from('invoices')
+            .select(`
+                *,
+                bookings (
+                    id,
+                    booking_date,
+                    time_slot,
+                    guests_count,
+                    majlis:majalis (
+                        name,
+                        city
+                    )
+                )
+            `)
+            .eq('company_id', currentCompany.id)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        allInvoices = invoices || [];
+        displayInvoices(allInvoices);
+
+    } catch (error) {
+        console.error('Error loading invoices:', error);
+        document.getElementById('invoices-table-body').innerHTML = 
+            '<tr><td colspan="5" class="text-center" style="padding: 40px; color: #dc3545;">حدث خطأ في تحميل الفواتير</td></tr>';
+    }
+}
+
+// Display invoices in table
+function displayInvoices(invoices) {
+    const tbody = document.getElementById('invoices-table-body');
+    
+    if (!invoices || invoices.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center" style="padding: 40px; color: #999;">لا توجد فواتير</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = invoices.map(invoice => {
+        const statusBadge = getStatusBadge(invoice.status);
+        const amount = parseFloat(invoice.total || 0).toFixed(2);
+        const date = new Date(invoice.issue_date).toLocaleDateString('ar-SA');
+
+        return `
+            <tr style="border-bottom: 1px solid #e0e0e0;">
+                <td style="padding: 12px;">
+                    <strong style="color: #1a4d8f;">#${invoice.invoice_number}</strong>
+                </td>
+                <td style="padding: 12px;">${date}</td>
+                <td style="padding: 12px;">
+                    <strong>${amount} ر.س</strong>
+                </td>
+                <td style="padding: 12px;">${statusBadge}</td>
+                <td style="padding: 12px;">
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="showInvoiceDetails('${invoice.id}')" 
+                            style="padding: 6px 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;"
+                            title="عرض التفاصيل">
+                            📄 عرض
+                        </button>
+                        <button onclick="downloadInvoicePDF('${invoice.id}')" 
+                            style="padding: 6px 12px; background: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;"
+                            title="تحميل PDF">
+                            📥
+                        </button>
+                        <button onclick="printInvoice('${invoice.id}')" 
+                            style="padding: 6px 12px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;"
+                            title="طباعة">
+                            🖨️
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Get status badge HTML
+function getStatusBadge(status) {
+    const badges = {
+        'paid': '<span style="padding: 4px 12px; background: #d4edda; color: #155724; border-radius: 12px; font-size: 13px; font-weight: 600;">✅ مدفوع</span>',
+        'pending': '<span style="padding: 4px 12px; background: #fff3cd; color: #856404; border-radius: 12px; font-size: 13px; font-weight: 600;">⏳ معلق</span>',
+        'cancelled': '<span style="padding: 4px 12px; background: #f8d7da; color: #721c24; border-radius: 12px; font-size: 13px; font-weight: 600;">❌ ملغي</span>'
+    };
+    return badges[status] || badges['pending'];
+}
+
+// Filter invoices
+function filterInvoices() {
+    const status = document.getElementById('invoice-status-filter').value;
+    const dateFrom = document.getElementById('invoice-date-from').value;
+    const dateTo = document.getElementById('invoice-date-to').value;
+
+    let filtered = allInvoices;
+
+    // Filter by status
+    if (status) {
+        filtered = filtered.filter(inv => inv.status === status);
+    }
+
+    // Filter by date range
+    if (dateFrom) {
+        filtered = filtered.filter(inv => new Date(inv.issue_date) >= new Date(dateFrom));
+    }
+    if (dateTo) {
+        filtered = filtered.filter(inv => new Date(inv.issue_date) <= new Date(dateTo));
+    }
+
+    displayInvoices(filtered);
+}
+
+// Show invoice details in modal
+async function showInvoiceDetails(invoiceId) {
+    try {
+        currentInvoiceId = invoiceId;
+        
+        // Get full invoice details
+        const { data: invoice, error } = await window.supabaseClient
+            .from('invoices')
+            .select(`
+                *,
+                company:companies(company_name, contact_phone, city),
+                booking:bookings(
+                    booking_date,
+                    time_slot,
+                    guests_count,
+                    majlis:majalis(name, city, address)
+                )
+            `)
+            .eq('id', invoiceId)
+            .single();
+
+        if (error) throw error;
+
+        // Build invoice HTML
+        const content = buildInvoiceHTML(invoice);
+        document.getElementById('invoice-details-content').innerHTML = content;
+        document.getElementById('invoice-details-modal').style.display = 'flex';
+
+    } catch (error) {
+        console.error('Error loading invoice details:', error);
+        showToast('خطأ', 'حدث خطأ في تحميل تفاصيل الفاتورة', 'error');
+    }
+}
+
+// Build invoice HTML for display
+function buildInvoiceHTML(invoice) {
+    const date = new Date(invoice.issue_date).toLocaleDateString('ar-SA');
+    const statusBadge = getStatusBadge(invoice.status);
+    
+    return `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #1a4d8f;">
+                <h1 style="color: #1a4d8f; margin: 0 0 10px 0;">منصة كرم</h1>
+                <p style="margin: 0; color: #666;">فاتورة حجز مجلس</p>
+            </div>
+
+            <!-- Invoice Info -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                <div>
+                    <p style="margin: 0 0 8px 0;"><strong>رقم الفاتورة:</strong> #${invoice.invoice_number}</p>
+                    <p style="margin: 0 0 8px 0;"><strong>التاريخ:</strong> ${date}</p>
+                    <p style="margin: 0 0 8px 0;"><strong>الحالة:</strong> ${statusBadge}</p>
+                </div>
+                <div style="text-align: left;">
+                    <p style="margin: 0 0 8px 0;"><strong>الشركة:</strong> ${invoice.company?.company_name || 'غير محدد'}</p>
+                    <p style="margin: 0 0 8px 0;"><strong>الهاتف:</strong> ${invoice.company?.contact_phone || 'غير محدد'}</p>
+                    <p style="margin: 0 0 8px 0;"><strong>المدينة:</strong> ${invoice.company?.city === 'mecca' ? 'مكة المكرمة' : 'المدينة المنورة'}</p>
+                </div>
+            </div>
+
+            <!-- Booking Details -->
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+                <h3 style="margin: 0 0 15px 0; color: #333;">تفاصيل الحجز</h3>
+                <p style="margin: 0 0 8px 0;"><strong>المجلس:</strong> ${invoice.booking?.majlis?.name || 'غير محدد'}</p>
+                <p style="margin: 0 0 8px 0;"><strong>المدينة:</strong> ${invoice.booking?.majlis?.city === 'mecca' ? 'مكة المكرمة' : 'المدينة المنورة'}</p>
+                <p style="margin: 0 0 8px 0;"><strong>العنوان:</strong> ${invoice.booking?.majlis?.address || 'غير محدد'}</p>
+                <p style="margin: 0 0 8px 0;"><strong>تاريخ الحجز:</strong> ${new Date(invoice.booking?.booking_date).toLocaleDateString('ar-SA')}</p>
+                <p style="margin: 0 0 8px 0;"><strong>الفترة:</strong> ${getTimeSlotArabic(invoice.booking?.time_slot)}</p>
+                <p style="margin: 0;"><strong>عدد الضيوف:</strong> ${invoice.booking?.guests_count || 0}</p>
+            </div>
+
+            <!-- Amount Details -->
+            <div style="background: white; border: 2px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f8f9fa;">
+                            <th style="padding: 12px; text-align: right; border-bottom: 2px solid #dee2e6;">البند</th>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">المبلغ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">الإجمالي الفرعي</td>
+                            <td style="padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0;">${parseFloat(invoice.subtotal || 0).toFixed(2)} ر.س</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">الضريبة (15%)</td>
+                            <td style="padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0;">${parseFloat(invoice.tax || 0).toFixed(2)} ر.س</td>
+                        </tr>
+                        <tr style="background: #f8f9fa; font-weight: bold; font-size: 18px;">
+                            <td style="padding: 15px;">الإجمالي النهائي</td>
+                            <td style="padding: 15px; text-align: left; color: #1a4d8f;">${parseFloat(invoice.total || 0).toFixed(2)} ر.س</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            ${invoice.notes ? `
+                <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px;">
+                    <p style="margin: 0;"><strong>ملاحظات:</strong> ${invoice.notes}</p>
+                </div>
+            ` : ''}
+        </div>
+    `;
+}
+
+// Helper function for time slot translation
+function getTimeSlotArabic(slot) {
+    const slots = {
+        'morning': 'صباحي (8ص-12ظ)',
+        'afternoon': 'مسائي (12ظ-5ع)',
+        'evening': 'ليلي (5ع-12ص)'
+    };
+    return slots[slot] || slot;
+}
+
+// Close invoice modal
+function closeInvoiceModal() {
+    document.getElementById('invoice-details-modal').style.display = 'none';
+    currentInvoiceId = null;
+}
+
+// Download invoice as PDF
+function downloadInvoicePDF(invoiceId) {
+    // For now, just show a message
+    // TODO: Implement PDF generation with jsPDF
+    showToast('قريباً', 'سيتم إضافة ميزة تحميل PDF قريباً', 'info');
+}
+
+// Print invoice
+function printInvoice(invoiceId) {
+    if (!invoiceId && !currentInvoiceId) {
+        showToast('خطأ', 'لم يتم تحديد فاتورة للطباعة', 'error');
+        return;
+    }
+
+    const id = invoiceId || currentInvoiceId;
+    
+    // If modal is open, print its content
+    if (currentInvoiceId === id) {
+        const content = document.getElementById('invoice-details-content').innerHTML;
+        const printWindow = window.open('', '', 'height=600,width=800');
+        printWindow.document.write('<html dir="rtl"><head><title>طباعة الفاتورة</title>');
+        printWindow.document.write('<style>body{font-family:Arial;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{padding:10px;border:1px solid #ddd;}</style>');
+        printWindow.document.write('</head><body>');
+        printWindow.document.write(content);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.print();
+    } else {
+        showToast('خطأ', 'الرجاء فتح الفاتورة أولاً', 'error');
+    }
+}
+
     }
 }

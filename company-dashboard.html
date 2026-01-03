@@ -202,6 +202,60 @@
                         </div>
                     </div>
                 </div>
+            <!-- Invoices Section (Hidden by default) -->
+            <div id="invoices-section" class="section-hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📄 الفواتير</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Filters -->
+                        <div class="invoices-filters" style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 200px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600;">الحالة</label>
+                                <select id="invoice-status-filter" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                    <option value="">الكل</option>
+                                    <option value="paid">مدفوع</option>
+                                    <option value="pending">معلق</option>
+                                    <option value="cancelled">ملغي</option>
+                                </select>
+                            </div>
+                            <div style="flex: 1; min-width: 200px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600;">من تاريخ</label>
+                                <input type="date" id="invoice-date-from" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                            </div>
+                            <div style="flex: 1; min-width: 200px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600;">إلى تاريخ</label>
+                                <input type="date" id="invoice-date-to" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                            </div>
+                            <div style="display: flex; align-items: flex-end;">
+                                <button onclick="filterInvoices()" class="btn-primary" style="padding: 8px 24px; border: none; border-radius: 6px; background: #1a4d8f; color: white; font-weight: 600; cursor: pointer;">
+                                    🔍 تصفية
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Invoices Table -->
+                        <div class="table-responsive">
+                            <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: #f8f9fa;">
+                                        <th style="padding: 12px; text-align: right; border-bottom: 2px solid #dee2e6;">رقم الفاتورة</th>
+                                        <th style="padding: 12px; text-align: right; border-bottom: 2px solid #dee2e6;">التاريخ</th>
+                                        <th style="padding: 12px; text-align: right; border-bottom: 2px solid #dee2e6;">المبلغ</th>
+                                        <th style="padding: 12px; text-align: right; border-bottom: 2px solid #dee2e6;">الحالة</th>
+                                        <th style="padding: 12px; text-align: right; border-bottom: 2px solid #dee2e6;">الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invoices-table-body">
+                                    <tr>
+                                        <td colspan="5" class="text-center" style="padding: 40px; color: #999;">جاري تحميل الفواتير...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Settings Section (Hidden by default) -->
@@ -271,6 +325,26 @@
     <script src="js/i18n.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/company-dashboard.js"></script>
+
+    <!-- Invoice Details Modal -->
+    <div id="invoice-details-modal" class="custom-prompt-overlay" style="display: none;">
+        <div class="custom-prompt-modal" style="max-width: 800px; width: 90%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #1a4d8f; padding-bottom: 15px;">
+                <h2 style="margin: 0; color: #1a4d8f;">📄 تفاصيل الفاتورة</h2>
+                <button onclick="closeInvoiceModal()" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #999;">&times;</button>
+            </div>
+            
+            <div id="invoice-details-content" style="max-height: 70vh; overflow-y: auto;">
+                <!-- Will be populated by JavaScript -->
+            </div>
+            
+            <div class="custom-prompt-buttons" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+                <button onclick="printInvoice()" class="btn-secondary" style="flex: 1;">🖨️ طباعة</button>
+                <button onclick="downloadInvoicePDF()" class="btn-primary" style="flex: 1;">📥 تحميل PDF</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>
