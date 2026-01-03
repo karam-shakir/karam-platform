@@ -269,8 +269,8 @@ async function updateCompanyInfo(event) {
 function promptDateForBooking(majlisId, guestsCount) {
     const date = prompt('يرجى إدخال تاريخ الحجز (YYYY-MM-DD):\nمثال: 2026-01-15');
 
+    // If user cancels, just return without showing error
     if (!date) {
-        showToast('تنبيه', 'لم يتم إدخال تاريخ', 'warning');
         return;
     }
 
