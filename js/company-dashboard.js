@@ -226,26 +226,31 @@ function loadCompanySettings() {
     if (!currentCompany) return;
 
     document.getElementById('company-name-input').value = currentCompany.company_name || '';
-    document.getElementById('commercial-registration').value = currentCompany.commercial_registration || '';
-    document.getElementById('company-type').value = currentCompany.company_type || '';
-    document.getElementById('company-address').value = currentCompany.address || '';
-    document.getElementById('company-website').value = currentCompany.website || '';
+    document.getElementById('commercial-registration').value = currentCompany.registration_number || '';
+    document.getElementById('company-city').value = currentCompany.city || '';
+    document.getElementById('company-address').value = currentCompany.office_address || '';
+    document.getElementById('company-phone').value = currentCompany.responsible_person_phone || '';
 }
 
-// Update company info
 async function updateCompanyInfo(event) {
     event.preventDefault();
 
     try {
         const formData = {
             company_name: document.getElementById('company-name-input').value,
+            city: document.getElementById('company-city').value,
             address: document.getElementById('company-address').value,
-            website: document.getElementById('company-website').value
+            phone: document.getElementById('company-phone').value
         };
 
         const { error } = await window.supabaseClient
             .from('companies')
-            .update(formData)
+            .update({
+                company_name: formData.company_name,
+                city: formData.city,
+                office_address: formData.address,
+                responsible_person_phone: formData.phone
+            })
             .eq('id', currentCompany.id);
 
         if (error) throw error;
@@ -275,17 +280,24 @@ async function downloadInvoice(bookingId) {
     showToast('قريباً', 'سيتم إضافة ميزة تحميل الفواتير قريباً', 'info');
 }
 
-// Switch tab
-function switchTab(tabName, event) {
-    event.preventDefault();
+// Switch section
+function switchTab(sectionName, event) {
+    if (event) event.preventDefault();
 
-    // Update sidebar links
-    document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
-    event.target.classList.add('active');
+    // Hide all sections
+    const sections = ['bookings', 'invoices', 'settings'];
+    sections.forEach(sec => {
+        const element = document.getElementById(`${sec}-section`);
+        if (element) {
+            element.className = 'section-hidden';
+        }
+    });
 
-    // Update content
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.getElementById(`${tabName}-tab`).classList.add('active');
+    // Show selected section
+    const targetSection = document.getElementById(`${sectionName}-section`);
+    if (targetSection) {
+        targetSection.className = 'section-active';
+    }
 }
 
 // Logout
