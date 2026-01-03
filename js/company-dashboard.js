@@ -261,9 +261,32 @@ async function updateCompanyInfo(event) {
 
     } catch (error) {
         console.error('Error updating company:', error);
-        showToast('خطأ', 'حدث خطأ في تحديث المعلومات', 'error');
+        showToast('خطأ', 'حدث خطأ في إنشاء الحجز', 'error');
     }
 }
+
+// Prompt for date when booking from view-all mode
+function promptDateForBooking(majlisId, guestsCount) {
+    const date = prompt('يرجى إدخال تاريخ الحجز (YYYY-MM-DD):\nمثال: 2026-01-15');
+
+    if (!date) {
+        showToast('تنبيه', 'لم يتم إدخال تاريخ', 'warning');
+        return;
+    }
+
+    // Validate date format
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        showToast('خطأ', 'صيغة التاريخ غير صحيحة. استخدم: YYYY-MM-DD', 'error');
+        return;
+    }
+
+    const timeSlot = prompt('يرجى اختيار الفترة:\n1 = صباحي\n2 = مسائي\n3 = ليلي');
+    const slots = { '1': 'morning', '2': 'afternoon', '3': 'evening' };
+    const selectedSlot = slots[timeSlot] || 'morning';
+
+    createGroupBooking(majlisId, guestsCount, date, selectedSlot);
+}
+
 
 // New group booking
 function newGroupBooking() {
@@ -326,13 +349,15 @@ function showToast(title, message, type = 'info') {
 // Search for available majalis
 async function searchAvailableMajalis() {
     try {
+        const viewAll = document.getElementById('view-all-majalis').checked;
         const searchDate = document.getElementById('search-date').value;
         const searchTime = document.getElementById('search-time').value;
         const searchCity = document.getElementById('search-city').value;
         const searchGuests = parseInt(document.getElementById('search-guests').value) || 1;
 
-        if (!searchDate) {
-            showToast('تنبيه', 'يرجى اختيار التاريخ', 'warning');
+        // If not viewing all, require date
+        if (!viewAll && !searchDate) {
+            showToast('تنبيه', 'يرجى اختيار التاريخ أو تفعيل خيار "عرض الكل"', 'warning');
             return;
         }
 
@@ -371,7 +396,13 @@ async function searchAvailableMajalis() {
         }
 
         // Display results
-        renderMajalisResults(filteredData, searchGuests, searchDate, searchTime);
+        if (viewAll) {
+            // Show all majalis without date/time filtering
+            renderMajalisResults(filteredData, searchGuests, null, null);
+        } else {
+            // Show with specific date/time
+            renderMajalisResults(filteredData, searchGuests, searchDate, searchTime);
+        }
 
     } catch (error) {
         console.error('Search error:', error);
@@ -435,8 +466,8 @@ function renderMajalisResults(majalis, guestsCount, bookingDate, timeSlot) {
                             </div>
                         </div>
 
-                        <button onclick="createGroupBooking('${majlis.id}', ${guestsCount}, '${bookingDate}', '${timeSlot}')" style="width: 100%; padding: 10px; background: #1a4d8f; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
-                            ✅ حجز الآن
+                        <button onclick="${bookingDate ? `createGroupBooking('${majlis.id}', ${guestsCount}, '${bookingDate}', '${timeSlot}')` : `promptDateForBooking('${majlis.id}', ${guestsCount})`}" style="width: 100%; padding: 10px; background: #1a4d8f; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                            ✅ ${bookingDate ? 'حجز الآن' : 'تحديد تاريخ وحجز'}
                         </button>
                     </div>
                 `;
