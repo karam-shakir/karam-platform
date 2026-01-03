@@ -2365,3 +2365,16 @@ body.rtl {
         grid-template-columns: 1fr;
     }
 }
+/* ============================================
+   Section Toggle Classes for Company Dashboard
+   ============================================ */
+
+/* Hide sections by default */
+.section-hidden {
+    display: none !important;
+}
+
+/* Show active section */
+.section-active {
+    display: block !important;
+}
