@@ -71,20 +71,36 @@ async function loadBookings() {
             .from('bookings')
             .select(`
                 *,
-                family:host_families(family_name, city),
-                package:packages(name, price, b2b_price)
+                majlis:majlis_id (
+                    majlis_name,
+                    package_type,
+                    package_price,
+                    base_price,
+                    family:family_id (
+                        family_name,
+                        city
+                    )
+                )
             `)
-            .eq('visitor_id', currentCompany.user_id)
-            .eq('booking_type', 'b2b')
+            .eq('user_id', currentCompany.user_id)
             .order('booking_date', { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+            console.error('Error loading bookings:', error);
+            throw error;
+        }
 
         companyBookings = data || [];
         renderBookings(companyBookings);
 
     } catch (error) {
         console.error('Error loading bookings:', error);
+        document.getElementById('bookings-list').innerHTML = `
+            <div class="empty-state">
+                <p>حدث خطأ في تحميل الحجوزات</p>
+                <p class="text-muted">${error.message}</p>
+            </div>
+        `;
     }
 }
 
@@ -103,11 +119,14 @@ function renderBookings(bookings) {
     }
 
     container.innerHTML = bookings.map(booking => {
-        const cityName = booking.family?.city === 'makkah' ? 'مكة المكرمة' : 'المدينة المنورة';
-        const statusClass = getStatusClass(booking.status);
-        const statusText = getStatusText(booking.status);
+        const city = booking.majlis?.family?.city || '';
+        const cityName = city === 'mecca' ? 'مكة المكرمة' : city === 'medina' ? 'المدينة المنورة' : city || '-';
+        const statusClass = getStatusClass(booking.booking_status);
+        const statusText = getStatusText(booking.booking_status);
         const bookingDate = new Date(booking.booking_date).toLocaleDateString('ar-SA');
-        const price = booking.package?.b2b_price || booking.package?.price || 0;
+        const packageType = booking.majlis?.package_type;
+        const packageBadge = packageType ? `<span class="badge ${packageType === 'premium' ? 'badge-premium' : 'badge-basic'}">${packageType === 'premium' ? '⭐ متميزة' : '🎁 أساسية'}</span>` : '';
+        const price = booking.majlis?.package_price || booking.majlis?.base_price || 0;
         const discount = currentCompany.discount_rate || 0;
         const finalPrice = price * (1 - discount / 100);
 
@@ -115,40 +134,41 @@ function renderBookings(bookings) {
             <div class="booking-card">
                 <div class="booking-header">
                     <div>
-                        <h3>${booking.family?.family_name || 'أسرة'}</h3>
-                        <p class="text-muted">📍 ${cityName}</p>
+                        <h3>${booking.majlis?.majlis_name || 'مجلس'}</h3>
+                        <p class="text-muted">📍 ${cityName} - ${booking.majlis?.family?.family_name || ''}</p>
+                        ${packageBadge}
                     </div>
                     <span class="status-badge ${statusClass}">${statusText}</span>
                 </div>
                 <div class="booking-details">
                     <div class="detail-item">
-                        <span class="label">الباقة:</span>
-                        <span>${booking.package?.name || '-'}</span>
-                    </div>
-                    <div class="detail-item">
                         <span class="label">التاريخ:</span>
                         <span>${bookingDate}</span>
                     </div>
                     <div class="detail-item">
-                        <span class="label">عدد المعتمرين:</span>
-                        <span>${booking.number_of_guests}</span>
+                        <span class="label">الفترة:</span>
+                        <span>${formatTimeSlot(booking.time_slot)}</span>
                     </div>
                     <div class="detail-item">
-                        <span class="label">السعر الأساسي:</span>
-                        <span>${price} ريال</span>
+                        <span class="label">عدد الضيوف:</span>
+                        <span>${booking.guests_count}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">سعر الشخص:</span>
+                        <span>${price.toFixed(2)} ر.س</span>
                     </div>
                     <div class="detail-item">
                         <span class="label">بعد الخصم (${discount}%):</span>
-                        <span class="price">${finalPrice.toFixed(2)} ريال</span>
+                        <span class="price">${finalPrice.toFixed(2)} ر.س</span>
                     </div>
                     <div class="detail-item">
                         <span class="label">المبلغ الإجمالي:</span>
-                        <span class="price-total">${booking.final_price} ريال</span>
+                        <span class="price-total">${booking.total_price.toFixed(2)} ر.س</span>
                     </div>
                 </div>
                 <div class="booking-actions">
                     <a href="#" class="btn btn-text btn-sm">عرض التفاصيل</a>
-                    ${booking.status === 'confirmed' ?
+                    ${booking.booking_status === 'confirmed' ?
                 `<button class="btn btn-secondary btn-sm" onclick="downloadInvoice('${booking.id}')">تحميل الفاتورة</button>` : ''}
                 </div>
             </div>
@@ -180,15 +200,25 @@ function getStatusText(status) {
 // Update stats
 function updateStats() {
     const totalBookings = companyBookings.length;
-    const totalVisitors = companyBookings.reduce((sum, b) => sum + (b.number_of_guests || 0), 0);
+    const totalVisitors = companyBookings.reduce((sum, b) => sum + (b.guests_count || 0), 0);
     const totalAmount = companyBookings
-        .filter(b => b.status !== 'cancelled')
-        .reduce((sum, b) => sum + parseFloat(b.final_price || 0), 0);
+        .filter(b => b.booking_status !== 'cancelled')
+        .reduce((sum, b) => sum + parseFloat(b.total_price || 0), 0);
 
     document.getElementById('total-bookings').textContent = totalBookings;
     document.getElementById('total-visitors').textContent = totalVisitors;
-    document.getElementById('total-amount').textContent = `${totalAmount.toFixed(2)} ريال`;
+    document.getElementById('total-amount').textContent = `${totalAmount.toFixed(2)} ر.س`;
     document.getElementById('discount-rate').textContent = `${currentCompany.discount_rate || 15}%`;
+}
+
+// Format time slot
+function formatTimeSlot(slot) {
+    const slots = {
+        morning: 'صباحي (8ص5-12ظ)',
+        afternoon: 'مسائي (12ظ-5ع)',
+        evening: 'ليلي (5ع-12ص)'
+    };
+    return slots[slot] || slot;
 }
 
 // Load company settings
